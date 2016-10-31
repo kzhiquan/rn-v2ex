@@ -1,14 +1,17 @@
 
 import * as types from '../constants/ActionTypes';
 
-export function topicRequest(){
+export function topicRequest(isRefreshing, isLoading){
 	return {
-		type : types.TOPIC_REQUEST
+		type : types.TOPIC_REQUEST,
+		isRefreshing,
+		isLoading
 	};
 }
 
-export function topicReceive(){
+export function topicReceive(topicList){
 	return {
-		type : types.TOPIC_RECEIVE
+		type : types.TOPIC_RECEIVE,
+		topicList
 	}
 }

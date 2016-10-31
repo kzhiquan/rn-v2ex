@@ -9,13 +9,12 @@ import Main from './Main.js';
 class App extends React.Component{
 
 	constructor(props){
-		console.log('constructor');
 		super(props);
 		this.renderScene = this.renderScene.bind(this);
 	}
 
 	renderScene(route, navigator){
-		console.log('route:', route, navigator);
+		//console.log('route:', route, navigator);
 		const Component = route.component;
 		return (
 			<Component navigator={navigator} route={route} />

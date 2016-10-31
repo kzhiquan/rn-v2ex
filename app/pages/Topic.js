@@ -11,6 +11,10 @@ import {
 } from 'react-native';
 
 
+import ScrollableTabView, { ScrollableTabBar, } from 'react-native-scrollable-tab-view';
+import SITE from '../constants/Config'
+import IndexNodeTopic from './IndexNodeTopic'
+
 
 const propTypes = {
   topicActions: PropTypes.object,
@@ -26,15 +30,21 @@ class Topic extends React.Component {
   }
 
   componentDidMount() {
-
   }
 
   render() {
     const { navigator, route } = this.props;
+    //console.log('Topic props', this.props);
     return (
-      <View style={styles.container}>
-        <Text>topic page</Text>
-      </View>
+      <ScrollableTabView
+        initialPage={0}
+        renderTabBar={() => <ScrollableTabBar />}>
+        {
+          SITE.INDEX_NODE.map((node, index) => {
+            return <IndexNodeTopic key={index} tabLabel={node.name} node={node} {...this.props} />
+          })
+        }
+      </ScrollableTabView>
     );
   }
 }
