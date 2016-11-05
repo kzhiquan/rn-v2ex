@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Alert,
   ListView,
+  Image
 } from 'react-native';
 
 import LoadingView from '../components/LoadingView'
@@ -40,21 +41,21 @@ class IndexNodeTopic extends React.Component {
   }
 
   renderItem(topic) {
-    console.log('topic:',topic);
+    //console.log('topic:',topic);
     return (
       //<Text>{topic.topic_title}</Text>
-      <View>
-        <Image source={{uri:topic.member_avatar}} />
-        <View>
+      <View style={styles.containerItem}>
+        <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
+        <View style={styles.itemBody}>
           <Text>{topic.topic_title}</Text>
-          <View>
+          <View style={styles.itemBodyDetail}>
             <Text>{topic.node_name}</Text>
             <Text>{topic.member_name}</Text>
             <Text>{topic.date}</Text>
             <Text>{topic.latest_reply_member_name}</Text>
           </View>
         </View>
-        <Text>{topic.reply_count}</Text>
+        <Text style={styles.itemFooter}>{topic.reply_count}</Text>
       </View>
     )
   }
@@ -98,7 +99,33 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#FFF'
   },
-  categoryBtn: {
+  containerItem:{
+    flex:1,
+    flexDirection:'row',
+    borderBottomWidth:1,
+    padding:5,
+    justifyContent: 'space-between'
+  },
+  itemHeader:{
+    width:48,
+    height:48
+  },
+  itemBody:{
+    width:280
+  },
+  itemBodyDetail:{
+    flex:1,
+    flexDirection:'row',
+    justifyContent: 'space-between'
+  },
+  itemFooter:{
+    color:'blue',
+    //borderWidth: 1,
+    paddingTop: 18
+    //paddingLeft: 10
+  }
+
+  ,categoryBtn: {
     margin: 10,
     padding: 10,
     borderRadius: 10,
