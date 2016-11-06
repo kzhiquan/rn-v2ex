@@ -41,7 +41,7 @@ class Topic extends React.Component {
         renderTabBar={() => <ScrollableTabBar />}>
         {
           SITE.INDEX_NODE.map((node, index) => {
-            return <IndexNodeTopic key={index} tabLabel={node.name} node={node} {...this.props} />
+            return <IndexNodeTopic key={index}  node={node} {...this.props} tabLabel={node.name}/>
           })
         }
       </ScrollableTabView>

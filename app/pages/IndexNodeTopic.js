@@ -9,7 +9,8 @@ import {
   RefreshControl,
   Alert,
   ListView,
-  Image
+  Image,
+  ActivityIndicator
 } from 'react-native';
 
 import LoadingView from '../components/LoadingView'
@@ -18,26 +19,36 @@ const propTypes = {
   node : PropTypes.object.isRequired
 };
 
+let canLoadMore;
+let page = 0;
+let loadMoreTime = 0;
+
 class IndexNodeTopic extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.topic_url !== r2.topic_url } )
     };
+    this.renderItem = this.renderItem.bind(this);
+    this.renderFooter = this.renderFooter.bind(this);
+    this.onEndReached = this.onEndReached.bind(this);
+    this.onScroll = this.onScroll.bind(this);
+    canLoadMore = false;
   }
 
   componentWillMount() {
   }
 
   componentDidMount() {
-    const { topicActions } = this.props;
+    const { topicActions, node } = this.props;
     //console.log('topicActions', topicActions, this.props);
-    topicActions.topicRequest(false, true);
+    topicActions.topicRequest(false, true, false, node.path);
   }
 
   onRefresh(){
-    const { topicActions } = this.props;
-    topicActions.topicRequest(true, false);
+    const { topicActions, node } = this.props;
+    canLoadMore = false;
+    topicActions.topicRequest(true, false, false, node.path);
   }
 
   renderItem(topic) {
@@ -60,9 +71,45 @@ class IndexNodeTopic extends React.Component {
     )
   }
 
+  renderFooter(){
+    const { topic } = this.props;
+
+    if(topic.isLoadingMore){
+      return (
+        <View style={styles.footerContainer} >
+          <ActivityIndicator size="small" color="#3e9ce9" />
+          <Text style={styles.footerText}>
+            数据加载中……
+          </Text>
+        </View>
+      );
+    }
+  }
+
+  onEndReached() {
+    console.log('onEndReached');
+    const time = Date.parse(new Date()) / 1000;
+    if (canLoadMore && time - loadMoreTime > 2) {
+      page += 1;
+      //console.log('this.props:', this.props);
+      const { topicActions, node } = this.props;
+      topicActions.topicRequest(false, false, true, node.path);
+      canLoadMore = false;
+      loadMoreTime = Date.parse(new Date()) / 1000;
+    }
+  }
+
+  onScroll(){
+    console.log('onScroll');
+    const { topic } = this.props;
+    if (!canLoadMore && !topic.isLoadingMore){
+      canLoadMore = true;
+    }
+  }
+
   render() {
 
-    console.log('render IndexNodeTopic props', this.props);
+    //console.log('render IndexNodeTopic props', this.props);
 
     const { node, topic } = this.props;
 
@@ -77,6 +124,10 @@ class IndexNodeTopic extends React.Component {
         initialListSize = {1}
         dataSource={this.state.dataSource.cloneWithRows(topic.topicList)}
         renderRow={this.renderItem}
+        renderFooter={this.renderFooter}
+        onEndReached={this.onEndReached}
+        onScroll={this.onScroll}
+        onEndReachedThreshold={2}
         enableEmptySections={true}
         refreshControl={
           <RefreshControl
@@ -120,11 +171,20 @@ const styles = StyleSheet.create({
   },
   itemFooter:{
     color:'blue',
-    //borderWidth: 1,
     paddingTop: 18
-    //paddingLeft: 10
+  },
+  footerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 5
+  },
+  footerText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 10
   }
-
   ,categoryBtn: {
     margin: 10,
     padding: 10,
