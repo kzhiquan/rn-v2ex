@@ -56,8 +56,11 @@ const post_headers = {
 export function getLoginWillPostForm(name, password){
 	return new Promise((resolve, reject) => {
 		url = SITE.HOST + '/signin'
-		fetch(url)
+		fetch(url, {
+			credentials: 'include'
+		})
 		.then((response) => {
+			console.log(response.headers);
 			return response.text();
 		})
 		.then((body) => {
@@ -75,9 +78,11 @@ export function getLoginWillPostForm(name, password){
 			postForm['once'] = loginField.once;
 			postForm['next'] = '/' 
 
-			console.log(qs.stringify(postForm));
+			//console.log(qs.stringify(postForm));
 
-			fetch(url, {
+			resolve(postForm);
+
+			/*fetch(url, {
 				method : 'POST',
 				header : post_headers,
 				body: qs.stringify(postForm)
@@ -91,7 +96,7 @@ export function getLoginWillPostForm(name, password){
 			})
 			.catch((error) => {
 				console.error('error', error);
-			})
+			})*/
 
 		})
 		.catch((error) => {

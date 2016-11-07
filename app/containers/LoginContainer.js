@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text,TouchableHighlight,StyleSheet } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
+import qs from 'qs'
 
 import { getLoginWillPostForm }  from '../utils/SiteUtil'
 
@@ -33,9 +34,33 @@ class LoginContainer extends React.Component {
 		if (value) { // if validation fails, value will be null
 		  console.log(value); // value here is an instance of Person
 
-		  getLoginWillPostForm('kzhqiuan', 'kzhiquan62286507')
-		  .then(function(postFrom){
-		  	console.log('postFrom');
+		  getLoginWillPostForm('kzhiquan', 'kzhiquan62286507')
+		  .then(function(postForm){
+		  	console.log(postForm);
+		  	console.log(qs.stringify(postForm));
+
+			fetch('https://www.v2ex.com/signin', {
+				method : 'post',
+				headers : {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36',
+        			'Host': 'www.v2ex.com',
+        			'Referer': 'https://www.v2ex.com/signin',
+        			'Origin': 'https://www.v2ex.com'
+				},
+				credentials: 'include',
+				body: qs.stringify(postForm)
+			})
+			.then((response) => {
+				console.log(response, response.headers);
+				return response.text();
+			})
+			.then((body) => {
+				console.log('body', body);
+			})
+			.catch((error) => {
+				console.error('error', error);
+			})
 		  });
 
 		}

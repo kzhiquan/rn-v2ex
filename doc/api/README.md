@@ -309,6 +309,8 @@ curl https://www.v2ex.com/api/members/show.json?id=1
 
 
 ## Login
-curl -X POST --data "a0e7d9c28220a6b0c6806338bf95141f24c7e4c93e7730dde19d3a64cb8b6f95=kzhiquan&b6d39b011839f84f1203a27ba7ca37c6170f7d66d6cc17126ec3c952755d5beb=kzhiquan62286507&once=77210&next=%2F" -v https://www.v2ex.com/signin
+curl -X POST --data "aa531108ce382fd0a4f5a26bc7dd4496565f5e27a9e47b889999706d9f30a137=kzhqiuan&1a270d76416448050d079f43b9b4f8ec6daa414b76bccd2f4ae419863e4db01c=kzhiquan6228650&once=64006&next=%2F" https://www.v2ex.com/signin
 
+
+curl -X POST -H "Content-Type:applicationx-www-form-urlencoded" -H "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36" -H "Host:www.v2ex.com" -H "Referer:https://www.v2ex.com/signin" -H "Origin:https://www.v2ex.com" --data "db0d7abf548929625ff1f89e741bbe2829e0912c0fed02ab7ccc58a18577e0ea=kzhiquan&a9ae48cf890988b5a008e7ca8be49eb10b3d93d4521396b25478474cda812723=kzhiquan62286507&once=76231&next=%2F" -v https://www.v2ex.com/signin
 
