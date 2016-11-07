@@ -3,7 +3,7 @@ import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
 import { topicRequest, topicReceive } from '../actions/topic';
-import { fetchTopicList } from '../models/Topic'
+import { fetchTopicList } from '../utils/SiteUtil'
 
 
 

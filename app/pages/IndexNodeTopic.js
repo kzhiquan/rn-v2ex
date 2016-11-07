@@ -14,26 +14,27 @@ import {
 } from 'react-native';
 
 import LoadingView from '../components/LoadingView'
+import Login from '../containers/LoginContainer'
 
 const propTypes = {
   node : PropTypes.object.isRequired
 };
 
-let canLoadMore;
 let page = 0;
-let loadMoreTime = 0;
+let rowCount = 0;
+let needLoadMore = false;
+
 
 class IndexNodeTopic extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.topic_url !== r2.topic_url } )
+      dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } )
     };
     this.renderItem = this.renderItem.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onEndReached = this.onEndReached.bind(this);
     this.onScroll = this.onScroll.bind(this);
-    canLoadMore = false;
   }
 
   componentWillMount() {
@@ -47,7 +48,6 @@ class IndexNodeTopic extends React.Component {
 
   onRefresh(){
     const { topicActions, node } = this.props;
-    canLoadMore = false;
     topicActions.topicRequest(true, false, false, node.path);
   }
 
@@ -78,33 +78,38 @@ class IndexNodeTopic extends React.Component {
       return (
         <View style={styles.footerContainer} >
           <ActivityIndicator size="small" color="#3e9ce9" />
-          <Text style={styles.footerText}>
-            数据加载中……
-          </Text>
         </View>
       );
     }
+
+
   }
 
   onEndReached() {
     console.log('onEndReached');
-    const time = Date.parse(new Date()) / 1000;
-    if (canLoadMore && time - loadMoreTime > 2) {
+    /*const newRowCount = this.listView.props.dataSource.getRowCount();
+    console.log('newRowCount', newRowCount, rowCount);
+    if (newRowCount == rowCount) {
       page += 1;
-      //console.log('this.props:', this.props);
+      console.log('page', page);
       const { topicActions, node } = this.props;
       topicActions.topicRequest(false, false, true, node.path);
-      canLoadMore = false;
-      loadMoreTime = Date.parse(new Date()) / 1000;
+    }*/
+
+    const { auth, navigator } = this.props;
+    console.log('auth', auth);
+    if(auth.user == null){
+      //console.log('switch to login view');
+      navigator.push({
+        component:Login,
+        name:'Login'
+      })
     }
+
   }
 
   onScroll(){
     console.log('onScroll');
-    const { topic } = this.props;
-    if (!canLoadMore && !topic.isLoadingMore){
-      canLoadMore = true;
-    }
   }
 
   render() {
@@ -118,7 +123,8 @@ class IndexNodeTopic extends React.Component {
     }
 
     //we should merge the coming topic.topicList into the older topic.topicList
-
+    console.log('rowCount', rowCount, topic.topicList.length);
+    
     return (
       <ListView
         initialListSize = {1}
@@ -129,6 +135,7 @@ class IndexNodeTopic extends React.Component {
         onScroll={this.onScroll}
         onEndReachedThreshold={2}
         enableEmptySections={true}
+        ref={(listView)=>this.listView = listView}
         refreshControl={
           <RefreshControl
             refreshing={topic.isRefreshing}

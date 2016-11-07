@@ -8,3 +8,7 @@ export const TEST_B = 'TEST_B'
 
 export const TOPIC_REQUEST = 'TOPIC_REQUEST'
 export const TOPIC_RECEIVE = 'TOPIC_RECEIVE'
+
+
+export const USER_LOGIN = 'USER_LOGIN'
+export const USER_LOGOUT = 'USER_LOGOUT'

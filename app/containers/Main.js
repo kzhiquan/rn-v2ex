@@ -19,17 +19,17 @@ class Main extends React.Component{
 	      		renderTabBar={() => <Tarbar />}
 	      		>
 
-			      <TopicContainer tabLabel="ios-paper">
+			      <TopicContainer tabLabel="ios-paper" {...this.props}>
 			      </TopicContainer>
 
-			      <AccountContainer tabLabel="ios-people">
+			      <AccountContainer tabLabel="ios-people" {...this.props}>
 			      </AccountContainer>
 
-			      <ScrollView tabLabel="ios-notifications">
+			      <ScrollView tabLabel="ios-notifications" {...this.props}>
 			          <Text>Notifications</Text>
 			      </ScrollView>
 
-			      <ScrollView tabLabel="ios-list">
+			      <ScrollView tabLabel="ios-list" {...this.props}>
 			          <Text>Other nav</Text>
 			      </ScrollView>
 

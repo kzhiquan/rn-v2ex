@@ -14,9 +14,10 @@ class TopicContainer extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { topic } = state;
+  const { topic, auth } = state;
   return {
-    topic
+    topic,
+    auth
   };
 };
 

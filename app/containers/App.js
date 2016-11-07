@@ -4,6 +4,7 @@ import React from 'react';
 import { View, StatusBar, Navigator } from 'react-native';
 
 import Main from './Main.js';
+import LoginContainer from './LoginContainer';
 
 
 class App extends React.Component{
@@ -24,12 +25,12 @@ class App extends React.Component{
 	render(){
 		return (
 			<View style={{flex : 1}}>
-				<StatusBar backgroundColor="blue" barStyle="dark-content"/>
 				<Navigator
-					style={{flex : 1, marginTop : 20 }}
+					style={{flex : 1}}
 					renderScene={this.renderScene}
 					initialRoute={{
-						component : Main,
+						//component : Main,
+						component : LoginContainer,
 						name : 'Topic'
 					}}
 				/>
