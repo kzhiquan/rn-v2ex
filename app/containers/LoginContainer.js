@@ -56,6 +56,16 @@ class LoginContainer extends React.Component {
 			})
 			.then((body) => {
 				console.log('body', body);
+				/*fetch('https://www.v2ex.com/recent?p=2', {
+					credentials:'include'
+				})
+				.then((response) => {
+					console.log(response.headers);
+					return response.text();
+				})
+				.then((body) => {
+					console.log('body', body);
+				});*/
 			})
 			.catch((error) => {
 				console.error('error', error);
@@ -63,7 +73,7 @@ class LoginContainer extends React.Component {
 
 		  });*/
 
-		  login('kzhiquan', 'kzhiquan62286507');
+		  //login('kzhiquan', 'kzhiquan62286507');
 
 		}
 	}
