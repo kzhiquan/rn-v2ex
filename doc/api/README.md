@@ -314,3 +314,22 @@ curl -X POST --data "aa531108ce382fd0a4f5a26bc7dd4496565f5e27a9e47b889999706d9f3
 
 curl -X POST -H "Content-Type:applicationx-www-form-urlencoded" -H "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36" -H "Host:www.v2ex.com" -H "Referer:https://www.v2ex.com/signin" -H "Origin:https://www.v2ex.com" --data "db0d7abf548929625ff1f89e741bbe2829e0912c0fed02ab7ccc58a18577e0ea=kzhiquan&a9ae48cf890988b5a008e7ca8be49eb10b3d93d4521396b25478474cda812723=kzhiquan62286507&once=76231&next=%2F" -v https://www.v2ex.com/signin
 
+curl -H 'cookie:V2EX_TAB="2|1:0|10:1478565529|8:V2EX_TAB|8:dGVjaA==|078b959899505dbbcd8c470c6bc905f07a38e002307c2c1949f6fe8d96c4c0b6"' -v https://www.v2ex.com/
+
+
+curl -H 'cookie:V2EX_TAB="2|1:0|10:1478565529|8:V2EX_TAB|8:dGVjaA==|078b959899505dbbcd8c470c6bc905f07a38e002307c2c1949f6fe8d96c4c0b6"' -v https://www.v2ex.com/recent
+
+the right one:
+curl -H 'cookie:A2="2|1:0|10:1478566263|2:A2|56:ODViOWFjYjkxOGE4ODdlNDZiMjVkMmU4ZmE2OGJiN2Y4NTk2YjZmNw==|9ffcd17e50cf4690294c0a3a6c256094c50295444b994fbcba97a789375938c8"' -v https://www.v2ex.com/recent
+
+
+curl -H 'cookie:V2EX_TAB="2|1:0|10:1478586872|8:V2EX_TAB|8:dGVjaA==|5f0846b8175141ef0d13321aced5ec784d47a1bec7946ea85899794e4c12231b"' -v https://www.v2ex.com/recent
+
+curl -X POST -H "Content-Type:applicationx-www-form-urlencoded" -H "User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36" -H "Host:www.v2ex.com" -H "Referer:https://www.v2ex.com/signin" -H "Origin:https://www.v2ex.com" -H 'Cookie:V2EX_LANG=zhcn' --data "c546dcbf410e474b55915c718835c99b3398d5e98a188c6895080656a1abb8b2=kzhiquan&8d73177bc1e9171f960b25cf888ea1b22ac18d0ccd014ea0333178f10922f0bb=kzhiquan62286507&once=96193&next=%2F" -v https://www.v2ex.com/signin
+
+
+
+
+
+
+
