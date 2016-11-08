@@ -1,6 +1,6 @@
 
 const SITE = {
-	HOST : 'https://v2ex.com',
+	HOST : 'https://www.v2ex.com',
 	INDEX_NODE : [
 		{ name : '技术', path : '/?tab=tech', order : 0},
 		{ name : '创意', path : '/?tab=creative', order : 1},
