@@ -51,7 +51,7 @@ class EditAccount extends React.Component {
 		const {currentAccount, account} = this.props;
 		console.log('value', value, currentAccount, account);
 		if(value.name !== currentAccount.name){
-			this.setState({removeBtnShow:false})
+			this.refs.remove.hidden = true;
 		}
 	}
 
@@ -88,12 +88,10 @@ class EditAccount extends React.Component {
 					  <Text style={styles.buttonText}>Save</Text>
 					</TouchableHighlight>
 
-					{ 
-						this.state.removeBtnShow ?
-							(<TouchableHighlight ref="remove" style={styles.button} onPress={this.onRemovePress} underlayColor='#99d9f4'>
+							<TouchableHighlight ref="remove" style={styles.button} onPress={this.onRemovePress} underlayColor='#99d9f4'>
 						  		<Text style={styles.buttonText}>Remove</Text>
-							</TouchableHighlight>) : null
-					}
+							</TouchableHighlight>
+					
 
 
 				</View>
