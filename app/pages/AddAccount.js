@@ -28,69 +28,45 @@ class AddAccount extends React.Component {
 		this.onPress = this.onPress.bind(this);
 	}
 
+	componentWillReceiveProps(nextProps){
+		console.log('this.props', this.props, 'nextProps:', nextProps);
+	}
+
 	onPress(){
-		// call getValue() to get the values of the form
 		const { navigator, accountActions } = this.props;
 
-		console.log('this.props', this.props);
+		//console.log('this.props', this.props);
 
 		var value = this.refs.form.getValue();
-		if (value) { // if validation fails, value will be null
-		  console.log(value, accountActions); // value here is an instance of Person
+		if (value) {
 
-		  accountActions.accountAdd(value.name, value.password);
+		   console.log(value);
+		   accountActions.accountAdd(value.name, value.password);
 
-		  navigator.pop();
-		  /*getLoginWillPostForm('kzhiquan', 'kzhiquan62286507')
-		  .then(function(credit){
-		  	console.log(credit.postForm, credit.cookie,qs.stringify(credit.postForm).length);
-		  	console.log(qs.stringify(credit.postForm));
 
-			fetch('https://www.v2ex.com/signin', {
-				method : 'post',
-				headers : {
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
-        			'Referer': "https://www.v2ex.com/signin",
-        			'Connection': 'keep-alive'
-				},
-				body: qs.stringify(credit.postForm),
-				credentials: 'include'
-			})
-			.then((response) => {
-				console.log(response.headers.get('set-cookie'));
-				return response.text();
-			})
-			.then((body) => {
-				console.log('body', body);
-				fetch('https://www.v2ex.com/recent?p=2', {
-					credentials:'include'
-				})
-				.then((response) => {
-					console.log(response.headers);
-					return response.text();
-				})
-				.then((body) => {
-					console.log('body', body);
-				});
-			})
-			.catch((error) => {
-				console.error('error', error);
-			})
 
-		  });
+		   /*login(value.name, value.password)
+		   .then((user)=>{
+		   		accountActions.accountAdd(value.name, value.password);
 
-		  login('kzhiquan', 'kzhiquan62286507');*/
+		   })
+		   .catch((error)=>{
+		   		console.error(error);
+		   });*/
 
+		  //accountActions.accountAdd(value.name, value.password);
+
+		  //navigator.pop();
+
+		  //login('kzhiquan', 'kzhiquan62286507');
 		}
 	}
 
 	render() {
-		const { navigator } = this.props;
+		const { navigator, account } = this.props;
 		var leftButtonConfig = {
 			title: 'Back',
 			handler: function onBack() {
-			  //alert('hello!');
 			  navigator.pop();
 			}
 		};
@@ -106,7 +82,6 @@ class AddAccount extends React.Component {
         			leftButton={leftButtonConfig}/>
 
 				<View style={styles.container}>
-					{/* display */}
 					<Form
 					  ref="form"
 					  type={LoginFrom}
@@ -116,6 +91,7 @@ class AddAccount extends React.Component {
 					  <Text style={styles.buttonText}>Save</Text>
 					</TouchableHighlight>
 				</View>
+
 			</View>
 		);
 	}

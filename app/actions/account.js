@@ -14,3 +14,11 @@ export function accountDelete(name){
 		name
 	}
 }
+
+
+export function userReceive(user){
+	return {
+		type: types.USER_RECEIVE,
+		user: user
+	}
+}

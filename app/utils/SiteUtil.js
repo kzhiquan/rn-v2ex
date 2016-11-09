@@ -97,11 +97,12 @@ export function loginWithToken(token, url){
 			const $ = cheerio.load(body);
 			let user = {};
 			if($('.content td a').length < 7 ){
-				resolve(false);
+				reject(false);
 			}else{
 				user['logout_url'] = $('.content td a').eq(7).attr('onclick').match(/\/signout\?once=\d+/i)[0];
 				user['name'] = $('.content td a').eq(2).text();
 				user['member_url'] = $('.content td a').eq(2).attr('href');
+				user['avatar_url'] = $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
 				resolve(user);
 			}
 		})
@@ -140,25 +141,11 @@ export async function login(name, password){
 	var token = await getLoginToken(name, password, url);
 	console.log(token);
 
-	console.log('url:', url);
 	var user = await loginWithToken(token, url);
 	console.log('user', user);
-	if(!user){
-		login(name, password);
-	}
 
+	return user;
 
-	var result = await logout(SITE.HOST + user.logout_url);
-	console.log('result', result);
-	if ( typeof result === 'boolean' && !result ){
-		var result_again = await logout(SITE.HOST + user.logout_url);
-		console.log('result_again', result_again);
-	}
-
-	if ( typeof result === 'boolean' && result){
-		var body = await fetchRecentTopic();
-		console.log('body', body);
-	}
 };
 
 export function logout(url){
@@ -176,7 +163,7 @@ export function logout(url){
 			return response.text();
 		})
 		.then( (body) => {
-			console.log('body', body);
+			//console.log('body', body);
 			const $ = cheerio.load(body);
 			if($('input[value="Retry Sign Out"]').length >= 1){
 				resolve(false)

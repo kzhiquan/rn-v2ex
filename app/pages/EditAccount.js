@@ -22,8 +22,10 @@ class EditAccount extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			removeBtnShow:true
+			removeBtnShow:true,
+			updateBtnShow:false
 		}
+		this.presentAccount = props.currentAccount;
 		this.onSavePress = this.onSavePress.bind(this);
 		this.onRemovePress = this.onRemovePress.bind(this);
 		this.onChange = this.onChange.bind(this);
@@ -49,14 +51,22 @@ class EditAccount extends React.Component {
 
 	onChange(value){
 		const {currentAccount, account} = this.props;
-		console.log('value', value, currentAccount, account);
+		//console.log('value', value, currentAccount, account);
+		this.presentAccount = value;
 		if(value.name !== currentAccount.name){
-			this.refs.remove.hidden = true;
+			this.setState({removeBtnShow:false});
+			if( Object.keys(account.accounts).indexOf(value.name) >= 0 ){
+				this.setState({updateBtnShow:true});
+			}else{
+				this.setState({updateBtnShow:false});
+			}
+		}else{
+			this.setState({removeBtnShow:true});
 		}
 	}
 
 	render() {
-		const { navigator, currentAccount } = this.props;
+		const { navigator } = this.props;
 		var leftButtonConfig = {
 			title: 'Back',
 			handler: function onBack() {
@@ -75,24 +85,21 @@ class EditAccount extends React.Component {
         			leftButton={leftButtonConfig}/>
 
 				<View style={styles.container}>
-					{/* display */}
 					<Form
 					  ref="form"
 					  type={LoginFrom}
-					  value={currentAccount}
+					  value={this.presentAccount}
 					  onChange={this.onChange}
 					  options={options}
 					/>
 
 					<TouchableHighlight style={styles.button} onPress={this.onSavePress} underlayColor='#99d9f4'>
-					  <Text style={styles.buttonText}>Save</Text>
+					  <Text style={styles.buttonText}>{this.state.updateBtnShow ? 'Update' : 'Save'}</Text>
 					</TouchableHighlight>
 
-							<TouchableHighlight ref="remove" style={styles.button} onPress={this.onRemovePress} underlayColor='#99d9f4'>
-						  		<Text style={styles.buttonText}>Remove</Text>
-							</TouchableHighlight>
-					
-
+					{this.state.removeBtnShow && (<TouchableHighlight ref="remove" style={styles.button} onPress={this.onRemovePress} underlayColor='#99d9f4'>
+				  		<Text style={styles.buttonText}>Remove</Text>
+					</TouchableHighlight>)}
 
 				</View>
 			</View>
