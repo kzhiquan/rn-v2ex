@@ -2,6 +2,8 @@
 import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware, { END } from 'redux-saga';
 import createLogger from 'redux-logger';
+import {persistStore, autoRehydrate} from 'redux-persist';
+var {AsyncStorage} = require('react-native');
 
 import rootReducer from '../reducers/index';
 
@@ -14,10 +16,12 @@ if (process.env.NODE_ENV === 'development'){
 	middlewares.push(logger);
 }
 
-const createStoreWithMiddleware = applyMiddleware(...middlewares)(createStore);
+const createV2EXStore = applyMiddleware(...middlewares)(createStore);
 
-export default function configureStore(initialState){
-	const store = createStoreWithMiddleware(rootReducer, initialState);
+export default function configureStore(initialState, onComplete){
+
+	const store = createV2EXStore(rootReducer, initialState, autoRehydrate());
+	persistStore(store, {storage: AsyncStorage}, onComplete);
 
 	store.runSaga = sagaMiddleware.run;
 	store.close = () => store.dispatch(END);

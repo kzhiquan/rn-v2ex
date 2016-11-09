@@ -4,7 +4,7 @@ import { View, Text,TouchableHighlight,StyleSheet } from 'react-native'
 import NavigationBar from 'react-native-navbar';
 import qs from 'qs'
 
-import { login, getLoginWillPostForm }  from '../utils/SiteUtil'
+import { login,getLoginWillPostForm }  from '../utils/SiteUtil'
 
 
 
@@ -22,7 +22,7 @@ var options = {
 	}
 }
 
-class LoginContainer extends React.Component {
+class AddAccount extends React.Component {
 	constructor(props){
 		super(props);
 		this.onPress = this.onPress.bind(this);
@@ -30,10 +30,17 @@ class LoginContainer extends React.Component {
 
 	onPress(){
 		// call getValue() to get the values of the form
+		const { navigator, accountActions } = this.props;
+
+		console.log('this.props', this.props);
+
 		var value = this.refs.form.getValue();
 		if (value) { // if validation fails, value will be null
-		  console.log(value); // value here is an instance of Person
+		  console.log(value, accountActions); // value here is an instance of Person
 
+		  accountActions.accountAdd(value.name, value.password);
+
+		  navigator.pop();
 		  /*getLoginWillPostForm('kzhiquan', 'kzhiquan62286507')
 		  .then(function(credit){
 		  	console.log(credit.postForm, credit.cookie,qs.stringify(credit.postForm).length);
@@ -71,9 +78,9 @@ class LoginContainer extends React.Component {
 				console.error('error', error);
 			})
 
-		  });*/
+		  });
 
-		  //login('kzhiquan', 'kzhiquan62286507');
+		  login('kzhiquan', 'kzhiquan62286507');*/
 
 		}
 	}
@@ -146,4 +153,4 @@ var styles = StyleSheet.create({
 });
 
 
-export default LoginContainer;
+export default AddAccount;

@@ -9,7 +9,9 @@ import { View, Text } from 'react-native'
 import rootSaga from './sagas/index'
 import App from './containers/App'
 
-const store = configureStore();
+const store = configureStore(undefined, ()=>{
+	console.log('rehydration complete');
+});
 
 store.runSaga(rootSaga);
 
