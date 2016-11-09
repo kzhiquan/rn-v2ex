@@ -12,3 +12,8 @@ export const TOPIC_RECEIVE = 'TOPIC_RECEIVE'
 
 export const USER_LOGIN = 'USER_LOGIN'
 export const USER_LOGOUT = 'USER_LOGOUT'
+
+
+
+export const ACCOUNT_ADD = 'ACCOUNTS_ADD'
+export const ACCOUNT_DELETE = 'ACCOUNTS_DELETE'

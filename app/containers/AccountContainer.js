@@ -1,16 +1,32 @@
 import React from 'react';
-import { View, Text } from 'react-native'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
+
+
+import * as accountsCreators from '../actions/account';
+import Account from '../pages/Account';
 
 class AccountContainer extends React.Component {
   render() {
     return (
-      <View>
-        <Text>AccountContainer</Text>
-      </View>
+      <Account {...this.props} />
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  const { account } = state;
+  return {
+    account
+  };
+};
 
-export default AccountContainer;
+const mapDispatchToProps = (dispatch) => {
+  const accountActions = bindActionCreators(accountsCreators, dispatch);
+  return {
+    accountActions
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AccountContainer);

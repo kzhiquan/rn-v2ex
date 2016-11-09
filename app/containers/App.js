@@ -5,6 +5,7 @@ import { View, StatusBar, Navigator } from 'react-native';
 
 import Main from './Main.js';
 import LoginContainer from './LoginContainer';
+import AccountContainer from './AccountContainer';
 
 
 class App extends React.Component{
@@ -15,10 +16,10 @@ class App extends React.Component{
 	}
 
 	renderScene(route, navigator){
-		//console.log('route:', route, navigator);
 		const Component = route.component;
+		const props = Object.assign({}, route.props);
 		return (
-			<Component navigator={navigator} route={route} />
+			<Component  {...props} navigator={navigator} route={route}  />
 		);
 	}
 
@@ -30,7 +31,7 @@ class App extends React.Component{
 					renderScene={this.renderScene}
 					initialRoute={{
 						//component : Main,
-						component : LoginContainer,
+						component : AccountContainer,
 						name : 'Topic'
 					}}
 				/>
