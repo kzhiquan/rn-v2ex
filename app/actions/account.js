@@ -16,9 +16,23 @@ export function accountDelete(name){
 }
 
 
+export function userCheckStart(){
+	return{
+		type: types.USER_CHECK_START,
+		isChecking:true
+	}
+}
+
 export function userReceive(user){
 	return {
 		type: types.USER_RECEIVE,
 		user: user
+	}
+}
+
+export function userCheckEnd(){
+	return{
+		type: types.USER_CHECK_END,
+		isChecking:false
 	}
 }

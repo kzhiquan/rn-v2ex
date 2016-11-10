@@ -17,9 +17,9 @@ class App extends React.Component{
 
 	renderScene(route, navigator){
 		const Component = route.component;
-		const props = Object.assign({}, route.props);
+		//const props = Object.assign({}, route.props);
 		return (
-			<Component  {...props} navigator={navigator} route={route}  />
+			<Component  /*{...props}*/ navigator={navigator} route={route}  />
 		);
 	}
 

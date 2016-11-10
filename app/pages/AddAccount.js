@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text,TouchableHighlight,StyleSheet } from 'react-native'
+import { View, Text,TouchableHighlight,StyleSheet,ActivityIndicator } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
 import qs from 'qs'
@@ -29,7 +29,19 @@ class AddAccount extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps){
-		console.log('this.props', this.props, 'nextProps:', nextProps);
+		//console.log('this.props', this.props, 'nextProps:', nextProps);
+	}
+
+	componentDidMount(){
+		console.log('componentDidMount');
+	}
+
+	componentDidUpdate(){
+		console.log('componentDidUpdate');
+		const { navigator, account } = this.props;
+		if( account.user && account.checkAccount.name === account.user.name){
+			navigator.pop();
+		}
 	}
 
 	onPress(){
@@ -39,26 +51,8 @@ class AddAccount extends React.Component {
 
 		var value = this.refs.form.getValue();
 		if (value) {
-
 		   console.log(value);
 		   accountActions.accountAdd(value.name, value.password);
-
-
-
-		   /*login(value.name, value.password)
-		   .then((user)=>{
-		   		accountActions.accountAdd(value.name, value.password);
-
-		   })
-		   .catch((error)=>{
-		   		console.error(error);
-		   });*/
-
-		  //accountActions.accountAdd(value.name, value.password);
-
-		  //navigator.pop();
-
-		  //login('kzhiquan', 'kzhiquan62286507');
 		}
 	}
 
@@ -75,6 +69,8 @@ class AddAccount extends React.Component {
 			title: 'Add Account',
 		};
 
+		console.log('render addAccount', account);
+
 		return (
 			<View>
 				<NavigationBar
@@ -85,12 +81,20 @@ class AddAccount extends React.Component {
 					<Form
 					  ref="form"
 					  type={LoginFrom}
+					  value={account.checkAccount}
 					  options={options}
 					/>
 					<TouchableHighlight style={styles.button} onPress={this.onPress} underlayColor='#99d9f4'>
 					  <Text style={styles.buttonText}>Save</Text>
 					</TouchableHighlight>
+
 				</View>
+
+				<ActivityIndicator
+			        animating={account.isChecking}
+			        style={{height: 80}}
+			        size="large"
+		        />
 
 			</View>
 		);

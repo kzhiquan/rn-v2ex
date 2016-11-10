@@ -2,24 +2,37 @@ import { put, take, call, fork } from 'redux-saga/effects'
 import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
-import { accountAdd, accountDelete, userReceive } from '../actions/account';
-import { login } from '../utils/SiteUtil'
+import { 
+	accountAdd, 
+	accountDelete, 
+	userReceive,
+	userCheckStart,
+	userCheckEnd 
+} from '../actions/account';
+
+import { login, isLogin } from '../utils/SiteUtil'
 
 
 
 export function* checkUser(name, password){
 	try{
-		//console.log('isRefreshing', isRefreshing, 'isLoading', isLoading, 'path:', path);
 
+		yield put(userCheckStart());
 		const user = yield call(login, name, password);
-
-		//console.log('user', user);
-
+		if(!user){
+			toastShort('验证失败，请检查邮箱／密码！');
+		}else{
+			toastShort('验证成功！');
+		}
+		
 		yield put(userReceive(user));
+		yield put(userCheckEnd());
 
 	} catch ( error ){
-		console.error('error:', error);
-		yield toastShort('网络发生错误，请重试');
+		console.log('error:', error);
+		yield put(userCheckEnd());
+		toastShort('网络发生错误，请重试');
+
 	}
 }
 

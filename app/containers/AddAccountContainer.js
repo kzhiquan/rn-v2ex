@@ -3,15 +3,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 
-
 import * as accountsCreators from '../actions/account';
-import Account from '../pages/Account';
+import AddAccount from '../pages/AddAccount';
 
-class AccountContainer extends React.Component {
+class AddAccountContainer extends React.Component {
   render() {
-    //console.log('render AccountContainer', this.props);
+    //console.log('render AddAccountContainer', this.props);
     return (
-      <Account {...this.props} />
+      <AddAccount {...this.props} />
     );
   }
 }
@@ -30,4 +29,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(AddAccountContainer);

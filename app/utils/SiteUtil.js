@@ -53,6 +53,7 @@ export function getLoginToken(name, password, url){
 			return response.text();
 		})
 		.then( (body) => {
+			//console.log('body',body);
 			const $ = cheerio.load(body);
 			loginField = {};
 			loginField.name = $('.sl').first().attr('name');
@@ -97,17 +98,17 @@ export function loginWithToken(token, url){
 			const $ = cheerio.load(body);
 			let user = {};
 			if($('.content td a').length < 7 ){
-				reject(false);
+				resolve(false);
 			}else{
 				user['logout_url'] = $('.content td a').eq(7).attr('onclick').match(/\/signout\?once=\d+/i)[0];
 				user['name'] = $('.content td a').eq(2).text();
 				user['member_url'] = $('.content td a').eq(2).attr('href');
 				user['avatar_url'] = $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
-				resolve(user);
+				resolve(user);   
 			}
 		})
 		.catch( (error) => {
-			console.error(error);
+			console.error('error', error);
 			reject(error);
 		});
 	});
@@ -137,16 +138,62 @@ export function fetchRecentTopic(){
 }
 
 export async function login(name, password){
+	let checkUser = await isLogin();
+	console.log('checkUser:', checkUser)
+
+	if( typeof checkUser === 'object'){
+		let logoutUrl = SITE.HOST + checkUser.logout_url
+		let checkLogout = await logout(logoutUrl);
+		console.log('checkLogout', checkLogout);
+	}
+
 	const url = SITE.HOST + '/signin';
-	var token = await getLoginToken(name, password, url);
+	let token = await getLoginToken(name, password, url);
 	console.log(token);
 
-	var user = await loginWithToken(token, url);
+	let user = await loginWithToken(token, url);
 	console.log('user', user);
 
 	return user;
 
 };
+
+
+export function isLogin(){
+	const url = SITE.HOST + '/recent';
+	return new Promise( (resolve, reject) => {
+		fetch(url,{
+			method : 'get',
+			headers : {
+				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
+				'Referer': "https://www.v2ex.com/",	
+			}
+		})
+		.then( (response) => {
+			return response.text();
+		})
+		.then( (body) => {
+			//console.log('body',body);
+			const $ = cheerio.load(body);
+
+			//console.log($('title').text().indexOf("最近"));
+			if( $('title').text().indexOf("最近")>= 0 ){
+				let user = {}
+				user['logout_url'] = $('#Top .content td a').eq(7).attr('onclick').match(/\/signout\?once=\d+/i)[0];
+				user['name'] = $('#Top .content td a').eq(2).text();
+				user['member_url'] = $('#Top .content td a').eq(2).attr('href');
+				user['avatar_url'] = $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
+				resolve(user);
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error) => {
+			console.error(error);
+			reject(error);
+		})		
+	});
+}
 
 export function logout(url){
 	return new Promise( (resolve, reject) => {
@@ -172,7 +219,7 @@ export function logout(url){
 			}
 		})
 		.catch( (error) => {
-			console.error(error);
+			console.error('error', error);
 			reject(error);
 		});
 	});

@@ -5,7 +5,7 @@ import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
-import AddAccount from './AddAccount'
+import AddAccountContainer from '../containers/AddAccountContainer'
 import EditAccount from './EditAccount'
 
 class Accounts extends React.Component {
@@ -18,7 +18,6 @@ class Accounts extends React.Component {
   	}
 
   	onPressButton(){
-  		//console.log('this', this);
   		const { navigator } = this;
   		navigator.push({
   			component : EditAccount,
@@ -42,15 +41,15 @@ class Accounts extends React.Component {
   	}
 
 	render() {
+		//console.log('render account', this.props);
 		const props = this.props;
 		const { navigator, account } = this.props;
 		var leftButtonConfig = {
 			title: 'Add',
 			handler: function onAdd() {
 			  navigator.push({
-			  	component: AddAccount,
-			  	name: 'Add an Account',
-			  	props : props
+			  	component: AddAccountContainer,
+			  	name: 'Add an Account'
 			  })
 			}
 		};

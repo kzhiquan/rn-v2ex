@@ -20,8 +20,10 @@ const createV2EXStore = applyMiddleware(...middlewares)(createStore);
 
 export default function configureStore(initialState, onComplete){
 
-	const store = createV2EXStore(rootReducer, initialState, autoRehydrate());
-	persistStore(store, {storage: AsyncStorage}, onComplete);
+	//const store = createV2EXStore(rootReducer, initialState, autoRehydrate());
+	//persistStore(store, {storage: AsyncStorage}, onComplete);
+
+	const store = createV2EXStore(rootReducer, initialState);
 
 	store.runSaga = sagaMiddleware.run;
 	store.close = () => store.dispatch(END);
