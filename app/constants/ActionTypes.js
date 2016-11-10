@@ -13,7 +13,7 @@ export const USER_LOGIN = 'USER_LOGIN'
 export const USER_LOGOUT = 'USER_LOGOUT'
 
 
-
+export const ADD_ACCOUNT_PAGE_INIT = 'ADD_ACCOUNT_PAGE_INIT'
 export const ACCOUNT_ADD = 'ACCOUNTS_ADD'
 export const ACCOUNT_DELETE = 'ACCOUNTS_DELETE'
 export const USER_RECEIVE = 'USER_RECEIVE'

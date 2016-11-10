@@ -27,9 +27,10 @@ class Accounts extends React.Component {
   	}
 
   	renderItem(account){
+  		//console.log('account', account);
   		return (
 	      <View style={styles.containerItem}>
-	        <Image style={styles.itemHeader} source={{uri:'https://cdn.v2ex.co/avatar/8464/0d60/69099_normal.png'}} />
+	        <Image style={styles.itemHeader} source={{uri:account.avatar_url}} />
 	        <View style={styles.itemBody}>
 	          <Text>{account.name}</Text>
 	        </View>
@@ -59,13 +60,7 @@ class Accounts extends React.Component {
 		};
 
 		
-		let rows = [];
-		for ( let name of Object.keys(account.accounts) ){
-			rows.push({
-				name : name,
-				password : account.accounts[name]
-			})
-		}
+		let rows = Array.from(account.accounts.values());
 
 		return (
 			<View>

@@ -97,18 +97,18 @@ export function loginWithToken(token, url){
 			//console.log('body', body);
 			const $ = cheerio.load(body);
 			let user = {};
-			if($('.content td a').length < 7 ){
+			if( !$('.content td a[href="#;"]').first() ){
 				resolve(false);
 			}else{
-				user['logout_url'] = $('.content td a').eq(7).attr('onclick').match(/\/signout\?once=\d+/i)[0];
+				user['logout_url'] = $('.content td a[href="#;"]').first().attr('onclick').match(/\/signout\?once=\d+/i)[0];
 				user['name'] = $('.content td a').eq(2).text();
 				user['member_url'] = $('.content td a').eq(2).attr('href');
-				user['avatar_url'] = $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
+				user['avatar_url'] = 'https:' + $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
 				resolve(user);   
 			}
 		})
 		.catch( (error) => {
-			console.error('error', error);
+			console.log('error', error);
 			reject(error);
 		});
 	});
@@ -130,7 +130,7 @@ export function fetchRecentTopic(){
 			resolve(body);
 		})
 		.catch( (error) => {
-			console.error(error);
+			console.log(error);
 			reject(error);
 		})
 	});
@@ -179,17 +179,17 @@ export function isLogin(){
 			//console.log($('title').text().indexOf("最近"));
 			if( $('title').text().indexOf("最近")>= 0 ){
 				let user = {}
-				user['logout_url'] = $('#Top .content td a').eq(7).attr('onclick').match(/\/signout\?once=\d+/i)[0];
+				user['logout_url'] = $('#Top .content td a[href="#;"]').first().attr('onclick').match(/\/signout\?once=\d+/i)[0];
 				user['name'] = $('#Top .content td a').eq(2).text();
 				user['member_url'] = $('#Top .content td a').eq(2).attr('href');
-				user['avatar_url'] = $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
+				user['avatar_url'] = 'https:' + $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
 				resolve(user);
 			}else{
 				resolve(false);
 			}
 		})
 		.catch( (error) => {
-			console.error(error);
+			console.log('error', error);
 			reject(error);
 		})		
 	});
@@ -219,7 +219,7 @@ export function logout(url){
 			}
 		})
 		.catch( (error) => {
-			console.error('error', error);
+			console.log('error', error);
 			reject(error);
 		});
 	});

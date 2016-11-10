@@ -24,6 +24,7 @@ var options = {
 
 class AddAccount extends React.Component {
 	constructor(props){
+		//console.log("AddAcount constructor");
 		super(props);
 		this.onPress = this.onPress.bind(this);
 	}
@@ -32,12 +33,18 @@ class AddAccount extends React.Component {
 		//console.log('this.props', this.props, 'nextProps:', nextProps);
 	}
 
+	componentWillMount(){
+		//console.log("componentWillMount");
+		const { accountActions } = this.props;
+		accountActions.addAccountPageInit();
+	}
+
 	componentDidMount(){
-		console.log('componentDidMount');
+		//console.log('componentDidMount');
 	}
 
 	componentDidUpdate(){
-		console.log('componentDidUpdate');
+		//console.log('componentDidUpdate');
 		const { navigator, account } = this.props;
 		if( account.user && account.checkAccount.name === account.user.name){
 			navigator.pop();
@@ -46,9 +53,7 @@ class AddAccount extends React.Component {
 
 	onPress(){
 		const { navigator, accountActions } = this.props;
-
 		//console.log('this.props', this.props);
-
 		var value = this.refs.form.getValue();
 		if (value) {
 		   console.log(value);
@@ -69,7 +74,7 @@ class AddAccount extends React.Component {
 			title: 'Add Account',
 		};
 
-		console.log('render addAccount', account);
+		//console.log('render addAccount', account);
 
 		return (
 			<View>

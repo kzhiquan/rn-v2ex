@@ -1,5 +1,12 @@
 import * as types from '../constants/ActionTypes';
 
+
+export function addAccountPageInit(){
+	return {
+		type: types.ADD_ACCOUNT_PAGE_INIT
+	}
+}
+
 export function accountAdd(name, password){
 	return {
 		type : types.ACCOUNT_ADD,
@@ -18,8 +25,7 @@ export function accountDelete(name){
 
 export function userCheckStart(){
 	return{
-		type: types.USER_CHECK_START,
-		isChecking:true
+		type: types.USER_CHECK_START
 	}
 }
 
@@ -32,7 +38,6 @@ export function userReceive(user){
 
 export function userCheckEnd(){
 	return{
-		type: types.USER_CHECK_END,
-		isChecking:false
+		type: types.USER_CHECK_END
 	}
 }
