@@ -29,7 +29,7 @@ class Main extends React.Component{
 			          <Text>Notifications</Text>
 			      </ScrollView>
 
-			      <ScrollView tabLabel="ios-list" {...this.props}>
+			      <ScrollView tabLabel="ios-person" {...this.props}>
 			          <Text>Other nav</Text>
 			      </ScrollView>
 

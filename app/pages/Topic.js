@@ -27,23 +27,28 @@ class Topic extends React.Component {
   }
 
   componentWillMount() {
+    console.log("componentWillMount");
   }
 
   componentDidMount() {
+    console.log("componentDidMount")
   }
 
   render() {
     const { navigator, route } = this.props;
-    //console.log('Topic props', this.props);
+    console.log('Topic props', this.props);
     return (
       <ScrollableTabView
         initialPage={0}
-        renderTabBar={() => <ScrollableTabBar />}>
+        renderTabBar={() => <ScrollableTabBar />} 
+        >
+        
         {
           SITE.INDEX_NODE.map((node, index) => {
             return <IndexNodeTopic key={index}  node={node} {...this.props} tabLabel={node.name}/>
           })
         }
+
       </ScrollableTabView>
     );
   }

@@ -97,7 +97,7 @@ export function loginWithToken(token, url){
 			//console.log('body', body);
 			const $ = cheerio.load(body);
 			let user = {};
-			if( !$('.content td a[href="#;"]').first() ){
+			if( !$('.content td a[href="#;"]').first().attr('onclick') ){
 				resolve(false);
 			}else{
 				user['logout_url'] = $('.content td a[href="#;"]').first().attr('onclick').match(/\/signout\?once=\d+/i)[0];

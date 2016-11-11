@@ -10,6 +10,8 @@ import {
 	userCheckEnd 
 } from '../actions/account';
 
+import { userLogin } from '../actions/auth'
+
 import { login, isLogin } from '../utils/SiteUtil'
 
 
@@ -23,6 +25,7 @@ export function* checkUser(name, password){
 			toastShort('验证失败，请检查邮箱／密码！');
 		}else{
 			toastShort('验证成功！');
+			yield put(userLogin(user));
 		}
 		
 		yield put(userReceive(user));

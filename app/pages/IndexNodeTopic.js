@@ -10,11 +10,13 @@ import {
   Alert,
   ListView,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  RecyclerViewBackedScrollView
 } from 'react-native';
 
 import LoadingView from '../components/LoadingView'
-import Login from '../containers/LoginContainer'
+import AccountContainer from '../containers/AccountContainer'
+import { toastShort } from '../utils/ToastUtil';
 
 const propTypes = {
   node : PropTypes.object.isRequired
@@ -38,9 +40,11 @@ class IndexNodeTopic extends React.Component {
   }
 
   componentWillMount() {
+    console.log("componentWillMount");
   }
 
   componentDidMount() {
+    console.log("componentDidMount");
     const { topicActions, node } = this.props;
     //console.log('topicActions', topicActions, this.props);
     topicActions.topicRequest(false, true, false, node.path);
@@ -99,10 +103,10 @@ class IndexNodeTopic extends React.Component {
     const { auth, navigator } = this.props;
     console.log('auth', auth);
     if(auth.user == null){
-      //console.log('switch to login view');
+      toastShort('还未登录，请先登录！');
       navigator.push({
-        component:Login,
-        name:'Login'
+        component : AccountContainer,
+        name:'Account'
       })
     }
 
@@ -114,7 +118,7 @@ class IndexNodeTopic extends React.Component {
 
   render() {
 
-    //console.log('render IndexNodeTopic props', this.props);
+    console.log('render IndexNodeTopic props', this.props);
 
     const { node, topic } = this.props;
 
@@ -127,15 +131,17 @@ class IndexNodeTopic extends React.Component {
     
     return (
       <ListView
-        initialListSize = {1}
+        initialListSize = {5}
         dataSource={this.state.dataSource.cloneWithRows(topic.topicList)}
         renderRow={this.renderItem}
         renderFooter={this.renderFooter}
         onEndReached={this.onEndReached}
         onScroll={this.onScroll}
-        onEndReachedThreshold={2}
+        onEndReachedThreshold={-50}
         enableEmptySections={true}
+        removeClippedSubviews = {false}
         ref={(listView)=>this.listView = listView}
+        renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
         refreshControl={
           <RefreshControl
             refreshing={topic.isRefreshing}

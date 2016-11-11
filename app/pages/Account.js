@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 
 import AddAccountContainer from '../containers/AddAccountContainer'
-import EditAccount from './EditAccount'
+import EditAccountContainer from '../containers/EditAccountContainer'
 
 class Accounts extends React.Component {
 	constructor(props) {
@@ -17,24 +17,37 @@ class Accounts extends React.Component {
 	    this.renderItem = this.renderItem.bind(this);
   	}
 
+  	componentDidMount(){
+		const { navigator, account } = this.props;
+		if(account.accounts.size == 0){
+			navigator.push({
+				component : AddAccountContainer,
+				name : "And An Account"
+			});
+		}
+	}
+
   	onPressButton(){
-  		const { navigator } = this;
+  		console.log('this:', this);
+  		const { navigator, currentAccount, accountActions } = this;
+  		console.log('currentAccount', currentAccount, 'navigator', navigator, 'accountActions', accountActions);
+  		accountActions.editAccountPageInit(currentAccount);
   		navigator.push({
-  			component : EditAccount,
-  			name : 'Edit An Account',
-  			props: this
+  			component : EditAccountContainer,
+  			name : 'Edit An Account'
   		})
   	}
 
   	renderItem(account){
   		//console.log('account', account);
+  		const { navigator, accountActions } = this.props;
   		return (
 	      <View style={styles.containerItem}>
 	        <Image style={styles.itemHeader} source={{uri:account.avatar_url}} />
 	        <View style={styles.itemBody}>
 	          <Text>{account.name}</Text>
 	        </View>
-	        <TouchableOpacity onPress={this.onPressButton} currentAccount={account} {...this.props}>
+	        <TouchableOpacity onPress={this.onPressButton} currentAccount={account} navigator={navigator} accountActions={accountActions}>
 				<Icon name="ios-cog" size={36} />
     		</TouchableOpacity>
 	      </View>
@@ -61,6 +74,8 @@ class Accounts extends React.Component {
 
 		
 		let rows = Array.from(account.accounts.values());
+
+		//console.log('rows:', rows);
 
 		return (
 			<View>

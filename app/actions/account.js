@@ -7,6 +7,13 @@ export function addAccountPageInit(){
 	}
 }
 
+export function editAccountPageInit(account){
+	return {
+		type: types.EDIT_ACCOUNT_PAGE_INIT,
+		editAccount: account
+	}
+}
+
 export function accountAdd(name, password){
 	return {
 		type : types.ACCOUNT_ADD,

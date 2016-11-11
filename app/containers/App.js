@@ -17,9 +17,8 @@ class App extends React.Component{
 
 	renderScene(route, navigator){
 		const Component = route.component;
-		//const props = Object.assign({}, route.props);
 		return (
-			<Component  /*{...props}*/ navigator={navigator} route={route}  />
+			<Component  navigator={navigator} route={route}  />
 		);
 	}
 
@@ -30,8 +29,8 @@ class App extends React.Component{
 					style={{flex : 1}}
 					renderScene={this.renderScene}
 					initialRoute={{
-						//component : Main,
-						component : AccountContainer,
+						component : Main,
+						//component : AccountContainer,
 						name : 'Topic'
 					}}
 				/>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text,TouchableHighlight,StyleSheet } from 'react-native'
+import { View, Text,TouchableHighlight,StyleSheet,ActivityIndicator } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
 
@@ -23,12 +23,21 @@ class EditAccount extends React.Component {
 		super(props);
 		this.state = {
 			removeBtnShow:true,
-			updateBtnShow:false
+			updateBtnShow:true
 		}
-		this.presentAccount = props.currentAccount;
+		const { account } = props;
+		this.presentAccount = account.editAccount;
 		this.onSavePress = this.onSavePress.bind(this);
 		this.onRemovePress = this.onRemovePress.bind(this);
 		this.onChange = this.onChange.bind(this);
+	}
+
+	componentDidUpdate(){
+		//console.log('componentDidUpdate');
+		const { navigator, account } = this.props;
+		if( account.user && account.checkAccount.name === account.user.name){
+			//navigator.pop();
+		}
 	}
 
 	onSavePress(){
@@ -50,23 +59,24 @@ class EditAccount extends React.Component {
 	}
 
 	onChange(value){
-		const {currentAccount, account} = this.props;
+		const { account } = this.props;
 		//console.log('value', value, currentAccount, account);
 		this.presentAccount = value;
-		if(value.name !== currentAccount.name){
+		if(value.name !== account.editAccount.name){
 			this.setState({removeBtnShow:false});
-			if( Object.keys(account.accounts).indexOf(value.name) >= 0 ){
+			if (account.accounts.has(value.name)){
 				this.setState({updateBtnShow:true});
 			}else{
 				this.setState({updateBtnShow:false});
 			}
 		}else{
-			this.setState({removeBtnShow:true});
+			this.setState({removeBtnShow:true, updateBtnShow:true});
 		}
+
 	}
 
 	render() {
-		const { navigator } = this.props;
+		const { navigator, account } = this.props;
 		var leftButtonConfig = {
 			title: 'Back',
 			handler: function onBack() {
@@ -78,6 +88,7 @@ class EditAccount extends React.Component {
 			title: 'Edit Account',
 		};
 
+		//console.log('this.presentAccount:', this.presentAccount);
 		return (
 			<View>
 				<NavigationBar
@@ -102,6 +113,12 @@ class EditAccount extends React.Component {
 					</TouchableHighlight>)}
 
 				</View>
+
+				<ActivityIndicator
+			        animating={account.isChecking}
+			        style={{height: 80}}
+			        size="large"
+		        />
 			</View>
 		);
 	}
