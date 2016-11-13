@@ -4,8 +4,8 @@ import React from 'react';
 import { View, StatusBar, Navigator } from 'react-native';
 
 import Main from './Main.js';
-import LoginContainer from './LoginContainer';
 import AccountContainer from './AccountContainer';
+import MyTopicContainer from './MyTopicContainer'
 
 
 class App extends React.Component{
@@ -31,6 +31,7 @@ class App extends React.Component{
 					initialRoute={{
 						component : Main,
 						//component : AccountContainer,
+						//component : MyTopicContainer,
 						name : 'Topic'
 					}}
 				/>

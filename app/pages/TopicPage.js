@@ -13,7 +13,7 @@ import {
 
 import ScrollableTabView, { ScrollableTabBar, } from 'react-native-scrollable-tab-view';
 import SITE from '../constants/Config'
-import IndexNodeTopic from './IndexNodeTopic'
+import IndexNodeTopicPage from './IndexNodeTopicPage'
 
 
 const propTypes = {
@@ -21,7 +21,7 @@ const propTypes = {
   topic: PropTypes.object.isRequired
 };
 
-class Topic extends React.Component {
+class TopicPage extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -36,7 +36,7 @@ class Topic extends React.Component {
 
   render() {
     const { navigator, route } = this.props;
-    console.log('Topic props', this.props);
+    //console.log('Topic props', this.props);
     return (
       <ScrollableTabView
         initialPage={0}
@@ -45,7 +45,7 @@ class Topic extends React.Component {
         
         {
           SITE.INDEX_NODE.map((node, index) => {
-            return <IndexNodeTopic key={index}  node={node} {...this.props} tabLabel={node.name}/>
+            return <IndexNodeTopicPage key={index}  node={node} {...this.props} tabLabel={node.name}/>
           })
         }
 
@@ -96,6 +96,6 @@ const styles = StyleSheet.create({
   }
 });
 
-Topic.propTypes = propTypes;
+TopicPage.propTypes = propTypes;
 
-export default Topic;
+export default TopicPage;

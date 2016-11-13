@@ -1,16 +1,23 @@
 import React from 'react';
-import { View, Text } from 'react-native'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
+import UserPage from '../pages/UserPage';
 
 class UserContainer extends React.Component {
   render() {
     return (
-      <View>
-        <Text>UserContainer</Text>
-      </View>
+      <UserPage {...this.props} />
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  const { auth } = state;
+  return {
+    auth
+  };
+};
 
-export default UserContainer;
+
+export default connect(mapStateToProps)(UserContainer);

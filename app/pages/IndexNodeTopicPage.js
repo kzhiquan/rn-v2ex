@@ -27,7 +27,7 @@ let rowCount = 0;
 let needLoadMore = false;
 
 
-class IndexNodeTopic extends React.Component {
+class IndexNodeTopicPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -118,7 +118,7 @@ class IndexNodeTopic extends React.Component {
 
   render() {
 
-    console.log('render IndexNodeTopic props', this.props);
+    //console.log('render IndexNodeTopic props', this.props);
 
     const { node, topic } = this.props;
 
@@ -127,7 +127,7 @@ class IndexNodeTopic extends React.Component {
     }
 
     //we should merge the coming topic.topicList into the older topic.topicList
-    console.log('rowCount', rowCount, topic.topicList.length);
+    //console.log('rowCount', rowCount, topic.topicList.length);
     
     return (
       <ListView
@@ -231,6 +231,6 @@ const styles = StyleSheet.create({
   }
 });
 
-IndexNodeTopic.propTypes = propTypes;
+IndexNodeTopicPage.propTypes = propTypes;
 
-export default IndexNodeTopic;
+export default IndexNodeTopicPage;

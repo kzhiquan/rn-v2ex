@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as topicCreators from '../actions/topic';
 
-import Topic from '../pages/Topic';
+import TopicPage from '../pages/TopicPage';
 
 class TopicContainer extends React.Component {
   render() {
     return (
-      <Topic {...this.props} />
+      <TopicPage {...this.props} />
     );
   }
 }

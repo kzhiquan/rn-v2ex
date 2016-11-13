@@ -5,13 +5,13 @@ import { bindActionCreators } from 'redux';
 
 
 import * as accountsCreators from '../actions/account';
-import Account from '../pages/Account';
+import AccountPage from '../pages/AccountPage';
 
 class AccountContainer extends React.Component {
   render() {
     //console.log('render AccountContainer', this.props);
     return (
-      <Account {...this.props} />
+      <AccountPage {...this.props} />
     );
   }
 }

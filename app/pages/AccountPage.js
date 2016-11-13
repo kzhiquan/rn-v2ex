@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AddAccountContainer from '../containers/AddAccountContainer'
 import EditAccountContainer from '../containers/EditAccountContainer'
 
-class Accounts extends React.Component {
+class AccountPage extends React.Component {
 	constructor(props) {
 	    super(props);
 	    this.state = {
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
 	}
 });
 
-export default Accounts;
+export default AccountPage;
 
 
 

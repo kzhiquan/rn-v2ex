@@ -4,13 +4,13 @@ import { bindActionCreators } from 'redux';
 
 
 import * as accountsCreators from '../actions/account';
-import EditAccount from '../pages/EditAccount';
+import EditAccountPage from '../pages/EditAccountPage';
 
 class EditAccountContainer extends React.Component {
   render() {
     //console.log('render AddAccountContainer', this.props);
     return (
-      <EditAccount {...this.props} />
+      <EditAccountPage {...this.props} />
     );
   }
 }

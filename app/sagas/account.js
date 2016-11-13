@@ -35,7 +35,6 @@ export function* checkUser(name, password){
 		console.log('error-:', error);
 		yield put(userCheckEnd());
 		toastShort('网络发生错误，请重试');
-
 	}
 }
 

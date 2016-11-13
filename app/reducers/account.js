@@ -12,6 +12,7 @@ const initialState = {
 
 
 export default function auth(state = initialState, action){
+	console.log('state', state);
 	switch(action.type){
 		case types.ADD_ACCOUNT_PAGE_INIT:
 			return Object.assign({}, state, {

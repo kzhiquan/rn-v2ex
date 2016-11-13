@@ -17,7 +17,7 @@ export function fetchTopicList(path){
 		$('.box').children('.item').each(function(i, el){
 			//console.log(i);
 			topic = {}
-			topic.member_url = $(this).find('td[width="48"] a').first().attr('href');
+			topic.member_url = $(this).find('.small strong a').first().attr('href');
 			topic.member_name = $(this).find('.small strong a').first().text();
 			topic.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
 			topic.topic_url = $(this).find('.item_title a').first().attr('href');
@@ -76,7 +76,6 @@ export function getLoginToken(name, password, url){
 	});
 }
 
-
 export function loginWithToken(token, url){
 	return new Promise( (resolve, reject) => {
 		fetch(url, {
@@ -114,29 +113,6 @@ export function loginWithToken(token, url){
 	});
 }
 
-
-export function fetchRecentTopic(){
-	return new Promise( (resolve, reject) => {
-
-		fetch('https://www.v2ex.com/recent?p=2', {
-			credentials:'include'
-		})
-		.then((response) => {
-			//console.log(response.headers);
-			return response.text();
-		})
-		.then((body) => {
-			//console.log('body', body);
-			resolve(body);
-		})
-		.catch( (error) => {
-			console.log(error);
-			reject(error);
-		})
-	});
-
-}
-
 export async function login(name, password){
 	let checkUser = await isLogin();
 	console.log('checkUser:', checkUser)
@@ -156,7 +132,7 @@ export async function login(name, password){
 
 	return user;
 
-};
+}
 
 
 export function isLogin(){
@@ -223,4 +199,131 @@ export function logout(url){
 			reject(error);
 		});
 	});
+}
+
+
+
+export function fetchRecentTopic(){
+	return new Promise( (resolve, reject) => {
+
+		fetch('https://www.v2ex.com/recent?p=2', {
+			credentials:'include'
+		})
+		.then((response) => {
+			//console.log(response.headers);
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			resolve(body);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});
+
+}
+
+
+
+export function fetchMyTopic(url, page){
+	let myTopicUrl = SITE.HOST + url + '/topics?p=' + page;
+	console.log('myTopicUrl:', myTopicUrl);
+	return new Promise( (resolve, reject) => {
+
+		fetch(myTopicUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			//console.log(response.headers);
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			let topics = []
+			const $ = cheerio.load(body);
+			$('.box').children('.item').each(function(i, el){
+				//console.log(i);
+				topic = {}
+				topic.member_url = $(this).find('.small strong a').first().attr('href');
+				topic.member_name = $(this).find('.small strong a').first().text();
+				topic.topic_url = $(this).find('.item_title a').first().attr('href');
+				topic.topic_title = $(this).find('.item_title a').first().text();
+				topic.node_url = $(this).find('.node').first().attr('href');
+				topic.node_name = $(this).find('.node').first().text();
+
+				//console.log($(this).find('.small'), $(this).find('.small strong a'), $(this).find('td[width="70"] a'));
+				topic.date = $(this).find('.small').text().split('•')[2];
+
+				topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
+				topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
+
+				topic.reply_count = $(this).find('td[width="70"] a').first().text();
+				topic.reply_url = $(this).find('td[width="70"] a').first().attr('href');
+
+				topics.push(topic);
+			});
+			//console.log('topics length:', topics.length);
+			let total_count = $('#Main .header .fr .gray').first().text();
+
+			const result = {
+				topics : topics,
+				total_count : total_count,
+			}
+			resolve(result);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});	
+}
+
+
+export function fetchMyReply(url, page=1){
+	let myTopicUrl = SITE.HOST + url + '/replies?p=' + page;
+	console.log('myTopicUrl:', myTopicUrl);
+	return new Promise( (resolve, reject) => {
+
+		fetch(myTopicUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			//console.log(response.headers);
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			let replies = [];
+			const $ = cheerio.load(body);
+			$('.box').children('.dock_area').each(function(i, el){
+				let reply = {};
+				reply.date = $(this).find('.fr span').first().text();
+				reply.title = $(this).find('.gray').first().text();
+				reply.title_url = $(this).find('.gray a').first().attr('href');
+				reply.content = $(this).next('div').find('.reply_content').first().text();
+				reply.content_at = [];
+				$(this).next('div').find('.reply_content a').each(function(){
+					content_at_who = {};
+					content_at_who.name = $(this).text();
+					content_at_who.url = $(this).attr('href');
+					reply.content_at.push(content_at_who);
+				});
+
+				replies.push(reply);
+			})
+
+			let total_count = $('#Main .header .fr .gray').first().text();
+			const result = {
+				replies : replies,
+				total_count : total_count,
+			}
+			resolve(result);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});	
 }

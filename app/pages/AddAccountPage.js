@@ -3,6 +3,9 @@ import { View, Text,TouchableHighlight,StyleSheet,ActivityIndicator } from 'reac
 
 import NavigationBar from 'react-native-navbar';
 
+import { login,getLoginWillPostForm }  from '../utils/SiteUtil'
+
+
 
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
@@ -18,61 +21,43 @@ var options = {
 	}
 }
 
-class EditAccount extends React.Component {
+class AddAccountPage extends React.Component {
 	constructor(props){
+		//console.log("AddAcount constructor");
 		super(props);
-		this.state = {
-			removeBtnShow:true,
-			updateBtnShow:true
-		}
-		const { account } = props;
-		this.presentAccount = account.editAccount;
-		this.onSavePress = this.onSavePress.bind(this);
-		this.onRemovePress = this.onRemovePress.bind(this);
-		this.onChange = this.onChange.bind(this);
+		this.onPress = this.onPress.bind(this);
+	}
+
+	componentWillReceiveProps(nextProps){
+		//console.log('this.props', this.props, 'nextProps:', nextProps);
+	}
+
+	componentWillMount(){
+		//console.log("componentWillMount");
+		const { accountActions } = this.props;
+		accountActions.addAccountPageInit();
+	}
+
+	componentDidMount(){
+		//console.log('componentDidMount');
 	}
 
 	componentDidUpdate(){
 		//console.log('componentDidUpdate');
 		const { navigator, account } = this.props;
 		if( account.user && account.checkAccount.name === account.user.name){
-			//navigator.pop();
+			navigator.pop();
 		}
 	}
 
-	onSavePress(){
+	onPress(){
 		const { navigator, accountActions } = this.props;
+		//console.log('this.props', this.props);
 		var value = this.refs.form.getValue();
-		if (value){
-		  accountActions.accountAdd(value.name, value.password);
-		  navigator.pop();
+		if (value) {
+		   console.log(value);
+		   accountActions.accountAdd(value.name, value.password);
 		}
-	}
-
-	onRemovePress(){
-		const { navigator, accountActions } = this.props;
-		var value = this.refs.form.getValue();
-		if (value){
-		  accountActions.accountDelete(value.name, value.password);
-		  navigator.pop();
-		}
-	}
-
-	onChange(value){
-		const { account } = this.props;
-		//console.log('value', value, currentAccount, account);
-		this.presentAccount = value;
-		if(value.name !== account.editAccount.name){
-			this.setState({removeBtnShow:false});
-			if (account.accounts.has(value.name)){
-				this.setState({updateBtnShow:true});
-			}else{
-				this.setState({updateBtnShow:false});
-			}
-		}else{
-			this.setState({removeBtnShow:true, updateBtnShow:true});
-		}
-
 	}
 
 	render() {
@@ -85,10 +70,11 @@ class EditAccount extends React.Component {
 		};
 
 		var titleConfig = {
-			title: 'Edit Account',
+			title: 'Add Account',
 		};
 
-		//console.log('this.presentAccount:', this.presentAccount);
+		//console.log('render addAccount', account);
+
 		return (
 			<View>
 				<NavigationBar
@@ -99,18 +85,12 @@ class EditAccount extends React.Component {
 					<Form
 					  ref="form"
 					  type={LoginFrom}
-					  value={this.presentAccount}
-					  onChange={this.onChange}
+					  value={account.checkAccount}
 					  options={options}
 					/>
-
-					<TouchableHighlight style={styles.button} onPress={this.onSavePress} underlayColor='#99d9f4'>
-					  <Text style={styles.buttonText}>{this.state.updateBtnShow ? 'Update' : 'Save'}</Text>
+					<TouchableHighlight style={styles.button} onPress={this.onPress} underlayColor='#99d9f4'>
+					  <Text style={styles.buttonText}>Save</Text>
 					</TouchableHighlight>
-
-					{this.state.removeBtnShow && (<TouchableHighlight ref="remove" style={styles.button} onPress={this.onRemovePress} underlayColor='#99d9f4'>
-				  		<Text style={styles.buttonText}>Remove</Text>
-					</TouchableHighlight>)}
 
 				</View>
 
@@ -119,6 +99,7 @@ class EditAccount extends React.Component {
 			        style={{height: 80}}
 			        size="large"
 		        />
+
 			</View>
 		);
 	}
@@ -155,6 +136,5 @@ var styles = StyleSheet.create({
   }
 });
 
-export default EditAccount;
 
-
+export default AddAccountPage;
