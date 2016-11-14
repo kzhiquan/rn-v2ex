@@ -12,7 +12,7 @@ import {
 
 import { userLogin } from '../actions/auth'
 
-import { login, isLogin } from '../utils/SiteUtil'
+import { login } from '../utils/SiteUtil'
 
 
 
@@ -32,7 +32,7 @@ export function* checkUser(name, password){
 		yield put(userCheckEnd());
 
 	} catch ( error ){
-		console.log('error-:', error);
+		console.log('error:', error);
 		yield put(userCheckEnd());
 		toastShort('网络发生错误，请重试');
 	}

@@ -33,7 +33,7 @@ class EditAccountPage extends React.Component {
 	}
 
 	componentDidUpdate(){
-		//console.log('componentDidUpdate');
+		console.log('componentDidUpdate');
 		const { navigator, account } = this.props;
 		if( account.user && account.checkAccount.name === account.user.name){
 			//navigator.pop();
@@ -45,15 +45,18 @@ class EditAccountPage extends React.Component {
 		var value = this.refs.form.getValue();
 		if (value){
 		  accountActions.accountAdd(value.name, value.password);
-		  navigator.pop();
+		  //navigator.pop();
 		}
 	}
 
 	onRemovePress(){
-		const { navigator, accountActions } = this.props;
+		const { navigator, auth, accountActions, authActions } = this.props;
 		var value = this.refs.form.getValue();
 		if (value){
 		  accountActions.accountDelete(value.name, value.password);
+		  if( auth.user && auth.user.name === value.name ){
+		  	authActions.userLogout();
+		  }
 		  navigator.pop();
 		}
 	}

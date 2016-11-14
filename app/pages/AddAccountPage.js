@@ -39,14 +39,15 @@ class AddAccountPage extends React.Component {
 	}
 
 	componentDidMount(){
-		//console.log('componentDidMount');
+		console.log('componentDidMount');
 	}
 
 	componentDidUpdate(){
-		//console.log('componentDidUpdate');
+		console.log('componentDidUpdate');
 		const { navigator, account } = this.props;
+		//console.log('AddAccountPage account', account, navigator.getCurrentRoutes(0));
 		if( account.user && account.checkAccount.name === account.user.name){
-			navigator.pop();
+			//navigator.pop(0);
 		}
 	}
 
@@ -55,7 +56,7 @@ class AddAccountPage extends React.Component {
 		//console.log('this.props', this.props);
 		var value = this.refs.form.getValue();
 		if (value) {
-		   console.log(value);
+		   //console.log(value);
 		   accountActions.accountAdd(value.name, value.password);
 		}
 	}

@@ -17,6 +17,7 @@ export default function auth(state = initialState, action){
 
 		case types.USER_LOGOUT:
 			return Object.assign({}, state, {
+				user : null,
 			} );
 	
 		//Topic

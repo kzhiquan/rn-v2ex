@@ -1,7 +1,8 @@
 import * as types from '../constants/ActionTypes'
 
 const initialState = {
-	accounts: new Map(),
+	isChanging : false,
+	accounts: {},
 
 	checkAccount:{name:'', password:''},
 	user:false,
@@ -12,7 +13,7 @@ const initialState = {
 
 
 export default function auth(state = initialState, action){
-	console.log('state', state);
+	//console.log('state', state);
 	switch(action.type){
 		case types.ADD_ACCOUNT_PAGE_INIT:
 			return Object.assign({}, state, {
@@ -37,7 +38,7 @@ export default function auth(state = initialState, action){
 			return Object.assign({}, state, {checkAccount:checkAccount});
 
 		case types.ACCOUNT_DELETE:
-			state.accounts.delete(action.name);
+			delete state.accounts[action.name];
 			return Object.assign({}, state);
 
 		case types.USER_RECEIVE:
@@ -49,9 +50,18 @@ export default function auth(state = initialState, action){
 		case types.USER_CHECK_END:
 			if(state.user && state.user.name === state.checkAccount.name){
 				state.user['password'] = state.checkAccount.password
-				state.accounts.set(state.checkAccount.name, state.user);
+				state.accounts[state.checkAccount.name] = state.user;
 			}
 			return Object.assign({}, state, {isChecking:false});
+
+		case types.CHANGE_USER_START:
+			return Object.assign({}, state, {
+				isChanging : true
+			});
+		case types.CHANGE_USER_END:
+			return Object.assign({}, state, {
+				isChanging : false
+			});
 
 		default:
 			return state;

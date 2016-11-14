@@ -48,3 +48,17 @@ export function userCheckEnd(){
 		type: types.USER_CHECK_END
 	}
 }
+
+
+export function changeUserStart(user){
+	return{
+		type : types.CHANGE_USER_START,
+		user : user,
+	}
+}
+
+export function changeUserEnd(){
+	return {
+		type : types.CHANGE_USER_END
+	}
+}

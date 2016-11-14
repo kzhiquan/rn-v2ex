@@ -54,13 +54,16 @@ class MyReplyPage extends React.Component {
   }
 
   renderItem(reply) {
-    console.log('reply:',reply);
+    //console.log('reply:',reply);
+    if(!reply.title){
+      return null;
+    }
+    
     return (
-      <View>
+      <View style={styles.containerItem}>
 
         <View>
-          <View><Text>{reply.title}</Text></View>
-          <View><Text>{reply.date}</Text></View>
+          <View><Text>{reply.date}:{reply.title}</Text></View>
         </View>
 
         <View>
@@ -137,7 +140,7 @@ class MyReplyPage extends React.Component {
 const styles = StyleSheet.create({
   containerItem:{
     flex:1,
-    flexDirection:'row',
+    flexDirection:'column',
     borderBottomWidth:1,
     padding:5,
     justifyContent: 'space-between'

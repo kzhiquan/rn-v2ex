@@ -19,7 +19,7 @@ export function* fetchTopic(isRefreshing, isLoading, isLoadingMore, path){
 		}
 
 	} catch ( error ){
-		console.error('error:', error);
+		console.log('error:', error);
 		yield toastShort('网络发生错误，请重试');
 	}
 }

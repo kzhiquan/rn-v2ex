@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 
 
 import * as accountsCreators from '../actions/account';
+import * as authCreators from '../actions/auth';
 import AccountPage from '../pages/AccountPage';
 
 class AccountContainer extends React.Component {
@@ -17,16 +18,19 @@ class AccountContainer extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { account } = state;
+  const { account, auth } = state;
   return {
-    account
+    account,
+    auth,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   const accountActions = bindActionCreators(accountsCreators, dispatch);
+  const authActions = bindActionCreators(authCreators, dispatch);
   return {
-    accountActions
+    accountActions,
+    authActions,
   };
 };
 

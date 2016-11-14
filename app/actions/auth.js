@@ -8,6 +8,12 @@ export function userLogin(user){
 	}
 }
 
+export function userLogout(){
+	return {
+		type : types.USER_LOGOUT,
+	}
+}
+
 
 export function requestMyTopic(user){
 	return {

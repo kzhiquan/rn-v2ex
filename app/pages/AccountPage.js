@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text,ListView,StyleSheet,Image, TouchableOpacity} from 'react-native'
+import { View, Text,ListView,StyleSheet,Image, TouchableOpacity, ActivityIndicator} from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -19,7 +19,7 @@ class AccountPage extends React.Component {
 
   	componentDidMount(){
 		const { navigator, account } = this.props;
-		if(account.accounts.size == 0){
+		if(Object.values(account.accounts).length == 0){
 			navigator.push({
 				component : AddAccountContainer,
 				name : "And An Account"
@@ -27,30 +27,43 @@ class AccountPage extends React.Component {
 		}
 	}
 
-  	onPressButton(){
-  		console.log('this:', this);
-  		const { navigator, currentAccount, accountActions } = this;
-  		console.log('currentAccount', currentAccount, 'navigator', navigator, 'accountActions', accountActions);
-  		accountActions.editAccountPageInit(currentAccount);
+  	onAccountEdit(){
+  		const { navigator, account, accountActions } = this;
+  		accountActions.editAccountPageInit(account);
   		navigator.push({
   			component : EditAccountContainer,
   			name : 'Edit An Account'
   		})
   	}
 
+  	onAccountChange(){
+  		const { account, accountActions } = this;
+
+  		console.log('account', account);
+
+  		accountActions.changeUserStart(account);
+  	}
+
   	renderItem(account){
   		//console.log('account', account);
-  		const { navigator, accountActions } = this.props;
+  		const { navigator, accountActions, auth, authActions } = this.props;
+  		let isCurrentAccount = false;
+  		if( auth.user && auth.user.name === account.name){
+  			isCurrentAccount = true;
+  		}
   		return (
+  		<TouchableOpacity onPress={this.onAccountChange} account={account} accountActions={accountActions}>
 	      <View style={styles.containerItem}>
 	        <Image style={styles.itemHeader} source={{uri:account.avatar_url}} />
 	        <View style={styles.itemBody}>
 	          <Text>{account.name}</Text>
 	        </View>
-	        <TouchableOpacity onPress={this.onPressButton} currentAccount={account} navigator={navigator} accountActions={accountActions}>
+	        {isCurrentAccount ? (<View style={styles.itemCurrentAccount}><Text style={{color:'red'}}>正在使用</Text></View>) : null }
+	        <TouchableOpacity onPress={this.onAccountEdit} account={account} navigator={navigator} accountActions={accountActions}>
 				<Icon name="ios-cog" size={36} />
     		</TouchableOpacity>
 	      </View>
+	    </TouchableOpacity>
   		);
   	}
 
@@ -58,7 +71,7 @@ class AccountPage extends React.Component {
 		//console.log('render account', this.props);
 		const props = this.props;
 		const { navigator, account } = this.props;
-		var leftButtonConfig = {
+		var rightButtonConfig = {
 			title: 'Add',
 			handler: function onAdd() {
 			  navigator.push({
@@ -68,26 +81,42 @@ class AccountPage extends React.Component {
 			}
 		};
 
+		var leftButtonConfig = {
+			title: 'Back',
+			handler: function onBack() {
+			  navigator.pop();
+			}
+		};
+
 		var titleConfig = {
 			title: 'Accounts',
 		};
 
 		
-		let rows = Array.from(account.accounts.values());
+		//let rows = Array.from(account.accounts.values());
+		let rows = Object.values(account.accounts);
 
 		//console.log('rows:', rows);
 
 		return (
-			<View>
+			<View style={{flex:1}}>
 				<NavigationBar
         			title={titleConfig}
-        			leftButton={leftButtonConfig}/>
+        			leftButton={leftButtonConfig}
+        			rightButton={rightButtonConfig}/>
 
 				<ListView
+					initialListSize = {5}
 					dataSource={this.state.dataSource.cloneWithRows(rows)}
 					renderRow={this.renderItem}
 					enableEmptySections={true}
+					removeClippedSubviews = {false}
 				/>
+				<ActivityIndicator
+			        animating={account.isChanging}
+			        style={styles.front}
+			        size="large"
+		        />
 			</View>
 		);
 	}
@@ -110,8 +139,25 @@ const styles = StyleSheet.create({
 		width: 200,
 		marginTop: 10
 	},
+	itemCurrentAccount:{
+		marginTop : 10
+	},
 	itemFooter:{
 		marginRight:0
+	},
+	front:{
+		position: 'absolute',
+		top:300,
+		left: (375-50)/2,
+        width: 50,
+        height:50,
+        zIndex: 1
+	},
+	back:{
+		width: 100,
+        height: 100,
+        backgroundColor: 'blue',
+        zIndex: 0
 	}
 });
 

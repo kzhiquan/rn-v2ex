@@ -26,7 +26,7 @@ class UserPage extends React.Component {
 
 
 	componentWillMount(){
-
+		console.log('componentWillMount');
 		/*const { auth, navigator } = this.props;
 		console.log('auth', auth);
 		if(auth.user == null){
@@ -39,9 +39,13 @@ class UserPage extends React.Component {
 
 	}
 
+	componentDidMount(){
+		console.log('componentDidMount');
+	}
+
 
 	onPressButton(){
-		console.log('onPressButton');
+		//console.log('onPressButton');
 		const { navigator } = this.props;
 		navigator.push({
 	        component : AccountContainer,
@@ -165,6 +169,7 @@ class UserPage extends React.Component {
 			}
 		}
 
+		//console.log('rows', rows, this.props);
 		return (
 			<View style={{flex:1}}>
 				<NavigationBar
@@ -176,6 +181,7 @@ class UserPage extends React.Component {
 					renderRow={this.renderItem}
 					renderSectionHeader = {this.renderSectionHeader}
 					renderSeparator = {this.renderSeparator}
+					removeClippedSubviews = {false}
 				/>
 			</View>
 		);
