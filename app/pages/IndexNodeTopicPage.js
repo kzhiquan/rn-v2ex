@@ -58,7 +58,6 @@ class IndexNodeTopicPage extends React.Component {
   renderItem(topic) {
     //console.log('topic:',topic);
     return (
-      //<Text>{topic.topic_title}</Text>
       <View style={styles.containerItem}>
         <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
         <View style={styles.itemBody}>
@@ -151,6 +150,9 @@ class IndexNodeTopicPage extends React.Component {
         }
       />
     );
+
+
+
   }
 }
 
