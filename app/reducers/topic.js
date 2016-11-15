@@ -7,7 +7,7 @@ const initialState = {
 	isRefreshing : false,
 	isLoading : false,
 	isLoadingMore : false,
-	topicList : []
+	topicList : {}
 }
 
 console.log('REHYDRATE:', REHYDRATE);
@@ -20,7 +20,7 @@ export default function topic(state = initialState, action){
 				isRefreshing:false,
 				isLoading:false,
 				isLoadingMore:false,
-				topicList:[],
+				topicList:{},
 			});
 
 		case types.REQUEST_TOPIC:
@@ -35,7 +35,7 @@ export default function topic(state = initialState, action){
 				isRefreshing : false,
 				isLoading : false,
 				isLoadingMore : false,
-				topicList : action.topicList
+				topicList : state.isLoadingMore ? loadMore(state, action) : combine(state, action),
 			} );
 
 		case REHYDRATE:
@@ -44,10 +44,24 @@ export default function topic(state = initialState, action){
 				isRefreshing:false,
 				isLoading:false,
 				isLoadingMore:false,
-				topicList:[],
+				topicList:{},
 			});
 
 		default:
 			return state;
 	}
 }
+
+
+function combine(state, action) {
+  state.topicList[action.path] = action.topicList;
+  return state.topicList;
+}
+
+function loadMore(state, action) {
+  state.topicList[action.path] = state.topicList[action.path].concat(action.topicList);
+  return state.topicList;
+}
+
+
+

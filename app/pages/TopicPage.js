@@ -36,7 +36,6 @@ class TopicPage extends React.Component {
 
   render() {
     const { navigator, route } = this.props;
-    //console.log('Topic props', this.props);
     return (
       <ScrollableTabView
         initialPage={0}
@@ -63,37 +62,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#FFF'
   },
-  categoryBtn: {
-    margin: 10,
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#dddddd'
-  },
-  categoryText: {
-    fontSize: 16,
-    textAlign: 'center'
-  },
-  gridLayout: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#f2f2f2'
-  },
-  sureBtn: {
-    margin: 10,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: '#3e9ce9'
-  },
-  btnText: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#fff'
-  },
-  header: {
-    padding: 10,
-    backgroundColor: '#fcfcfc'
-  }
 });
 
 TopicPage.propTypes = propTypes;

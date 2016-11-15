@@ -36,9 +36,8 @@ class IndexNodeTopicPage extends React.Component {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } ),
       modalVisible: false,
     };
-    this.renderItem = this.renderItem.bind(this);
-    this.renderFooter = this.renderFooter.bind(this);
     this.onEndReached = this.onEndReached.bind(this);
+    this.renderItem = this.renderItem.bind(this);
     this.onScroll = this.onScroll.bind(this);
   }
 
@@ -51,7 +50,6 @@ class IndexNodeTopicPage extends React.Component {
   componentDidMount() {
     console.log("componentDidMount");
     const { topicActions, node } = this.props;
-    //console.log('topicActions', topicActions, this.props);
     topicActions.requestTopic(false, true, false, node.path);
   }
 
@@ -61,7 +59,6 @@ class IndexNodeTopicPage extends React.Component {
   }
 
   renderItem(topic) {
-    //console.log('topic:',topic);
     return (
       <View style={styles.containerItem}>
         <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
@@ -79,17 +76,6 @@ class IndexNodeTopicPage extends React.Component {
     )
   }
 
-  renderFooter(){
-    const { topic } = this.props;
-
-    if(topic.isLoadingMore){
-      return (
-        <View style={styles.footerContainer} >
-          <ActivityIndicator size="small" color="#3e9ce9" />
-        </View>
-      );
-    }
-  }
 
   onEndReached() {
     console.log('onEndReached');
@@ -144,7 +130,11 @@ class IndexNodeTopicPage extends React.Component {
 
     //we should merge the coming topic.topicList into the older topic.topicList
     //console.log('IndexNodeTopicPage rowCount', rowCount, topic.topicList.length);
-    
+    let rows = [];
+    if(topic.topicList && node.path in topic.topicList){
+      rows = topic.topicList[node.path];
+    }
+    //console.log('rows', rows);
     return (
       <View>
         <VXModal
@@ -155,15 +145,12 @@ class IndexNodeTopicPage extends React.Component {
         />
         <ListView
           initialListSize = {5}
-          dataSource={this.state.dataSource.cloneWithRows(topic.topicList)}
+          dataSource={this.state.dataSource.cloneWithRows(rows)}
           renderRow={this.renderItem}
-          renderFooter={this.renderFooter}
           onEndReached={this.onEndReached}
-          onScroll={this.onScroll}
           onEndReachedThreshold={-50}
           enableEmptySections={true}
           removeClippedSubviews = {false}
-          ref={(listView)=>this.listView = listView}
           renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
           refreshControl={
             <RefreshControl

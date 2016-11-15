@@ -8,20 +8,22 @@ export function nodeTopicPageInit(){
 	}
 }
 
-export function requestTopic(isRefreshing, isLoading, isLoadingMore, path){
+export function requestTopic(isRefreshing, isLoading, isLoadingMore, path, page=1){
 	return {
 		type : types.REQUEST_TOPIC,
 		isRefreshing,
 		isLoading,
 		isLoadingMore,
-		path
+		path,
+		page,
 	};
 }
 
 
-export function receiveTopic(topicList){
+export function receiveTopic(topicList, path){
 	return {
 		type : types.RECEIVE_TOPIC,
-		topicList
+		topicList,
+		path,
 	}
 }

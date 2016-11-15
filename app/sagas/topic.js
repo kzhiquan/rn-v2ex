@@ -7,15 +7,15 @@ import { fetchTopicList } from '../utils/SiteUtil'
 
 
 
-export function* fetchTopic(isRefreshing, isLoading, isLoadingMore, path){
+export function* fetchTopicSagas(isRefreshing, isLoading, isLoadingMore, path, page){
 	try{
 		//console.log('isRefreshing', isRefreshing, 'isLoading', isLoading, 'path:', path);
 
-		const topicList = yield call(fetchTopicList, path); 
+		const topicList = yield call(fetchTopicList, path, page); 
 		if(!Array.isArray(topicList) ){
 			yield toastShort(topicList);
 		}else{
-			yield put(receiveTopic(topicList));
+			yield put(receiveTopic(topicList, path));
 		}
 
 	} catch ( error ){
@@ -28,7 +28,7 @@ export function* fetchTopic(isRefreshing, isLoading, isLoadingMore, path){
 
 export function* watchTopic(){
 	while (true) {
-		const { isRefreshing, isLoading, isLoadingMore, path } = yield take(types.REQUEST_TOPIC);
-		yield fork(fetchTopic, isRefreshing, isLoading, isLoadingMore, path);
+		const { isRefreshing, isLoading, isLoadingMore, path, page } = yield take(types.REQUEST_TOPIC);
+		yield fork(fetchTopicSagas, isRefreshing, isLoading, isLoadingMore, path, page);
 	}
 }

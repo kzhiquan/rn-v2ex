@@ -22,6 +22,10 @@ import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
 
 
+let canLoadMore;
+let page = 1;
+let loadMoreTime = 0;
+
 class NodeTopicPage extends React.Component {
   constructor(props) {
     super(props);
@@ -29,17 +33,16 @@ class NodeTopicPage extends React.Component {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } ),
       modalVisible: false,
     };
-    this._rows = [];
     this.renderItem = this.renderItem.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onEndReached = this.onEndReached.bind(this);
     this.onScroll = this.onScroll.bind(this);
+    canLoadMore = false;
   }
 
   componentWillMount() {
     console.log("componentWillMount");
     const { topicActions } = this.props;
-    topicActions.nodeTopicPageInit();
   }
 
   componentDidMount() {
@@ -50,6 +53,7 @@ class NodeTopicPage extends React.Component {
 
   onRefresh(){
     console.log('onRefresh');
+    canLoadMore = false;
     const { topicActions, route } = this.props;
     topicActions.requestTopic(true, false, false, route.node.path);
   }
@@ -78,6 +82,9 @@ class NodeTopicPage extends React.Component {
       return (
         <View style={styles.footerContainer} >
           <ActivityIndicator size="small" color="#3e9ce9" />
+          <Text style={styles.footerText}>
+            数据加载中……
+          </Text>
         </View>
       );
     }
@@ -85,20 +92,34 @@ class NodeTopicPage extends React.Component {
   }
 
   onEndReached() {
-    console.log('onEndReached');
-    const { topicActions, route } = this.props;
-    topicActions.requestTopic(false, false, true, route.node.path);
+    /*const { topicActions, route } = this.props;
+    page += 1;
+    topicActions.requestTopic(false, false, true, route.node.path, page);*/
+    console.log('outer onEndReached page', page);
+
+    const time = Date.parse(new Date()) / 1000;
+    if (canLoadMore && time - loadMoreTime > 1) {
+      canLoadMore = false;
+      loadMoreTime = Date.parse(new Date()) / 1000;
+
+      const { topicActions, route } = this.props;
+      page += 1;
+      topicActions.requestTopic(false, false, true, route.node.path, page);
+      console.log('in onEndReached page', page);
+    }
   }
 
-  onScroll(){
-    console.log('onScroll');
+  onScroll() {
+    if (!canLoadMore) {
+      canLoadMore = true;
+    }
   }
 
 
   render() {
     const { topic } = this.props;
     console.log('render NodeTopicPage');
-    if (topic.isLoading || !topic.isInitialized){
+    if (topic.isLoading){
       return <LoadingView />
     }
 
@@ -114,12 +135,12 @@ class NodeTopicPage extends React.Component {
       title: route.name,
     };
 
-    console.log('rows', this._rows.length, topic.topicList.length);
 
-    this._rows = this._rows.concat(topic.topicList);
-
-    console.log('rows', this._rows.length, topic.topicList.length);
-    
+    let rows = [];
+    if(topic.topicList && route.node.path in topic.topicList){
+      rows = topic.topicList[route.node.path];
+    }
+    console.log('rows', rows.length);
     return (
       <View>
         <NavigationBar
@@ -128,7 +149,7 @@ class NodeTopicPage extends React.Component {
 
         <ListView
           initialListSize = {5}
-          dataSource={this.state.dataSource.cloneWithRows(this._rows)}
+          dataSource={this.state.dataSource.cloneWithRows(rows)}
           renderRow={this.renderItem}
           renderFooter={this.renderFooter}
           onEndReached={this.onEndReached}
@@ -189,6 +210,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 5
+  },
+  footerText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 10
   },
 
 
