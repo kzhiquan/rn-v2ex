@@ -30,10 +30,10 @@ class App extends React.Component{
 					style={{flex : 1}}
 					renderScene={this.renderScene}
 					initialRoute={{
-						//component : Main,
+						component : Main,
 						//component : AccountContainer,
 						//component : MyTopicContainer,
-						component: TestPage,
+						//component: TestPage,
 						name : 'Topic'
 					}}
 				/>

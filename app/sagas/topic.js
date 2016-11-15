@@ -2,7 +2,7 @@ import { put, take, call, fork } from 'redux-saga/effects'
 import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
-import { topicRequest, topicReceive } from '../actions/topic';
+import { requestTopic, receiveTopic } from '../actions/topic';
 import { fetchTopicList } from '../utils/SiteUtil'
 
 
@@ -15,7 +15,7 @@ export function* fetchTopic(isRefreshing, isLoading, isLoadingMore, path){
 		if(!Array.isArray(topicList) ){
 			yield toastShort(topicList);
 		}else{
-			yield put(topicReceive(topicList));
+			yield put(receiveTopic(topicList));
 		}
 
 	} catch ( error ){
@@ -28,7 +28,7 @@ export function* fetchTopic(isRefreshing, isLoading, isLoadingMore, path){
 
 export function* watchTopic(){
 	while (true) {
-		const { isRefreshing, isLoading, isLoadingMore, path } = yield take(types.TOPIC_REQUEST);
+		const { isRefreshing, isLoading, isLoadingMore, path } = yield take(types.REQUEST_TOPIC);
 		yield fork(fetchTopic, isRefreshing, isLoading, isLoadingMore, path);
 	}
 }

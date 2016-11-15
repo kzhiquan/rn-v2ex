@@ -8,17 +8,47 @@ import { View, Text } from 'react-native'
 
 import rootSaga from './sagas/index'
 import App from './containers/App'
+import LoadingView from './components/LoadingView';
 
-const store = configureStore(undefined, ()=>{
+/*const store = configureStore(undefined, ()=>{
 	console.log('rehydration complete');
+
 });
 
-store.runSaga(rootSaga);
+store.runSaga(rootSaga);*/
 
-const V2ex = () => (
-	<Provider store={store}>
-		<App />
-	</Provider>
-);
+
+class V2ex extends React.Component{
+
+	constructor(){
+		super();
+		this.state = {
+			rehydrated : false,
+		}
+	}
+
+	componentWillMount(){
+		this.store = configureStore(undefined, ()=>{
+			console.log('rehydration complete');
+			this.setState({
+				rehydrated : true,
+			})
+		});
+		this.store.runSaga(rootSaga);
+	}
+
+	render(){
+
+		if(!this.state.rehydrated){
+			return <LoadingView />
+		}
+
+		return(
+			<Provider store={this.store}>
+				<App />
+			</Provider>
+		)
+	}
+}
 
 export default V2ex;

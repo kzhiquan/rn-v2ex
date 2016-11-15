@@ -1,9 +1,16 @@
 
 import * as types from '../constants/ActionTypes';
 
-export function topicRequest(isRefreshing, isLoading, isLoadingMore, path){
+
+export function nodeTopicPageInit(){
+	return{
+		type : types.NODE_TOPIC_PAGE_INIT
+	}
+}
+
+export function requestTopic(isRefreshing, isLoading, isLoadingMore, path){
 	return {
-		type : types.TOPIC_REQUEST,
+		type : types.REQUEST_TOPIC,
 		isRefreshing,
 		isLoading,
 		isLoadingMore,
@@ -11,9 +18,10 @@ export function topicRequest(isRefreshing, isLoading, isLoadingMore, path){
 	};
 }
 
-export function topicReceive(topicList){
+
+export function receiveTopic(topicList){
 	return {
-		type : types.TOPIC_RECEIVE,
+		type : types.RECEIVE_TOPIC,
 		topicList
 	}
 }

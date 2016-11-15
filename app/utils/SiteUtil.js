@@ -3,10 +3,16 @@ import qs from 'qs'
 
 import SITE from '../constants/Config'
 
-export function fetchTopicList(path){
+export function fetchTopicList(path, page=1){
+
   return new Promise((resolve, reject) => {
-  	url = SITE.HOST + path;
-  	//console.log('url', url);
+
+  	let url = SITE.HOST + path;
+
+  	if(path.indexOf('?') == -1){
+  		url = SITE.HOST + path + '?p=' + page;
+  	}
+  	
     fetch(url)
       .then((response) => {
         return response.text();
@@ -134,7 +140,6 @@ export async function login(name, password){
 
 }
 
-
 export function isLogin(){
 	const url = SITE.HOST + '/recent';
 	return new Promise( (resolve, reject) => {
@@ -202,33 +207,8 @@ export function logout(url){
 }
 
 
-
-export function fetchRecentTopic(){
-	return new Promise( (resolve, reject) => {
-
-		fetch('https://www.v2ex.com/recent?p=2', {
-			credentials:'include'
-		})
-		.then((response) => {
-			//console.log(response.headers);
-			return response.text();
-		})
-		.then((body) => {
-			//console.log('body', body);
-			resolve(body);
-		})
-		.catch( (error) => {
-			console.log(error);
-			reject(error);
-		})
-	});
-
-}
-
-
-
-export function fetchMyTopic(url, page){
-	let myTopicUrl = SITE.HOST + url + '/topics?p=' + page;
+export function fetchMyTopic(path, page){
+	let myTopicUrl = SITE.HOST + path + '/topics?p=' + page;
 	console.log('myTopicUrl:', myTopicUrl);
 	return new Promise( (resolve, reject) => {
 
@@ -281,8 +261,8 @@ export function fetchMyTopic(url, page){
 }
 
 
-export function fetchMyReply(url, page=1){
-	let myTopicUrl = SITE.HOST + url + '/replies?p=' + page;
+export function fetchMyReply(path, page=1){
+	let myTopicUrl = SITE.HOST + path + '/replies?p=' + page;
 	console.log('myTopicUrl:', myTopicUrl);
 	return new Promise( (resolve, reject) => {
 

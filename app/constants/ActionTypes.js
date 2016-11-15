@@ -5,8 +5,9 @@ export const TEST_A = 'TEST_A'
 export const TEST_B = 'TEST_B'
 
 
-export const TOPIC_REQUEST = 'TOPIC_REQUEST'
-export const TOPIC_RECEIVE = 'TOPIC_RECEIVE'
+export const NODE_TOPIC_PAGE_INIT = 'NODE_TOPIC_PAGE_INIT'
+export const REQUEST_TOPIC = 'REQUEST_TOPIC'
+export const RECEIVE_TOPIC = 'RECEIVE_TOPIC'
 
 
 export const USER_LOGIN = 'USER_LOGIN'

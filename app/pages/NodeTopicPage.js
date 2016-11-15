@@ -14,28 +14,22 @@ import {
   RecyclerViewBackedScrollView,
 } from 'react-native';
 
+import NavigationBar from 'react-native-navbar';
+
 import LoadingView from '../components/LoadingView';
 import AccountContainer from '../containers/AccountContainer';
-import NodeTopicContainer from '../containers/NodeTopicContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
 
-const propTypes = {
-  node : PropTypes.object.isRequired
-};
 
-let page = 0;
-let rowCount = 0;
-let needLoadMore = false;
-
-
-class IndexNodeTopicPage extends React.Component {
+class NodeTopicPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } ),
       modalVisible: false,
     };
+    this._rows = [];
     this.renderItem = this.renderItem.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
     this.onEndReached = this.onEndReached.bind(this);
@@ -44,24 +38,23 @@ class IndexNodeTopicPage extends React.Component {
 
   componentWillMount() {
     console.log("componentWillMount");
-    //const { topicActions } = this.props;
-    //topicActions.nodeTopicPageInit();
+    const { topicActions } = this.props;
+    topicActions.nodeTopicPageInit();
   }
 
   componentDidMount() {
     console.log("componentDidMount");
-    const { topicActions, node } = this.props;
-    //console.log('topicActions', topicActions, this.props);
-    topicActions.requestTopic(false, true, false, node.path);
+    const { topicActions, route } = this.props;
+    topicActions.requestTopic(false, true, false, route.node.path);
   }
 
   onRefresh(){
-    const { topicActions, node } = this.props;
-    topicActions.requestTopic(true, false, false, node.path);
+    console.log('onRefresh');
+    const { topicActions, route } = this.props;
+    topicActions.requestTopic(true, false, false, route.node.path);
   }
 
   renderItem(topic) {
-    //console.log('topic:',topic);
     return (
       <View style={styles.containerItem}>
         <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
@@ -81,7 +74,6 @@ class IndexNodeTopicPage extends React.Component {
 
   renderFooter(){
     const { topic } = this.props;
-
     if(topic.isLoadingMore){
       return (
         <View style={styles.footerContainer} >
@@ -89,73 +81,54 @@ class IndexNodeTopicPage extends React.Component {
         </View>
       );
     }
+
   }
 
   onEndReached() {
     console.log('onEndReached');
-    /*const newRowCount = this.listView.props.dataSource.getRowCount();
-    console.log('newRowCount', newRowCount, rowCount);
-    if (newRowCount == rowCount) {
-      page += 1;
-      console.log('page', page);
-      const { topicActions, node } = this.props;
-      topicActions.topicRequest(false, false, true, node.path);
-    }*/
-
-    const { auth, navigator, topicActions } = this.props;
-    //console.log('auth', auth);
-    if(!auth.user){
-      this.setState({modalVisible:true});
-    }else{
-      navigator.push({
-        component : NodeTopicContainer,
-        name : '最近主题',
-        node : {
-          name : '最近主题', 
-          path : '/recent',
-        }
-      })
-    }
-
+    const { topicActions, route } = this.props;
+    topicActions.requestTopic(false, false, true, route.node.path);
   }
 
   onScroll(){
     console.log('onScroll');
   }
 
-  _onModalClick(){
-    const { navigator } = this.props;
-    this.setState({modalVisible:false});
-    navigator.push({
-        component : AccountContainer,
-        name:'Account'
-    });
-  }
 
   render() {
-
-    //console.log('render IndexNodeTopic props', this.props);
-
-    const { node, topic } = this.props;
-
-    if (topic.isLoading){
+    const { topic } = this.props;
+    console.log('render NodeTopicPage');
+    if (topic.isLoading || !topic.isInitialized){
       return <LoadingView />
     }
 
-    //we should merge the coming topic.topicList into the older topic.topicList
-    //console.log('IndexNodeTopicPage rowCount', rowCount, topic.topicList.length);
+    const { navigator, route } = this.props;
+    var leftButtonConfig = {
+      title: 'Back',
+      handler: function onBack() {
+        navigator.pop();
+      }
+    };
+
+    var titleConfig = {
+      title: route.name,
+    };
+
+    console.log('rows', this._rows.length, topic.topicList.length);
+
+    this._rows = this._rows.concat(topic.topicList);
+
+    console.log('rows', this._rows.length, topic.topicList.length);
     
     return (
       <View>
-        <VXModal
-          visible={this.state.modalVisible}
-          title={'尚未登录，请先登录'}
-          btnText={'确定'}
-          btnClick={ this._onModalClick.bind(this) }
-        />
+        <NavigationBar
+              title={titleConfig}
+              leftButton={leftButtonConfig}/>
+
         <ListView
           initialListSize = {5}
-          dataSource={this.state.dataSource.cloneWithRows(topic.topicList)}
+          dataSource={this.state.dataSource.cloneWithRows(this._rows)}
           renderRow={this.renderItem}
           renderFooter={this.renderFooter}
           onEndReached={this.onEndReached}
@@ -163,7 +136,6 @@ class IndexNodeTopicPage extends React.Component {
           onEndReachedThreshold={-50}
           enableEmptySections={true}
           removeClippedSubviews = {false}
-          ref={(listView)=>this.listView = listView}
           renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
           refreshControl={
             <RefreshControl
@@ -176,9 +148,6 @@ class IndexNodeTopicPage extends React.Component {
       </View>
 
     );
-
-
-
   }
 }
 
@@ -214,8 +183,15 @@ const styles = StyleSheet.create({
     color:'blue',
     paddingTop: 18
   },
+  footerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 5
+  },
+
+
 });
 
-IndexNodeTopicPage.propTypes = propTypes;
-
-export default IndexNodeTopicPage;
+export default NodeTopicPage;
