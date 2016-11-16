@@ -4,13 +4,13 @@ import { bindActionCreators } from 'redux';
 
 import * as authCreators from '../actions/auth';
 
-import MyReplyPage from '../pages/MyReplyPage';
+import MyReplyListPage from '../pages/MyReplyListPage';
 
 
-class MyReplyContainer extends React.Component {
+class MyReplyListContainer extends React.Component {
   render() {
     return (
-      <MyReplyPage {...this.props} />
+      <MyReplyListPage {...this.props} />
     );
   }
 }
@@ -30,4 +30,4 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(MyReplyContainer);
+export default connect(mapStateToProps,mapDispatchToProps)(MyReplyListContainer);

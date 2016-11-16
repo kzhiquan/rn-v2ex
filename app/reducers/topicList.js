@@ -6,25 +6,26 @@ const initialState = {
 	isRefreshing : false,
 	isLoading : false,
 	isLoadingMore : false,
-	topic : null,
+	topicList : {}
 }
 
 //console.log('REHYDRATE:', REHYDRATE);
-export default function topic(state = initialState, action){
+
+export default function topicList(state = initialState, action){
 	switch(action.type){
-		case types.REQUEST_TOPIC:
+		case types.REQUEST_TOPIC_LIST:
 			return Object.assign({}, state, { 
 				isRefreshing : action.isRefreshing,
 				isLoading : action.isLoading,
 				isLoadingMore : action.isLoadingMore
 			} );
 
-		case types.RECEIVE_TOPIC:
+		case types.RECEIVE_TOPIC_LIST:
 			return Object.assign({}, state, { 
 				isRefreshing : false,
 				isLoading : false,
 				isLoadingMore : false,
-				topic : state.isLoadingMore ? loadMore(state, action) : combine(state, action),
+				topicList : state.isLoadingMore ? loadMore(state, action) : combine(state, action),
 			} );
 
 		case REHYDRATE:
@@ -32,7 +33,7 @@ export default function topic(state = initialState, action){
 				isRefreshing:false,
 				isLoading:false,
 				isLoadingMore:false,
-				replyList:[],
+				topicList:{},
 			});
 
 		default:
@@ -42,13 +43,14 @@ export default function topic(state = initialState, action){
 
 
 function combine(state, action) {
-	state.topic = action.topic;
-	return state.topic;
+  state.topicList[action.path] = action.topicList;
+  return state.topicList;
 }
 
 function loadMore(state, action) {
-	action.topic.replyList = state.topic.replyList.concat(action.topic.replyList);
-  	return action.topic;
+  state.topicList[action.path] = state.topicList[action.path].concat(action.topicList);
+  return state.topicList;
 }
+
 
 

@@ -2,21 +2,24 @@ import { put, take, call, fork } from 'redux-saga/effects'
 import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
-import { requestTopic, receiveTopic } from '../actions/topic';
-import { fetchTopicList } from '../utils/SiteUtil'
+import { receiveTopic } from '../actions/topic';
+import { fetchTopic } from '../utils/SiteUtil'
 
 
 
-export function* fetchTopicSagas(isRefreshing, isLoading, isLoadingMore, path, page){
+function* fetchTopicSagas(isRefreshing, isLoading, isLoadingMore, topic, page){
 	try{
-		//console.log('isRefreshing', isRefreshing, 'isLoading', isLoading, 'path:', path);
 
-		const topicList = yield call(fetchTopicList, path, page); 
-		if(!Array.isArray(topicList) ){
-			yield toastShort(topicList);
+		const topicReceived = yield call(fetchTopic, topic, page); 
+		console.log('topicReceived:', topicReceived);
+
+		if( typeof(topicReceived) !== 'object' ){
+			yield toastShort(topicReceived);
 		}else{
-			yield put(receiveTopic(topicList, path));
+			yield put(receiveTopic(topicReceived));
 		}
+
+
 
 	} catch ( error ){
 		console.log('error:', error);
@@ -28,7 +31,7 @@ export function* fetchTopicSagas(isRefreshing, isLoading, isLoadingMore, path, p
 
 export function* watchTopic(){
 	while (true) {
-		const { isRefreshing, isLoading, isLoadingMore, path, page } = yield take(types.REQUEST_TOPIC);
-		yield fork(fetchTopicSagas, isRefreshing, isLoading, isLoadingMore, path, page);
+		const { isRefreshing, isLoading, isLoadingMore, topic, page } = yield take(types.REQUEST_TOPIC);
+		yield fork(fetchTopicSagas, isRefreshing, isLoading, isLoadingMore, topic, page);
 	}
 }

@@ -22,7 +22,7 @@ export function fetchTopicList(path, page=1){
 		const $ = cheerio.load(body);
 		$('.box').children('.item').each(function(i, el){
 			//console.log(i);
-			topic = {}
+			topic = {};
 			topic.member_url = $(this).find('.small strong a').first().attr('href');
 			topic.member_name = $(this).find('.small strong a').first().text();
 			topic.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
@@ -30,7 +30,7 @@ export function fetchTopicList(path, page=1){
 			topic.topic_title = $(this).find('.item_title a').first().text();
 			topic.node_url = $(this).find('.node').first().attr('href');
 			topic.node_name = $(this).find('.node').first().text();
-			topic.date = $(this).find('.small').text().split('•')[2];
+			topic.latest_reply_date = $(this).find('.small').text().split('•')[2];
 			topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
 			topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
 			topic.reply_count = $(this).find('td[width="70"] a').first().text();
@@ -44,6 +44,48 @@ export function fetchTopicList(path, page=1){
         reject(error);
       });
   });
+}
+
+export function fetchTopic(topic, page=1){
+	return new Promise( (resolve, reject) => {
+		console.log('topic', topic, 'page', page);
+		let topicId = topic.topic_url.split('#')[0].split('t/')[1];
+		let url = SITE.HOST + topic.topic_url.split('#')[0] + '?p=' + page;
+		console.log('url', url, topicId);
+
+		fetch(url)
+		.then( (response) => {
+			return response.text();
+		})
+		.then( (body) => {
+			//console.log(body);
+			const $ = cheerio.load(body);
+			topic.topic_content = $('#Main .topic_content .markdown_body').html();
+			if(!topic.topic_content){
+				topic.topic_content = $('#Main .topic_content').html();
+			}
+			topic.vote_count = $('#topic_' + topicId + '_votes').find('a').first().text();
+			topic.click_count = $('#Main .box .header .gray').first().text().split('·')[2];
+			topic.post_date = $('#Main .box .header .gray').first().text().split('·')[1];
+			topic.collect_count =$('#Main .topic_buttons .fr').first().text().split('∙')[1];
+			topic.replyList = [];
+			$('#Main .box').children('.cell').each(function(i, el){
+				let reply = {};
+				reply.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
+				reply.member_name = $(this).find('td[width="auto"] strong a').first().text();
+				reply.member_url = $(this).find('td[width="auto"] strong a').first().attr('href');
+				reply.floor_number = $(this).find('td[width="auto"] .fr span').first().text();
+				reply.content = $(this).find('.reply_content').html();
+				if(reply.content){
+					topic.replyList.push(reply);
+				}
+			});
+			resolve(topic);
+		})
+		.catch( (error) => {
+			reject(error);
+		});
+	});
 }
 
 export function getLoginToken(name, password, url){

@@ -4,7 +4,7 @@ import { View, StatusBar, Navigator,StyleSheet,ScrollView,Text } from 'react-nat
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 
 import Tarbar from '../components/TabBar';
-import TopicContainer from './TopicContainer';
+import TopicListContainer from './TopicListContainer';
 import AccountContainer from './AccountContainer';
 import UserContainer from './UserContainer'
 
@@ -20,8 +20,8 @@ class Main extends React.Component{
 	      		renderTabBar={() => <Tarbar />}
 	      		>
 
-			      <TopicContainer tabLabel="ios-paper" {...this.props}>
-			      </TopicContainer>
+			      <TopicListContainer tabLabel="ios-paper" {...this.props}>
+			      </TopicListContainer>
 
 			      <AccountContainer tabLabel="ios-people" {...this.props}>
 			      </AccountContainer>

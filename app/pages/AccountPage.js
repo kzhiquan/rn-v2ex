@@ -68,7 +68,6 @@ class AccountPage extends React.Component {
   	}
 
 	render() {
-		//console.log('render account', this.props);
 		const props = this.props;
 		const { navigator, account } = this.props;
 		var rightButtonConfig = {

@@ -27,7 +27,7 @@ let rowCount = 0;
 let needLoadMore = false;
 
 
-class MyReplyPage extends React.Component {
+class MyReplyListPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -161,6 +161,6 @@ const styles = StyleSheet.create({
 });
 
 
-export default MyReplyPage;
+export default MyReplyListPage;
 
 

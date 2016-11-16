@@ -5,7 +5,7 @@ import { View, StatusBar, Navigator } from 'react-native';
 
 import Main from './Main.js';
 import AccountContainer from './AccountContainer';
-import MyTopicContainer from './MyTopicContainer'
+import MyTopicListContainer from './MyTopicListContainer'
 import TestPage from '../pages/TestPage'
 
 

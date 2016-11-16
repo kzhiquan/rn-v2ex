@@ -6,8 +6,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import { toastShort } from '../utils/ToastUtil';
 import AccountContainer from '../containers/AccountContainer';
-import MyTopicContainer from '../containers/MyTopicContainer';
-import MyReplyContainer from '../containers/MyReplyContainer';
+import MyTopicListContainer from '../containers/MyTopicListContainer';
+import MyReplyListContainer from '../containers/MyReplyListContainer';
 
 
 class UserPage extends React.Component {
@@ -59,12 +59,12 @@ class UserPage extends React.Component {
 
 		if( item.name === '我的主题'){
 			navigator.push({
-				component : MyTopicContainer,
+				component : MyTopicListContainer,
 				name : 'My Topic'
 			})
 		}else{
 			navigator.push({
-				component : MyReplyContainer,
+				component : MyReplyListContainer,
 				name : 'My Reply'
 			})
 		}

@@ -194,6 +194,10 @@ curl https://www.v2ex.com/api/topics/show.json?node_id=1
 curl https://www.v2ex.com/api/topics/show.json?node_name=v2ex
 curl https://www.v2ex.com/api/topics/show.json?username=Livid
 
+
+curl https://www.v2ex.com/api/topics/show.json?id=320744
+curl https://www.v2ex.com/api/replies/show.json?topic_id=320744
+
 ### Create an topic
 
 /api/topics/create.json
