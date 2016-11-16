@@ -12,6 +12,7 @@ import {
   Image,
   ActivityIndicator,
   RecyclerViewBackedScrollView,
+  Dimensions,
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
@@ -27,6 +28,9 @@ import VXModal from '../components/VXModal';
 let canLoadMore;
 let page = 1;
 let loadMoreTime = 0;
+
+const maxHeight = Dimensions.get('window').height;
+const maxWidth = Dimensions.get('window').width;
 
 class TopicPage extends React.Component {
   constructor(props) {
@@ -65,46 +69,58 @@ class TopicPage extends React.Component {
   }
 
   _renderNode(node, index, parent, type) {
-    //console.log(node, index, parent, type);
+    console.log(node.name, index, node.data);
+    if (node.name === 'img') {
+        var uri = node.attribs.src;
+        console.log('uri', uri);
+        return (
+                <Image 
+                  key = {uri}
+                  source={{uri:uri}} 
+                  style={{
+                    width:maxWidth-30,
+                    height:maxWidth-30,
+                    resizeMode: Image.resizeMode.contain}} />
+        )
+    }
   }
 
   _onLinkPress(url){
-    //console.log('url', url);
+    console.log('url', url);
   }
 
   renderItem(item, sectionID, rowID, highlightRow){
     const { navigator } = this.props;
     if(sectionID == 'topic'){
-      var htmlContent = '<div>' + item.topic_content + '</div>';
-      console.log('htmlContent:', htmlContent);
       return (
-        <View>
-          <HtmlRender
-            value={htmlContent}
+        <View style={styles.containerTopic}>
+          <View style={styles.topicHeader}><Text style={{fontWeight:'bold'}}>{item.topic_title}</Text></View>
+          <HTMLView
+            value={'<div>' + item.topic_content + '</div>'}
             stylesheet={topicTitleStyle}
             onLinkPress={this._onLinkPress.bind(this)}
             renderNode={this._renderNode}
           />
-        </View>
-      );
-      /*return (
-        <View style={styles.containerTopic}>
-          <View style={styles.topicHeader}><Text style={{fontWeight:'bold'}}>{item.topic_title}</Text></View>
-          <View style={styles.topicBody}><Text>{item.topic_content}</Text></View>
           <View style={styles.topicFooter}>
             <Text style={{fontWeight:'bold'}}>{item.click_count}</Text>
             <Text style={{fontWeight:'bold'}}>{item.collect_count}</Text>
             <Text style={{fontWeight:'bold'}}>{item.vote_count}</Text>
           </View>
         </View>
-      );*/
+      );
     }
+
+    //console.log('item', item);
 
     return (
       <View style={styles.containerReply}>
         <Image style={styles.replyHeader} source={{uri:item.member_avatar}} />
         <View style={styles.replyBody}>
-          <Text>{item.content}</Text>
+          <HtmlRender
+            value={'<div>' + item.content + '</div>'}
+            stylesheet={topicTitleStyle}
+            onLinkPress={this._onLinkPress.bind(this)}
+          />
           <View style={styles.replyBodyDetail}>
             <Text>{item.member_name}</Text>
           </View>
@@ -156,7 +172,7 @@ class TopicPage extends React.Component {
 
   render() {
     const { topic, route } = this.props;
-    console.log('render TopicPage');
+    //console.log('render TopicPage');
     if (topic.isLoading){
       return <LoadingView />
     }
@@ -188,7 +204,7 @@ class TopicPage extends React.Component {
       'reply' : replyRows,
     }
 
-    console.log('rows',rows,topic);
+    //console.log('rows',rows,topic);
     return (
       <View>
         <NavigationBar
@@ -286,9 +302,12 @@ const topicTitleStyle = StyleSheet.create({
     fontWeight: '300',
     color: '#FF3366', // pink links
   },
-  p: {
-    color: 'blue',
-  }
+  img: {
+    width: 375 - 30,
+    height: 375 - 30,
+    resizeMode: Image.resizeMode.contain
+  },
+
 });
 
 export default TopicPage;
