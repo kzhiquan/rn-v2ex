@@ -10,10 +10,10 @@ import { fetchMyTopic, fetchMyReply, login } from '../utils/SiteUtil'
 
 
 
-function* fetchMyTopicSagas(myTopicUrl){
+function* fetchMyTopicSagas(myTopicUrl, page){
 	try{
 
-		const result = yield call(fetchMyTopic, myTopicUrl); 
+		const result = yield call(fetchMyTopic, myTopicUrl,page); 
 
 		console.log('result', result);
 
@@ -31,16 +31,17 @@ function* fetchMyTopicSagas(myTopicUrl){
 
 export function* watchAuthTopic(){
 	while (true) {
-		const { user } = yield take([types.REQUEST_MY_TOPIC, types.REFRESH_MY_TOPIC]);
-		yield fork(fetchMyTopicSagas, user.member_url);
+		const { user, page } = yield take([types.REQUEST_MY_TOPIC, types.REFRESH_MY_TOPIC, types.REQUEST_MORE_MY_TOPIC]);
+		//console.log('user', 'page');
+		yield fork(fetchMyTopicSagas, user.member_url, page);
 	}
 }
 
 
-function* fetchMyReplySagas(myReplyUrl){
+function* fetchMyReplySagas(myReplyUrl, page){
 	try{
 
-		const result = yield call(fetchMyReply, myReplyUrl); 
+		const result = yield call(fetchMyReply, myReplyUrl, page); 
 
 		console.log('result', result);
 
@@ -57,8 +58,8 @@ function* fetchMyReplySagas(myReplyUrl){
 
 export function* watchAuthReply(){
 	while (true) {
-		const { user } = yield take([types.REQUEST_MY_REPLY, types.REFRESH_MY_REPLY]);
-		yield fork(fetchMyReplySagas, user.member_url);
+		const { user, page } = yield take([types.REQUEST_MY_REPLY, types.REFRESH_MY_REPLY, types.REQUEST_MORE_MY_REPLY]);
+		yield fork(fetchMyReplySagas, user.member_url, page);
 	}
 }
 

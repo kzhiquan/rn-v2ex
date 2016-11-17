@@ -1,8 +1,8 @@
-var React = require('react-native')
-var {
+import  React from 'react'
+import {
   Image,
   Dimensions,
-} = React
+} from 'react-native'
 
 var {width} = Dimensions.get('window')
 
@@ -20,6 +20,7 @@ var ResizableImage = React.createClass({
   },
   componentDidMount: function() {
     //avoid repaint if width/height is given
+
     if (this.props.style.width || this.props.style.height) {
       return
     }

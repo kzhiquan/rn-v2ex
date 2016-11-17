@@ -57,3 +57,19 @@ export function receiveMyReply(myReply){
 		myReply : myReply
 	}
 }
+
+export function requestMoreMyTopic(user, page){
+	return {
+		type : types.REQUEST_MORE_MY_TOPIC,
+		user: user,
+		page,
+	}
+}
+
+export function requestMoreMyReply(user, page){
+	return {
+		type : types.REQUEST_MORE_MY_REPLY,
+		user: user,
+		page,
+	}
+}

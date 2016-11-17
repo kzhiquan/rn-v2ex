@@ -12,12 +12,14 @@ import {
   Image,
   ActivityIndicator,
   RecyclerViewBackedScrollView,
+  TouchableOpacity,
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
 
 import LoadingView from '../components/LoadingView';
 import AccountContainer from '../containers/AccountContainer';
+import TopicContainer from '../containers/TopicContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
 
@@ -37,42 +39,55 @@ class NodeTopicListPage extends React.Component {
     this.renderFooter = this.renderFooter.bind(this);
     this.onEndReached = this.onEndReached.bind(this);
     this.onScroll = this.onScroll.bind(this);
+    page = 1;
     canLoadMore = false;
   }
 
   componentWillMount() {
-    console.log("componentWillMount");
+    //console.log("componentWillMount");
     const { topicListActions } = this.props;
   }
 
   componentDidMount() {
-    console.log("componentDidMount");
+    //console.log("componentDidMount");
     const { topicListActions, route } = this.props;
     topicListActions.requestTopicList(false, true, false, route.node.path);
   }
 
   onRefresh(){
-    console.log('onRefresh');
+    //console.log('onRefresh');
     canLoadMore = false;
     const { topicListActions, route } = this.props;
     topicListActions.requestTopicList(true, false, false, route.node.path);
   }
 
+  _topicClick(){
+    const { topic, navigator } = this;
+    navigator.push({
+      component : TopicContainer,
+      name : 'Topic',
+      topic : topic,
+    });
+  }
+
   renderItem(topic) {
+    const { navigator } = this.props;
     return (
-      <View style={styles.containerItem}>
-        <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
-        <View style={styles.itemBody}>
-          <Text>{topic.topic_title}</Text>
-          <View style={styles.itemBodyDetail}>
-            <Text>{topic.node_name}</Text>
-            <Text>{topic.member_name}</Text>
-            <Text>{topic.date}</Text>
-            <Text>{topic.latest_reply_member_name}</Text>
+      <TouchableOpacity onPress={this._topicClick} topic={topic} navigator={navigator}>
+        <View style={styles.containerItem}>
+          <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
+          <View style={styles.itemBody}>
+            <Text>{topic.topic_title}</Text>
+            <View style={styles.itemBodyDetail}>
+              <Text>{topic.node_name}</Text>
+              <Text>{topic.member_name}</Text>
+              <Text>{topic.date}</Text>
+              <Text>{topic.latest_reply_member_name}</Text>
+            </View>
           </View>
+          <Text style={styles.itemFooter}>{topic.reply_count}</Text>
         </View>
-        <Text style={styles.itemFooter}>{topic.reply_count}</Text>
-      </View>
+      </TouchableOpacity>
     )
   }
 

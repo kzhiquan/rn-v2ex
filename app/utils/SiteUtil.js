@@ -48,10 +48,10 @@ export function fetchTopicList(path, page=1){
 
 export function fetchTopic(topic, page=1){
 	return new Promise( (resolve, reject) => {
-		console.log('topic', topic, 'page', page);
+		//console.log('topic', topic, 'page', page);
 		let topicId = topic.topic_url.split('#')[0].split('t/')[1];
 		let url = SITE.HOST + topic.topic_url.split('#')[0] + '?p=' + page;
-		console.log('url', url, topicId);
+		//console.log('url', url, topicId);
 
 		fetch(url)
 		.then( (response) => {
@@ -59,6 +59,7 @@ export function fetchTopic(topic, page=1){
 		})
 		.then( (body) => {
 			//console.log(body);
+			//console.log('page', page, 'topic', topic);
 			const $ = cheerio.load(body);
 			topic.topic_content = $('#Main .topic_content .markdown_body').html();
 			if(!topic.topic_content){
@@ -68,7 +69,13 @@ export function fetchTopic(topic, page=1){
 			topic.click_count = $('#Main .box .header .gray').first().text().split('·')[2];
 			topic.post_date = $('#Main .box .header .gray').first().text().split('·')[1];
 			topic.collect_count =$('#Main .topic_buttons .fr').first().text().split('∙')[1];
-			topic.replyList = [];
+			topic.reply_count = $('#Main .box .cell .gray').first().text().split('回复')[0].replace(' ', '');
+
+			if(page == 1){
+				topic.replyList = [];
+			}
+
+			let newReplyList = [];
 			$('#Main .box').children('.cell').each(function(i, el){
 				let reply = {};
 				reply.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
@@ -77,9 +84,30 @@ export function fetchTopic(topic, page=1){
 				reply.floor_number = $(this).find('td[width="auto"] .fr span').first().text();
 				reply.content = $(this).find('.reply_content').html();
 				if(reply.content){
-					topic.replyList.push(reply);
+					newReplyList.push(reply);
 				}
 			});
+
+
+			//add new replies
+			if(page == 1){
+				topic.replyList = topic.replyList.concat(newReplyList);
+			}else{
+				let currentCount = topic.replyList.length;
+				let currentLastFloorNumber = parseInt(topic.replyList[currentCount-1].floor_number);
+				let index = newReplyList.length-1;
+				for( ; index>=0; index--){
+					let reply = newReplyList[index];
+					if(parseInt(reply.floor_number) == currentLastFloorNumber){
+						break;
+					}
+				}
+
+				let incrementReplyList = newReplyList.slice(index+1);
+				topic.replyList = topic.replyList.concat(incrementReplyList);
+			}
+
+			//console.log('page', page, 'topic', topic);
 			resolve(topic);
 		})
 		.catch( (error) => {
@@ -249,7 +277,7 @@ export function logout(url){
 }
 
 
-export function fetchMyTopic(path, page){
+export function fetchMyTopic(path, page=1){
 	let myTopicUrl = SITE.HOST + path + '/topics?p=' + page;
 	console.log('myTopicUrl:', myTopicUrl);
 	return new Promise( (resolve, reject) => {
@@ -263,7 +291,7 @@ export function fetchMyTopic(path, page){
 		})
 		.then((body) => {
 			//console.log('body', body);
-			let topics = []
+			let topicList = []
 			const $ = cheerio.load(body);
 			$('.box').children('.item').each(function(i, el){
 				//console.log(i);
@@ -276,7 +304,7 @@ export function fetchMyTopic(path, page){
 				topic.node_name = $(this).find('.node').first().text();
 
 				//console.log($(this).find('.small'), $(this).find('.small strong a'), $(this).find('td[width="70"] a'));
-				topic.date = $(this).find('.small').text().split('•')[2];
+				topic.latest_reply_date = $(this).find('.small').text().split('•')[2];
 
 				topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
 				topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
@@ -284,13 +312,13 @@ export function fetchMyTopic(path, page){
 				topic.reply_count = $(this).find('td[width="70"] a').first().text();
 				topic.reply_url = $(this).find('td[width="70"] a').first().attr('href');
 
-				topics.push(topic);
+				topicList.push(topic);
 			});
 			//console.log('topics length:', topics.length);
 			let total_count = $('#Main .header .fr .gray').first().text();
 
 			const result = {
-				topics : topics,
+				topicList : topicList,
 				total_count : total_count,
 			}
 			resolve(result);
@@ -304,6 +332,8 @@ export function fetchMyTopic(path, page){
 
 
 export function fetchMyReply(path, page=1){
+	path = '/member/akaayy';
+	page = 3;
 	let myTopicUrl = SITE.HOST + path + '/replies?p=' + page;
 	console.log('myTopicUrl:', myTopicUrl);
 	return new Promise( (resolve, reject) => {
@@ -317,28 +347,23 @@ export function fetchMyReply(path, page=1){
 		})
 		.then((body) => {
 			//console.log('body', body);
-			let replies = [];
+			let replyList = [];
 			const $ = cheerio.load(body);
 			$('.box').children('.dock_area').each(function(i, el){
 				let reply = {};
+				reply.topic = {};
 				reply.date = $(this).find('.fr span').first().text();
-				reply.title = $(this).find('.gray').first().text();
-				reply.title_url = $(this).find('.gray a').first().attr('href');
-				reply.content = $(this).next('div').find('.reply_content').first().text();
-				reply.content_at = [];
-				$(this).next('div').find('.reply_content a').each(function(){
-					content_at_who = {};
-					content_at_who.name = $(this).text();
-					content_at_who.url = $(this).attr('href');
-					reply.content_at.push(content_at_who);
-				});
-
-				replies.push(reply);
+				reply.topic.topic_title = $(this).find('.gray').first().text();
+				reply.topic.topic_url = $(this).find('.gray a').first().attr('href');
+				reply.content = $(this).next('div').find('.reply_content').first().html();
+				if(reply.topic.topic_title){
+					replyList.push(reply);
+				}
 			})
 
 			let total_count = $('#Main .header .fr .gray').first().text();
 			const result = {
-				replies : replies,
+				replyList : replyList,
 				total_count : total_count,
 			}
 			resolve(result);

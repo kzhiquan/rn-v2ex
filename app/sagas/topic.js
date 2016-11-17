@@ -11,7 +11,7 @@ function* fetchTopicSagas(isRefreshing, isLoading, isLoadingMore, topic, page){
 	try{
 
 		const topicReceived = yield call(fetchTopic, topic, page); 
-		console.log('topicReceived:', topicReceived);
+		//console.log('topicReceived:', topicReceived);
 
 		if( typeof(topicReceived) !== 'object' ){
 			yield toastShort(topicReceived);

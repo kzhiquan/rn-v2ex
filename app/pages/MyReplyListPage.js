@@ -16,15 +16,16 @@ import {
 
 
 import NavigationBar from 'react-native-navbar';
-
+import HTMLView from 'react-native-htmlview';
+import HtmlRender from 'react-native-html-render';
 
 import LoadingView from '../components/LoadingView'
 import { toastShort } from '../utils/ToastUtil';
 
 
-let page = 0;
-let rowCount = 0;
-let needLoadMore = false;
+let canLoadMore;
+let page = 1;
+let loadMoreTime = 0;
 
 
 class MyReplyListPage extends React.Component {
@@ -37,10 +38,12 @@ class MyReplyListPage extends React.Component {
     this.renderFooter = this.renderFooter.bind(this);
     this.onEndReached = this.onEndReached.bind(this);
     this.onScroll = this.onScroll.bind(this);
+    page = 1;
+    canLoadMore = false;
   }
 
   componentWillMount() {
-    console.log("componentWillMount");
+    //console.log("componentWillMount");
   }
 
   componentDidMount() {
@@ -49,21 +52,47 @@ class MyReplyListPage extends React.Component {
   }
 
   onRefresh(){
+    canLoadMore = false;
     const { authActions,auth } = this.props;
     authActions.refreshMyReply(auth.user);
   }
 
-  renderItem(reply) {
-    //console.log('reply:',reply);
-    if(!reply.title){
-      return null;
+  _renderNode(node, index, parent, type) {
+    //console.log('node:',node);
+    if (node.name === 'img') {
+        let uri = node.attribs.src;
+        if(uri.indexOf('http') == -1){
+          uri = 'http:' + uri;
+        }
+
+        return (
+                <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
+                  <Image 
+                    source={{uri:uri}} 
+                    style={{
+                      width:maxWidth-30,
+                      height:maxWidth-30,
+                      resizeMode: Image.resizeMode.contain}} />
+                </View>
+                /*<ResizableImage 
+                    source={{uri:uri}}
+                    style={{}} />*/
+        )
+
     }
-    
+  }
+
+  _onLinkPress(url){
+    console.log('url', url);
+  }
+
+  renderItem(reply) {
+    console.log('reply:',reply);    
     return (
       <View style={styles.containerItem}>
 
         <View>
-          <View><Text>{reply.date}:{reply.title}</Text></View>
+          <View><Text>{reply.date}:{reply.topic.topic_title}</Text></View>
         </View>
 
         <View>
@@ -75,13 +104,36 @@ class MyReplyListPage extends React.Component {
   }
 
   renderFooter(){
+    const { auth } = this.props;
+    if(auth.isLoadingMore){
+      return (
+        <View style={styles.footerContainer} >
+          <ActivityIndicator size="small" color="#3e9ce9" />
+          <Text style={styles.footerText}>
+            数据加载中……
+          </Text>
+        </View>
+      );
+    }
   }
 
+
   onEndReached() {
+    const time = Date.parse(new Date()) / 1000;
+    if (canLoadMore && time - loadMoreTime > 1) {
+      canLoadMore = false;
+      loadMoreTime = Date.parse(new Date()) / 1000;
+
+      const { authActions, auth } = this.props;
+      page += 1;
+      authActions.requestMoreMyReply(auth.user, page);
+    }
   }
 
   onScroll(){
-    console.log('onScroll');
+    if (!canLoadMore) {
+      canLoadMore = true;
+    }
   }
 
   render() {
@@ -99,8 +151,8 @@ class MyReplyListPage extends React.Component {
     };
 
     let rows = []
-    if(auth.myReply && auth.myReply.replies){
-      rows = auth.myReply.replies;
+    if(auth.myReply && auth.myReply.replyList){
+      rows = auth.myReply.replyList;
     }
 
     return (
@@ -156,6 +208,19 @@ const styles = StyleSheet.create({
   itemFooter:{
     color:'blue',
     paddingTop: 18
+  },
+
+  footerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 5
+  },
+  footerText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 10
   },
 
 });

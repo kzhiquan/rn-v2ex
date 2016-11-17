@@ -1,6 +1,7 @@
 import {REHYDRATE} from 'redux-persist/constants'
 import * as types from '../constants/ActionTypes'
 
+//const replyCountPerPage = 100;
 
 const initialState = {
 	isRefreshing : false,
@@ -24,7 +25,7 @@ export default function topic(state = initialState, action){
 				isRefreshing : false,
 				isLoading : false,
 				isLoadingMore : false,
-				topic : state.isLoadingMore ? loadMore(state, action) : combine(state, action),
+				topic : action.topic,
 			} );
 
 		case REHYDRATE:
@@ -38,17 +39,6 @@ export default function topic(state = initialState, action){
 		default:
 			return state;
 	}
-}
-
-
-function combine(state, action) {
-	state.topic = action.topic;
-	return state.topic;
-}
-
-function loadMore(state, action) {
-	action.topic.replyList = state.topic.replyList.concat(action.topic.replyList);
-  	return action.topic;
 }
 
 

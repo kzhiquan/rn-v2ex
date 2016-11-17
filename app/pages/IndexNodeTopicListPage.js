@@ -75,7 +75,6 @@ class IndexNodeTopicListPage extends React.Component {
           <Text style={styles.itemFooter}>{topic.reply_count}</Text>
         </View>
       </TouchableOpacity>
-
     )
   }
 

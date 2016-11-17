@@ -11,7 +11,8 @@ import {
   ListView,
   Image,
   ActivityIndicator,
-  RecyclerViewBackedScrollView
+  RecyclerViewBackedScrollView,
+  TouchableOpacity
 } from 'react-native';
 
 
@@ -20,12 +21,13 @@ import NavigationBar from 'react-native-navbar';
 
 import LoadingView from '../components/LoadingView'
 import AccountContainer from '../containers/AccountContainer'
+import TopicContainer from '../containers/TopicContainer'
 import { toastShort } from '../utils/ToastUtil';
 
 
-let page = 0;
-let rowCount = 0;
-let needLoadMore = false;
+let canLoadMore;
+let page = 1;
+let loadMoreTime = 0;
 
 
 class MyTopicListPage extends React.Component {
@@ -38,53 +40,101 @@ class MyTopicListPage extends React.Component {
     this.renderFooter = this.renderFooter.bind(this);
     this.onEndReached = this.onEndReached.bind(this);
     this.onScroll = this.onScroll.bind(this);
+
+    canLoadMore = false;
+    page = 1;
   }
 
   componentWillMount() {
-    console.log("componentWillMount");
+    //console.log("componentWillMount");
   }
 
   componentDidMount() {
-    console.log("componentDidMount");
+    //console.log("componentDidMount");
     const { authActions,auth } = this.props;
     authActions.requestMyTopic(auth.user);
   }
 
   onRefresh(){
+    canLoadMore = false;
     const { authActions,auth } = this.props;
     authActions.refreshMyTopic(auth.user);
   }
 
+  _topicClick(){
+    const { topic, navigator } = this;
+    navigator.push({
+      component : TopicContainer,
+      name : 'Topic',
+      topic : topic,
+    });
+  }
+
   renderItem(topic) {
-    console.log('topic:',topic);
+    //console.log('topic:',topic);
+    const { navigator } = this.props;
     return (
-      <View style={styles.containerItem}>
-        <View style={styles.itemBody}>
-          <Text>{topic.topic_title}</Text>
-          <View style={styles.itemBodyDetail}>
-            <Text>{topic.node_name}</Text>
-            <Text>{topic.member_name}</Text>
-            <Text>{topic.date}</Text>
-            <Text>{topic.latest_reply_member_name}</Text>
+      <TouchableOpacity onPress={this._topicClick} topic={topic} navigator={navigator}>
+        <View style={styles.containerItem}>
+          <View style={styles.itemBody}>
+            <Text>{topic.topic_title}</Text>
+            <View style={styles.itemBodyDetail}>
+              <Text>{topic.node_name}</Text>
+              <Text>{topic.member_name}</Text>
+              <Text>{topic.date}</Text>
+              <Text>{topic.latest_reply_member_name}</Text>
+            </View>
           </View>
+          <Text style={styles.itemFooter}>{topic.reply_count}</Text>
         </View>
-        <Text style={styles.itemFooter}>{topic.reply_count}</Text>
-      </View>
+      </TouchableOpacity>
     )
   }
 
   renderFooter(){
 
+    const { auth } = this.props;
+    if(auth.isLoadingMore){
+      return (
+        <View style={styles.footerContainer} >
+          <ActivityIndicator size="small" color="#3e9ce9" />
+          <Text style={styles.footerText}>
+            数据加载中……
+          </Text>
+        </View>
+      );
+    }
+    
+  }
 
+  _isCurrentPageFilled(countPerPage=20){
+    const { auth } = this.props;
+
+    if(auth.myTopic.topicList.length % countPerPage === 0){
+      return true;
+    }else{
+      return false;
+    }
   }
 
   onEndReached() {
+    const time = Date.parse(new Date()) / 1000;
+    if (canLoadMore && time - loadMoreTime > 1) {
+      canLoadMore = false;
+      loadMoreTime = Date.parse(new Date()) / 1000;
 
-
+      const { authActions, auth } = this.props;
+      if(this._isCurrentPageFilled()){
+        page += 1;
+      }
+      authActions.requestMoreMyTopic(auth.user, page);
+    }
   }
 
   onScroll(){
-    console.log('onScroll');
+    if (!canLoadMore) {
+      canLoadMore = true;
+    }
   }
 
   render() {
@@ -102,8 +152,8 @@ class MyTopicListPage extends React.Component {
     };
 
     let rows = []
-    if(auth.myTopic && auth.myTopic.topics){
-      rows = auth.myTopic.topics;
+    if(auth.myTopic && auth.myTopic.topicList){
+      rows = auth.myTopic.topicList;
     }
 
     return (
@@ -120,7 +170,7 @@ class MyTopicListPage extends React.Component {
                 renderFooter={this.renderFooter}
                 onEndReached={this.onEndReached}
                 onScroll={this.onScroll}
-                onEndReachedThreshold={-50}
+                onEndReachedThreshold={-20}
                 enableEmptySections={true}
                 removeClippedSubviews = {false}
                 renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
@@ -159,6 +209,19 @@ const styles = StyleSheet.create({
   itemFooter:{
     color:'blue',
     paddingTop: 18
+  },
+
+  footerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 5
+  },
+  footerText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 10
   },
 
 });
