@@ -15,7 +15,7 @@ function* fetchMyTopicSagas(myTopicUrl, page){
 
 		const result = yield call(fetchMyTopic, myTopicUrl,page); 
 
-		console.log('result', result);
+		//console.log('result', result);
 
 		yield put(receiveMyTopic(result));
 		//yield put(receiveMyTopic());

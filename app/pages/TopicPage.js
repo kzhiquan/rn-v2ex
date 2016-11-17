@@ -63,6 +63,7 @@ class TopicPage extends React.Component {
   onRefresh(){
     //console.log('onRefresh');
     canLoadMore = false;
+    page = 1;
     const { topicActions, route } = this.props;
     topicActions.requestTopic(true, false, false, route.topic);
   }

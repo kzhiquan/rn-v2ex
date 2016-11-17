@@ -11,7 +11,8 @@ import {
   ListView,
   Image,
   ActivityIndicator,
-  RecyclerViewBackedScrollView
+  RecyclerViewBackedScrollView,
+  TouchableOpacity
 } from 'react-native';
 
 
@@ -19,6 +20,7 @@ import NavigationBar from 'react-native-navbar';
 import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
 
+import TopicContainer from '../containers/TopicContainer'
 import LoadingView from '../components/LoadingView'
 import { toastShort } from '../utils/ToastUtil';
 
@@ -53,6 +55,7 @@ class MyReplyListPage extends React.Component {
 
   onRefresh(){
     canLoadMore = false;
+    page = 1;
     const { authActions,auth } = this.props;
     authActions.refreshMyReply(auth.user);
   }
@@ -86,20 +89,34 @@ class MyReplyListPage extends React.Component {
     console.log('url', url);
   }
 
-  renderItem(reply) {
-    console.log('reply:',reply);    
+  _topicClick(){
+    const { topic, navigator } = this;
+    navigator.push({
+      component : TopicContainer,
+      name : 'Topic',
+      topic : topic,
+    });
+  }
+
+  renderItem(reply, sectionID, rowID, highlightRow){   
+    const { navigator } = this.props;
     return (
-      <View style={styles.containerItem}>
 
-        <View>
-          <View><Text>{reply.date}:{reply.topic.topic_title}</Text></View>
+      <TouchableOpacity onPress={this._topicClick} topic={reply.topic} navigator={navigator}>
+        <View style={styles.containerItem}>
+          <View>
+            <View><Text>{reply.date}:{reply.topic.topic_title}</Text></View>
+          </View>
+          <View>
+            <HtmlRender
+              key={`${sectionID}-${rowID}`}
+              value={'<div>' + reply.content + '</div>'}
+              onLinkPress={this._onLinkPress.bind(this)}
+              renderNode={this._renderNode}
+            />
+          </View>
         </View>
-
-        <View>
-          <Text>{reply.content}</Text>
-        </View>
-
-      </View>
+      </TouchableOpacity>
     )
   }
 

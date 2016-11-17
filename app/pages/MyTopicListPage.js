@@ -57,6 +57,7 @@ class MyTopicListPage extends React.Component {
 
   onRefresh(){
     canLoadMore = false;
+    page = 1;
     const { authActions,auth } = this.props;
     authActions.refreshMyTopic(auth.user);
   }

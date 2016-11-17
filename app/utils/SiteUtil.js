@@ -61,6 +61,7 @@ export function fetchTopic(topic, page=1){
 			//console.log(body);
 			//console.log('page', page, 'topic', topic);
 			const $ = cheerio.load(body);
+			topic.topic_title = $('#Main .box .header h1').first().text();
 			topic.topic_content = $('#Main .topic_content .markdown_body').html();
 			if(!topic.topic_content){
 				topic.topic_content = $('#Main .topic_content').html();
@@ -279,7 +280,7 @@ export function logout(url){
 
 export function fetchMyTopic(path, page=1){
 	let myTopicUrl = SITE.HOST + path + '/topics?p=' + page;
-	console.log('myTopicUrl:', myTopicUrl);
+	//console.log('myTopicUrl:', myTopicUrl);
 	return new Promise( (resolve, reject) => {
 
 		fetch(myTopicUrl, {
@@ -332,10 +333,10 @@ export function fetchMyTopic(path, page=1){
 
 
 export function fetchMyReply(path, page=1){
-	path = '/member/akaayy';
-	page = 3;
+	//path = '/member/jianghu521';
+	//page = 3;
 	let myTopicUrl = SITE.HOST + path + '/replies?p=' + page;
-	console.log('myTopicUrl:', myTopicUrl);
+	//console.log('myTopicUrl:', myTopicUrl);
 	return new Promise( (resolve, reject) => {
 
 		fetch(myTopicUrl, {

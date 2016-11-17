@@ -94,11 +94,14 @@ function combineReply(state, action) {
 }
 
 function loadMoreReply(state, action) {
-
-	if( parseInt(state.myReply.total_count) > state.myReply.replyList.length + action.myReply.replyList.length){
+	let currentCount = state.myReply.replyList.length;
+	let incrementCount = action.myReply.replyList.length;
+	let currentLastReply = state.myReply.replyList[currentCount-1];
+	let increntLastReply = action.myReply.replyList[incrementCount-1];
+	if( currentLastReply.topic.topic_url != increntLastReply.topic.topic_url ||
+		currentLastReply.content != increntLastReply.content){
 		state.myReply.replyList = state.myReply.replyList.concat(action.myReply.replyList);
 	}
-	
   	return state.myReply;
 }
 
