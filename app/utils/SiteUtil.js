@@ -410,22 +410,27 @@ export function fetchUser(path){
 			return response.text();
 		})
 		.then((body) => {
-			console.log('body', body);
+			//console.log('body', body);
 			const $ = cheerio.load(body);
 			user = {};
 			user.member_avatar = $('#Main .box').eq(1).children().first().find('img').first().attr('src');
-			user.member_name = $('#Main .box').eq(1).find('h1').text();
+			user.member_name = $('#Main .box .cell h1').first().text();
 			user.member_url = path;
-			user.member_intro = $('#Main .box').eq(1).children().first().find('.bigger').text();
-			user.member_num = $('#Main .box').eq(1).children().first().find('.gray').text().split('，')[0];
-			user.member_date = $('#Main .box').eq(1).children().first().find('.gray').text().split('，')[1];
-			user.active_num = $('#Main .box').eq(1).children().first().find('.gray a').text();
-			user.active_url = $('#Main .box').eq(1).children().first().find('.gray a').attr('href');
+			//user.member_intro = $('#Main .box').eq(1).children().first().find('.bigger').text();
+			user.member_num = $('#Main .box .cell table tbody tr td').eq(3)
+			user.member_date = $('#Main .box .cell .gray').eq(1).first().text().split('，')[1];
+			/*user.active_num = $('#Main .box .cell').eq(1).find('.gray a').first().text();
+			user.active_url = $('#Main .box .cell').eq(1).find('.gray a').first().attr('href');
 			user.linkList = [];
-			$('#Main .box').eq(1).children().eq(2).find('a').each(function(){
+			$('#Main .box .markdown_body').first().children('a').each(function(){
 				let link = {};
-				$(this).attr('')
-			})
+				link.url = $(this).attr('href');
+				link.img = SITE.HOST + $(this).find('img').src('src');
+				link.name = $(this).text();
+				user.linkList.push(link);
+			});
+			user.words = $('#Main .box .cell').eq(3).text();*/
+			resolve(user);
 		})
 		.catch( (error) => {
 			console.log(error);

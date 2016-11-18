@@ -14,16 +14,16 @@ function* fetchTopicSagas(isRefreshing, isLoading, isLoadingMore, topic, page){
 		//console.log('topicReceived:', topicReceived);
 
 		if( typeof(topicReceived) !== 'object' ){
-			yield toastShort(topicReceived);
+			toastShort(topicReceived);
+			yield put(receiveTopic());
 		}else{
 			yield put(receiveTopic(topicReceived));
 		}
 
-
-
 	} catch ( error ){
 		console.log('error:', error);
-		yield toastShort('网络发生错误，请重试');
+		toastShort('网络发生错误，请重试');
+		yield put(receiveTopic());
 	}
 }
 

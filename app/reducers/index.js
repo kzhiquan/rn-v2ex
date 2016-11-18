@@ -7,6 +7,7 @@ import auth from './auth'
 import account from './account'
 import topic from './topic'
 import nodeList from './nodeList'
+import user from './user'
 
 const rootReducer = combineReducers({
 	test,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
 	auth,
 	account,
 	nodeList,
+	user,
 });
 
 export default rootReducer;

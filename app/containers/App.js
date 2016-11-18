@@ -7,6 +7,7 @@ import Main from './Main.js';
 import AccountContainer from './AccountContainer';
 import MyTopicListContainer from './MyTopicListContainer';
 import NodeListContainer from './NodeListContainer';
+import UserContainer from './UserContainer';
 import TestPage from '../pages/TestPage';
 
 
@@ -31,11 +32,12 @@ class App extends React.Component{
 					style={{flex : 1}}
 					renderScene={this.renderScene}
 					initialRoute={{
-						component : Main,
+						//component : Main,
 						//component : AccountContainer,
 						//component : MyTopicContainer,
 						//component: TestPage,
 						//component : NodeListContainer,
+						component : UserContainer,
 						name : 'Topic'
 					}}
 				/>

@@ -42,7 +42,6 @@ class NodeListPage extends React.Component {
 
   _nodeClick(){
     const { node, navigator } = this;
-    //console.log('node:', node);
     navigator.push({
       component: NodeTopicListContainer,
       name : node.name,
