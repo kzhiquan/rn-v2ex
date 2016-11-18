@@ -5,8 +5,9 @@ import { View, StatusBar, Navigator } from 'react-native';
 
 import Main from './Main.js';
 import AccountContainer from './AccountContainer';
-import MyTopicListContainer from './MyTopicListContainer'
-import TestPage from '../pages/TestPage'
+import MyTopicListContainer from './MyTopicListContainer';
+import NodeListContainer from './NodeListContainer';
+import TestPage from '../pages/TestPage';
 
 
 class App extends React.Component{
@@ -34,6 +35,7 @@ class App extends React.Component{
 						//component : AccountContainer,
 						//component : MyTopicContainer,
 						//component: TestPage,
+						//component : NodeListContainer,
 						name : 'Topic'
 					}}
 				/>

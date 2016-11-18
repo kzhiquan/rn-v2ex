@@ -2,11 +2,12 @@
 
 import { fork } from 'redux-saga/effects';
 
-import { watchTest } from './test'
-import { watchTopicList } from './topicList'
-import { watchTopic } from './topic'
-import { watchAccount } from './account'
-import { watchAuthTopic, watchAuthReply, wathChangeUser } from './auth'
+import { watchTest } from './test';
+import { watchTopicList } from './topicList';
+import { watchTopic } from './topic';
+import { watchAccount } from './account';
+import { watchAuthTopic, watchAuthReply, wathChangeUser } from './auth';
+import { watchNodeList } from './nodeList';
 
 export default function* rootSaga(){
 	yield[
@@ -17,5 +18,6 @@ export default function* rootSaga(){
 		fork(watchAuthTopic),
 		fork(watchAuthReply),
 		fork(wathChangeUser),
+		fork(watchNodeList),
 	]
 }

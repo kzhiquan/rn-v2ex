@@ -79,9 +79,9 @@ class NodeTopicListPage extends React.Component {
           <View style={styles.itemBody}>
             <Text>{topic.topic_title}</Text>
             <View style={styles.itemBodyDetail}>
-              <Text>{topic.node_name}</Text>
+              {topic.node_name ? <Text>{topic.node_name}</Text> : null}
               <Text>{topic.member_name}</Text>
-              <Text>{topic.date}</Text>
+              <Text>{topic.latest_reply_date}</Text>
               <Text>{topic.latest_reply_member_name}</Text>
             </View>
           </View>

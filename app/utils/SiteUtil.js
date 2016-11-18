@@ -8,7 +8,7 @@ export function fetchTopicList(path, page=1){
   return new Promise((resolve, reject) => {
 
   	let url = SITE.HOST + path;
-
+  	console.log('url', url);
   	if(path.indexOf('?') == -1){
   		url = SITE.HOST + path + '?p=' + page;
   	}
@@ -18,8 +18,11 @@ export function fetchTopicList(path, page=1){
         return response.text();
       })
       .then((body) => {
-		topics = []
+      	//console.log('body', body);
+		topicList = []
 		const $ = cheerio.load(body);
+
+		//for recent node and index node
 		$('.box').children('.item').each(function(i, el){
 			//console.log(i);
 			topic = {};
@@ -35,10 +38,32 @@ export function fetchTopicList(path, page=1){
 			topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
 			topic.reply_count = $(this).find('td[width="70"] a').first().text();
 			topic.reply_url = $(this).find('td[width="70"] a').first().attr('href');
-			topics.push(topic);
+			topicList.push(topic);
 		});
+		if(topicList.length != 0){
+			resolve(topicList);
+		}
+
+		//for common node
+		$('#TopicsNode').children('.cell').each(function(i, el){
+			topic = {};
+			topic.member_url = $(this).find('.small strong a').first().attr('href');
+			topic.member_name = $(this).find('.small strong a').first().text();
+			topic.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
+			topic.topic_url = $(this).find('.item_title a').first().attr('href');
+			topic.topic_title = $(this).find('.item_title a').first().text();
+			topic.node_url = $(this).find('.node').first().attr('href');
+			topic.node_name = $(this).find('.node').first().text();
+			topic.latest_reply_date = $(this).find('.small').text().split('•')[1];
+			topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
+			topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
+			topic.reply_count = $(this).find('td[width="50"] a').first().text();
+			topic.reply_url = $(this).find('td[width="50"] a').first().attr('href');
+			topicList.push(topic);
+		});
+
 		//console.log('topics length:', topics.length);
-		resolve(topics);
+		resolve(topicList);
       })
       .catch((error) => {
         reject(error);
@@ -360,7 +385,7 @@ export function fetchMyReply(path, page=1){
 				if(reply.topic.topic_title){
 					replyList.push(reply);
 				}
-			})
+			});
 
 			let total_count = $('#Main .header .fr .gray').first().text();
 			const result = {
@@ -375,3 +400,86 @@ export function fetchMyReply(path, page=1){
 		})
 	});	
 }
+
+
+export function fetchCategoryNode(){
+	let url = SITE.HOST;
+	//console.log('url', url);
+	return new Promise( (resolve, reject) => {
+		fetch(url)
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			const $ = cheerio.load(body);
+			let categoryNodeList = [];
+			$('#Main .box').eq(1).children('.cell').each(function(){
+				let nodeList = [];
+				let category = $(this).find('table tr td .fade').first().text();
+				if(category){
+					$(this).find('table tr td a').each(function(){
+						let node = {};
+						node.category = category;
+						node.name = $(this).text();
+						node.path = $(this).attr('href');
+						nodeList.push(node);
+					})
+					categoryNodeList.push({
+						category : category,
+						nodeList : nodeList,
+					})
+				}
+			});
+			//console.log('categoryNodeList', categoryNodeList);
+			resolve(categoryNodeList);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});
+}
+
+export function fetchAllNode(){
+	let url = SITE.HOST + '/planes';
+	//console.log('url', url);
+	return new Promise( (resolve, reject) => {
+		fetch(url)
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			const $ = cheerio.load(body);
+			let allNodes = [];
+			$('#Main .box .inner').children('.item_node').each(function(){
+				node = {};
+				node.name = $(this).text();
+				node.path = $(this).attr('href');
+				allNodes.push(node);
+			})
+
+			//console.log('allNodes:', allNodes);
+			resolve(allNodes);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});
+}
+
+export async function fetchNode(){
+	//let [categoryNodeList, allNode] = await Promise.all([fetchCategoryNode(), fetchAllNode()]);
+	const categoryNodeList = await fetchCategoryNode();
+	const allNode = await fetchAllNode();
+	return {
+		categoryNodeList : categoryNodeList,
+		allNode : allNode,
+	}
+}
+
+
+
+

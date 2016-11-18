@@ -11,15 +11,18 @@ function* fetchTopicListSagas(isRefreshing, isLoading, isLoadingMore, path, page
 	try{
 
 		const topicList = yield call(fetchTopicList, path, page); 
+		console.log('topicList:', topicList);
 		if(!Array.isArray(topicList) ){
-			yield toastShort(topicList);
+			toastShort(topicList);
+			yield put(receiveTopicList());
 		}else{
 			yield put(receiveTopicList(topicList, path));
 		}
 
 	} catch ( error ){
 		console.log('error:', error);
-		yield toastShort('网络发生错误，请重试');
+		toastShort('网络发生错误，请重试');
+		yield put(receiveTopicList());
 	}
 }
 
