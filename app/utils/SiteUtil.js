@@ -401,6 +401,39 @@ export function fetchMyReply(path, page=1){
 	});	
 }
 
+export function fetchUser(path){
+	const url = SITE.HOST + path;
+	console.log('url', url);
+	return new Promise( (resolve, reject) => {
+		fetch(url)
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			console.log('body', body);
+			const $ = cheerio.load(body);
+			user = {};
+			user.member_avatar = $('#Main .box').eq(1).children().first().find('img').first().attr('src');
+			user.member_name = $('#Main .box').eq(1).find('h1').text();
+			user.member_url = path;
+			user.member_intro = $('#Main .box').eq(1).children().first().find('.bigger').text();
+			user.member_num = $('#Main .box').eq(1).children().first().find('.gray').text().split('，')[0];
+			user.member_date = $('#Main .box').eq(1).children().first().find('.gray').text().split('，')[1];
+			user.active_num = $('#Main .box').eq(1).children().first().find('.gray a').text();
+			user.active_url = $('#Main .box').eq(1).children().first().find('.gray a').attr('href');
+			user.linkList = [];
+			$('#Main .box').eq(1).children().eq(2).find('a').each(function(){
+				let link = {};
+				$(this).attr('')
+			})
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});
+}
+
 
 export function fetchCategoryNode(){
 	let url = SITE.HOST;
@@ -471,9 +504,9 @@ export function fetchAllNode(){
 }
 
 export async function fetchNode(){
-	//let [categoryNodeList, allNode] = await Promise.all([fetchCategoryNode(), fetchAllNode()]);
-	const categoryNodeList = await fetchCategoryNode();
-	const allNode = await fetchAllNode();
+	let [categoryNodeList, allNode] = await Promise.all([fetchCategoryNode(), fetchAllNode()]);
+	//const categoryNodeList = await fetchCategoryNode();
+	//const allNode = await fetchAllNode();
 	return {
 		categoryNodeList : categoryNodeList,
 		allNode : allNode,

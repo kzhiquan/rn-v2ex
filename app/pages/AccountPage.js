@@ -52,18 +52,18 @@ class AccountPage extends React.Component {
   			isCurrentAccount = true;
   		}
   		return (
-  		<TouchableOpacity onPress={this.onAccountChange} account={account} accountActions={accountActions}>
-	      <View style={styles.containerItem}>
-	        <Image style={styles.itemHeader} source={{uri:account.avatar_url}} />
-	        <View style={styles.itemBody}>
-	          <Text>{account.name}</Text>
-	        </View>
-	        {isCurrentAccount ? (<View style={styles.itemCurrentAccount}><Text style={{color:'red'}}>正在使用</Text></View>) : null }
-	        <TouchableOpacity onPress={this.onAccountEdit} account={account} navigator={navigator} accountActions={accountActions}>
-				<Icon name="ios-cog" size={36} />
-    		</TouchableOpacity>
-	      </View>
-	    </TouchableOpacity>
+	  		<TouchableOpacity onPress={this.onAccountChange} account={account} accountActions={accountActions}>
+		      <View style={styles.containerItem}>
+		        <Image style={styles.itemHeader} source={{uri:account.avatar_url}} />
+		        <View style={styles.itemBody}>
+		          <Text>{account.name}</Text>
+		        </View>
+		        {isCurrentAccount ? (<View style={styles.itemCurrentAccount}><Text style={{color:'red'}}>正在使用</Text></View>) : null }
+		        <TouchableOpacity onPress={this.onAccountEdit} account={account} navigator={navigator} accountActions={accountActions}>
+					<Icon name="ios-cog" size={36} />
+	    		</TouchableOpacity>
+		      </View>
+		    </TouchableOpacity>
   		);
   	}
 

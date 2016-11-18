@@ -310,6 +310,7 @@ curl https://www.v2ex.com/api/replies/show.json?topic_id=1&page=1&page_size=2
 
 curl https://www.v2ex.com/api/members/show.json?username=Livid
 curl https://www.v2ex.com/api/members/show.json?id=1
+curl https://www.v2ex.com/api/members/show.json?username=kzhiquan
 
 
 ## Login

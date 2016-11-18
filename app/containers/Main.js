@@ -6,7 +6,7 @@ import ScrollableTabView from 'react-native-scrollable-tab-view';
 import Tarbar from '../components/TabBar';
 import TopicListContainer from './TopicListContainer';
 import AccountContainer from './AccountContainer';
-import UserContainer from './UserContainer';
+import AuthContainer from './AuthContainer';
 import NodeListContainer from './NodeListContainer';
 
 
@@ -31,8 +31,8 @@ class Main extends React.Component{
 			          <Text>Notifications</Text>
 			      </ScrollView>
 
-			      <UserContainer tabLabel="ios-person" {...this.props}>
-			      </UserContainer>
+			      <AuthContainer tabLabel="ios-person" {...this.props}>
+			      </AuthContainer>
 
 	    	</ScrollableTabView>
 	    );

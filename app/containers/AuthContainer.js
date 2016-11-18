@@ -2,12 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import UserPage from '../pages/UserPage';
+import AuthPage from '../pages/AuthPage';
 
-class UserContainer extends React.Component {
+class AuthContainer extends React.Component {
   render() {
     return (
-      <UserPage {...this.props} />
+      <AuthPage {...this.props} />
     );
   }
 }
@@ -20,4 +20,4 @@ const mapStateToProps = (state) => {
 };
 
 
-export default connect(mapStateToProps)(UserContainer);
+export default connect(mapStateToProps)(AuthContainer);

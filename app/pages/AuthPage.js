@@ -10,7 +10,7 @@ import MyTopicListContainer from '../containers/MyTopicListContainer';
 import MyReplyListContainer from '../containers/MyReplyListContainer';
 
 
-class UserPage extends React.Component {
+class AuthPage extends React.Component {
 
 	constructor(props){
 		super(props);
@@ -27,16 +27,6 @@ class UserPage extends React.Component {
 
 	componentWillMount(){
 		console.log('componentWillMount');
-		/*const { auth, navigator } = this.props;
-		console.log('auth', auth);
-		if(auth.user == null){
-			toastShort('还未登录，请先登录！');
-			navigator.push({
-				component : AccountContainer,
-				name:'Account'
-			})
-		}*/
-
 	}
 
 	componentDidMount(){
@@ -214,4 +204,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default UserPage;
+export default AuthPage;
