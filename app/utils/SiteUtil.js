@@ -413,23 +413,29 @@ export function fetchUser(path){
 			//console.log('body', body);
 			const $ = cheerio.load(body);
 			user = {};
-			user.member_avatar = $('#Main .box').eq(1).children().first().find('img').first().attr('src');
+			user.member_avatar = $('#Main .box').eq(0).children('.cell').first().find('img').first().attr('src');
+			user.member_avatar = user.member_avatar ? 'https://' + user.member_avatar : undefined;
 			user.member_name = $('#Main .box .cell h1').first().text();
 			user.member_url = path;
-			//user.member_intro = $('#Main .box').eq(1).children().first().find('.bigger').text();
-			user.member_num = $('#Main .box .cell table tbody tr td').eq(3)
-			user.member_date = $('#Main .box .cell .gray').eq(1).first().text().split('，')[1];
-			/*user.active_num = $('#Main .box .cell').eq(1).find('.gray a').first().text();
-			user.active_url = $('#Main .box .cell').eq(1).find('.gray a').first().attr('href');
+			user.member_intro = $('#Main .box').eq(0).children('.cell').first().find('.bigger').text();
+
+			user.member_department = $('#Main .box').eq(0).children('.cell').first().find('span').eq(1).text();
+			user.member_num = $('#Main .box').eq(0).children('.cell').first().find('.gray').text().split('，')[0];
+			user.member_date = $('#Main .box').eq(0).children('.cell').first().find('.gray').text().split('，')[1];
+			
+			console.log('#Main,', $('#Main .box').eq(0).children('.cell').first().find('.gray').html());
+			user.active_num = $('#Main .box').eq(0).children('.cell').first().find('a').text();
+			user.active_url = $('#Main .box').eq(0).children('.cell').first().find('a').attr('href');		
 			user.linkList = [];
-			$('#Main .box .markdown_body').first().children('a').each(function(){
+
+			$('#Main .box').eq(0).children('.markdown_body').find('a').each(function(){
 				let link = {};
 				link.url = $(this).attr('href');
-				link.img = SITE.HOST + $(this).find('img').src('src');
+				link.img = SITE.HOST + $(this).find('img').first().attr('src');
 				link.name = $(this).text();
 				user.linkList.push(link);
 			});
-			user.words = $('#Main .box .cell').eq(3).text();*/
+			user.words = $('#Main .box').eq(0).children('.cell').eq(2).html();
 			resolve(user);
 		})
 		.catch( (error) => {

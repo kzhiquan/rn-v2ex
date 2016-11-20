@@ -32,7 +32,7 @@ class UserPage extends React.Component {
 	componentDidMount(){
 		//console.log('componentDidMount');
 		const { userActions } = this.props;
-		userActions.requestUser('/member/xdazz');
+		userActions.requestUser('/member/justyy');
 	}
 
 
