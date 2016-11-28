@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   RecyclerViewBackedScrollView,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
@@ -22,6 +23,7 @@ import HtmlRender from 'react-native-html-render';
 import ResizableImage from '../components/ResizableImage'
 import LoadingView from '../components/LoadingView';
 import AccountContainer from '../containers/AccountContainer';
+import UserContainer from '../containers/UserContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
 
@@ -97,6 +99,15 @@ class TopicPage extends React.Component {
     console.log('url', url);
   }
 
+  _userClick(){
+    const { navigator, path } = this;
+    navigator.push({
+      component : UserContainer,
+      name : 'User', 
+      path : path,
+    });
+  }
+
   renderItem(item, sectionID, rowID, highlightRow){
     const { navigator } = this.props;
     if(sectionID == 'topic'){
@@ -123,7 +134,9 @@ class TopicPage extends React.Component {
 
     return (
       <View style={styles.containerReply}>
-        <Image style={styles.replyHeader} source={{uri:item.member_avatar}} />
+        <TouchableOpacity onPress={this._userClick} navigator={navigator} path={item.member_url}>
+          <Image style={styles.replyHeader} source={{uri:item.member_avatar}} />
+        </TouchableOpacity>
         <View style={styles.replyBody}>
           <HtmlRender
             key={`${sectionID}-${rowID}`}
@@ -162,13 +175,11 @@ class TopicPage extends React.Component {
     if (canLoadMore && time - loadMoreTime > 1) {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
-
       const { topicActions, route } = this.props;
-      if(this._isCurrentPageFilled()){
+      if ( this._isCurrentPageFilled()){
         page += 1;
       }
       topicActions.requestTopic(false, false, true, route.topic, page);
-      //console.log('in onEndReached page', page);
     }
   }
 

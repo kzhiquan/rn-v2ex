@@ -16,3 +16,36 @@ export function receiveUser(user){
 		user : user,
 	}
 }
+
+
+export function requestUserTopicList(path, page=1){
+	return {
+		type : types.REQUEST_USER_TOPIC_LIST,
+		path,
+		page,
+	}
+}
+
+
+export function receiveUserTopicList(topicList){
+	return {
+		type : types.RECEIVE_USER_TOPIC_LIST,
+		topicList:topicList,
+	}
+}
+
+
+export function requestUserReplyList(path, page=1){
+	return {
+		type : types.REQUEST_USER_REPLY_LIST,
+		path, 
+		page,
+	}
+}
+
+export function receiveUserReplyList(replyList){
+	return {
+		type : types.RECEIVE_USER_REPLY_LIST,
+		replyList : replyList,
+	}
+}

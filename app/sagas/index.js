@@ -8,7 +8,7 @@ import { watchTopic } from './topic';
 import { watchAccount } from './account';
 import { watchAuthTopic, watchAuthReply, wathChangeUser } from './auth';
 import { watchNodeList } from './nodeList';
-import { watchUser } from './user'
+import { watchUser, watchUserTopicList,watchUserReplyList } from './user'
 
 export default function* rootSaga(){
 	yield[
@@ -22,6 +22,9 @@ export default function* rootSaga(){
 		fork(wathChangeUser),
 		
 		fork(watchNodeList),
+
 		fork(watchUser),
+		fork(watchUserTopicList),
+		fork(watchUserReplyList),
 	]
 }

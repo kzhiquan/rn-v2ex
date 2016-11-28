@@ -19,6 +19,7 @@ import LoadingView from '../components/LoadingView';
 import AccountContainer from '../containers/AccountContainer';
 import NodeTopicListContainer from '../containers/NodeTopicListContainer';
 import TopicContainer from '../containers/TopicContainer';
+import UserContainer from '../containers/UserContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
 
@@ -57,12 +58,24 @@ class IndexNodeTopicListPage extends React.Component {
     });
   }
 
+  _userClick(){
+    console.log('user click');
+    const { navigator, path } = this;
+    navigator.push({
+      component : UserContainer,
+      name : 'User', 
+      path : path,
+    });
+  }
+
   renderItem(topic) {
     const { navigator } = this.props;
     return (
       <TouchableOpacity onPress={this._topicClick} topic={topic} navigator={navigator}>
         <View style={styles.containerItem}>
-          <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
+          <TouchableOpacity onPress={this._userClick} navigator={navigator} path={topic.member_url}>
+              <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
+          </TouchableOpacity>
           <View style={styles.itemBody}>
             <Text>{topic.topic_title}</Text>
             <View style={styles.itemBodyDetail}>

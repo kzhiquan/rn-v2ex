@@ -356,7 +356,6 @@ export function fetchMyTopic(path, page=1){
 	});	
 }
 
-
 export function fetchMyReply(path, page=1){
 	//path = '/member/jianghu521';
 	//page = 3;
@@ -414,7 +413,7 @@ export function fetchUser(path){
 			const $ = cheerio.load(body);
 			user = {};
 			user.member_avatar = $('#Main .box').eq(0).children('.cell').first().find('img').first().attr('src');
-			user.member_avatar = user.member_avatar ? 'https://' + user.member_avatar : undefined;
+			user.member_avatar = user.member_avatar ? 'https:' + user.member_avatar : undefined;
 			user.member_name = $('#Main .box .cell h1').first().text();
 			user.member_url = path;
 			user.member_intro = $('#Main .box').eq(0).children('.cell').first().find('.bigger').text();
@@ -422,8 +421,10 @@ export function fetchUser(path){
 			user.member_department = $('#Main .box').eq(0).children('.cell').first().find('span').eq(1).text();
 			user.member_num = $('#Main .box').eq(0).children('.cell').first().find('.gray').text().split('，')[0];
 			user.member_date = $('#Main .box').eq(0).children('.cell').first().find('.gray').text().split('，')[1];
+
+			user.silver_count = $('#Main .box .cell .balance_area').text().split(' ')[0];
+			user.gold_count = $('#Main .box .cell .balance_area').text().split(' ')[2];
 			
-			console.log('#Main,', $('#Main .box').eq(0).children('.cell').first().find('.gray').html());
 			user.active_num = $('#Main .box').eq(0).children('.cell').first().find('a').text();
 			user.active_url = $('#Main .box').eq(0).children('.cell').first().find('a').attr('href');		
 			user.linkList = [];
@@ -443,6 +444,103 @@ export function fetchUser(path){
 			reject(error);
 		})
 	});
+}
+
+export function fetchUserTopicList(path, page=1){
+	let myTopicUrl = SITE.HOST + path + '/topics?p=' + page;
+	//console.log('myTopicUrl:', myTopicUrl);
+	return new Promise( (resolve, reject) => {
+
+		fetch(myTopicUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			//console.log(response.headers);
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			let topicList = []
+			const $ = cheerio.load(body);
+			$('.box').children('.item').each(function(i, el){
+				//console.log(i);
+				topic = {}
+				topic.member_url = $(this).find('.small strong a').first().attr('href');
+				topic.member_name = $(this).find('.small strong a').first().text();
+				topic.topic_url = $(this).find('.item_title a').first().attr('href');
+				topic.topic_title = $(this).find('.item_title a').first().text();
+				topic.node_url = $(this).find('.node').first().attr('href');
+				topic.node_name = $(this).find('.node').first().text();
+
+				//console.log($(this).find('.small'), $(this).find('.small strong a'), $(this).find('td[width="70"] a'));
+				topic.latest_reply_date = $(this).find('.small').text().split('•')[2];
+
+				topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
+				topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
+
+				topic.reply_count = $(this).find('td[width="70"] a').first().text();
+				topic.reply_url = $(this).find('td[width="70"] a').first().attr('href');
+
+				topicList.push(topic);
+			});
+			//console.log('topics length:', topics.length);
+			let total_count = $('#Main .header .fr .gray').first().text();
+
+			const result = {
+				topicList : topicList,
+				total_count : total_count,
+			}
+			resolve(result);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});	
+}
+
+export function fetchUserReplyList(path, page=1){
+	//path = '/member/jianghu521';
+	//page = 3;
+	let myTopicUrl = SITE.HOST + path + '/replies?p=' + page;
+	//console.log('myTopicUrl:', myTopicUrl);
+	return new Promise( (resolve, reject) => {
+
+		fetch(myTopicUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			//console.log(response.headers);
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			let replyList = [];
+			const $ = cheerio.load(body);
+			$('.box').children('.dock_area').each(function(i, el){
+				let reply = {};
+				reply.topic = {};
+				reply.date = $(this).find('.fr span').first().text();
+				reply.topic.topic_title = $(this).find('.gray').first().text();
+				reply.topic.topic_url = $(this).find('.gray a').first().attr('href');
+				reply.content = $(this).next('div').find('.reply_content').first().html();
+				if(reply.topic.topic_title){
+					replyList.push(reply);
+				}
+			});
+
+			let total_count = $('#Main .header .fr .gray').first().text();
+			const result = {
+				replyList : replyList,
+				total_count : total_count,
+			}
+			resolve(result);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});	
 }
 
 
