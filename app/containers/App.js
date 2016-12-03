@@ -1,7 +1,11 @@
 
 
 import React from 'react';
-import { View, StatusBar, Navigator } from 'react-native';
+import { 
+	View, 
+	StatusBar,
+	Navigator 
+} from 'react-native';
 
 import Main from './Main.js';
 import AccountContainer from './AccountContainer';
@@ -15,7 +19,6 @@ class App extends React.Component{
 
 	constructor(props){
 		super(props);
-		this.renderScene = this.renderScene.bind(this);
 	}
 
 	renderScene(route, navigator){
@@ -25,12 +28,22 @@ class App extends React.Component{
 		);
 	}
 
+	configureScene(route, routeStack){
+		switch(route.name){
+			case 'ReplyTopicPage' :
+				return Navigator.SceneConfigs.FloatFromBottom;
+			default:
+				return Navigator.SceneConfigs.FloatFromRight;
+		}
+	}
+
 	render(){
 		return (
 			<View style={{flex : 1}}>
 				<Navigator
 					style={{flex : 1}}
-					renderScene={this.renderScene}
+					renderScene={this.renderScene.bind(this)}
+					configureScene={this.configureScene.bind(this)}
 					initialRoute={{
 						component : Main,
 						//component : AccountContainer,

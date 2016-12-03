@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text,ListView,StyleSheet,TouchableOpacity } from 'react-native'
+import { 
+	View, 
+	Text,
+	ListView,
+	StyleSheet,
+	TouchableOpacity, 
+} from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';

@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, StatusBar, Navigator,StyleSheet,ScrollView,Text } from 'react-native';
+import { 
+	View, 
+	StatusBar,
+	Navigator,
+	StyleSheet,
+	ScrollView,
+	Text 
+} from 'react-native';
 
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 

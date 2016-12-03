@@ -20,3 +20,46 @@ export function receiveTopic(topic){
 		topic
 	}
 }
+
+
+export function startFavoriteTopic(favoriteUrl){
+	return {
+		type : types.START_FAVORITE_TOPIC,
+		favoriteUrl
+	}
+}
+
+export function endFavoriteTopic(){
+	return {
+		type : types.END_FAVORITE_TOPIC,
+	}
+}
+
+
+export function startThankTopic(thankUrl){
+	return {
+		type : types.START_THANK_TOPIC,
+		thankUrl,
+	}
+}
+
+export function endThankTopic(){
+	return {
+		type : types.END_THANK_TOPIC,
+	}
+}
+
+export function startReplyTopic(topicUrl, once, content){
+	return {
+		type : types.START_REPLY_TOPIC,
+		topicUrl, 
+		once,
+		content,
+	}
+}
+
+export function endReplyTopic(){
+	return {
+		type : types.END_REPLY_TOPIC,
+	}
+}

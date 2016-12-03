@@ -86,6 +86,7 @@ export function fetchTopic(topic, page=1){
 			//console.log(body);
 			//console.log('page', page, 'topic', topic);
 			const $ = cheerio.load(body);
+			topic.topic_id = topicId;
 			topic.topic_title = $('#Main .box .header h1').first().text();
 			topic.topic_content = $('#Main .topic_content .markdown_body').html();
 			if(!topic.topic_content){
@@ -94,8 +95,32 @@ export function fetchTopic(topic, page=1){
 			topic.vote_count = $('#topic_' + topicId + '_votes').find('a').first().text();
 			topic.click_count = $('#Main .box .header .gray').first().text().split('·')[2];
 			topic.post_date = $('#Main .box .header .gray').first().text().split('·')[1];
-			topic.collect_count =$('#Main .topic_buttons .fr').first().text().split('∙')[1];
 			topic.reply_count = $('#Main .box .cell .gray').first().text().split('回复')[0].replace(' ', '');
+			
+			//this part, should the user have login in
+			//console.log($('#Main .topic_buttons').html())
+			if($('#Main .topic_buttons').html()){
+
+				topic.collect_count =$('#Main .topic_buttons .fr').first().text().split('∙')[1];
+				let favorite_text = $('#Main .topic_buttons a').first().text();
+				if(favorite_text === '加入收藏'){
+					topic.favorite_url = $('#Main .topic_buttons a').first().attr('href');
+				}else{
+					topic.unFavorite_url = $('#Main .topic_buttons a').first().attr('href');
+				}
+
+				topic.twitter_url = $('#Main .topic_buttons a').eq(1).attr('onclick').match(/window.open\('(.+)', '_blank/i)[1];
+				topic.weibo_url = $('#Main .topic_buttons a').eq(2).attr('onclick').match(/window.open\('(.+)', '_blank/i)[1];
+				topic.ignore_url = $('#Main .topic_buttons a').eq(3).attr('onclick').match(/location.href = '(.+)'/i)[1];
+				//https://www.v2ex.com/thank/topic/324495?t=qrrthxvtcebhkvabkjlxfgalpufakjyo post method
+				if($('#topic_thank a').html()){
+					let thank = $('#topic_thank a').eq(0).attr('onclick').match(/thankTopic\((\d+), '(.+)'\)/i);
+					topic.thank_url = '/thank/topic/' + thank[1] + '?t=' + thank[2];
+				}
+
+				topic.reply_once = $('#Main .cell form input').first().attr('value');
+
+			}
 
 			if(page == 1){
 				topic.replyList = [];
@@ -139,6 +164,87 @@ export function fetchTopic(topic, page=1){
 		.catch( (error) => {
 			reject(error);
 		});
+	});
+}
+
+export function favoriteTopic(url){
+	let favoriteUrl = SITE.HOST + url;
+
+	return new Promise( (resolve, reject) => {
+		fetch(favoriteUrl,{
+			credentials:'include'
+		})
+		.then( (response) => {
+			console.log(response);
+			if(response.status === 200 && response.ok){
+				resolve(true);
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error)=>{
+			reject(error);
+		});	
+	});
+}
+
+export function thankTopic(url){
+	let thankUrl = SITE.HOST + url;
+	console.log('thankUrl', thankUrl);
+	return new Promise( (resolve, reject) => {
+		fetch(thankUrl,{
+			method: 'post',
+			headers : {
+				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
+				'Referer': thankUrl.split('?')[0],
+			},
+			credentials:'include'
+		})
+		.then( (response) => {
+			//console.log(response);
+			if(response.status === 200 && response.ok){
+				resolve(true);
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error)=>{
+			reject(error);
+		});	
+	});
+}
+
+export function replyTopic(url, once, content){
+	let replyUrl = SITE.HOST + url;
+	//console.log('replyUrl', replyUrl, once, content);
+	return new Promise( (resolve, reject) => {
+		let body = 'content=' + encodeURIComponent(content) + '&once=' + encodeURIComponent(once);
+		fetch(replyUrl,{
+			method: 'post',
+			headers : {
+				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
+				'Content-Type':'application/x-www-form-urlencoded',
+				'Content-Length': body.length,
+				'Referer': replyUrl,
+			},
+			credentials:'include',
+			body: 'content=' + encodeURIComponent(content) + '&once=' + encodeURIComponent(once),
+		})
+		.then( (response) => {
+			//console.log(response);
+			if(response.status === 200 && response.ok){
+				resolve(true);
+			}else{
+				resolve(false);
+			}
+			return response.text();
+		})
+		/*.then( (body)=>{
+			console.log(body);
+		})*/
+		.catch( (error)=>{
+			reject(error);
+		});	
 	});
 }
 
@@ -301,7 +407,6 @@ export function logout(url){
 		});
 	});
 }
-
 
 export function fetchMyTopic(path, page=1){
 	let myTopicUrl = SITE.HOST + path + '/topics?p=' + page;

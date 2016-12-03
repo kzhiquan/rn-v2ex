@@ -14,18 +14,23 @@ import {
   RecyclerViewBackedScrollView,
   Dimensions,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
 import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import ResizableImage from '../components/ResizableImage'
 import LoadingView from '../components/LoadingView';
 import AccountContainer from '../containers/AccountContainer';
 import UserContainer from '../containers/UserContainer';
+import ReplyTopicPage from './ReplyTopicPage'
 import { toastShort } from '../utils/ToastUtil';
+import VXMoreModal from '../components/VXMoreModal';
 import VXModal from '../components/VXModal';
+import SITE from '../constants/Config'
 
 
 let canLoadMore;
@@ -44,6 +49,8 @@ class TopicPage extends React.Component {
         sectionHeaderHasChanged: (h1, h2) => h1 !== h2,  
       }),
       modalVisible: false,
+      moreModalVisible:false,
+      unLoginModalVisible:false,
     };
     this.renderItem = this.renderItem.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
@@ -60,6 +67,14 @@ class TopicPage extends React.Component {
   componentDidMount() {
     const { topicActions, route } = this.props;
     topicActions.requestTopic(false, true, false, route.topic);
+  }
+
+  componentWillReceiveProps(nextProps){
+    //console.log('nextProps', nextProps);
+    const { topic } = nextProps;
+    if( topic.isWorking ){
+      this.setState({moreModalVisible:false});
+    }
   }
 
   onRefresh(){
@@ -205,6 +220,88 @@ class TopicPage extends React.Component {
     }
   }
 
+  _onMore(){
+    //console.log('more');
+    this.setState({moreModalVisible:true});
+  }
+
+  _onFavoriteBtnClick(){
+    //console.log('_onFavoriteBtnClick');
+    const { topicActions, topic, auth } = this.props;
+    if(!auth.user){
+      this.setState({moreModalVisible:false, unLoginModalVisible:true})
+    }else{
+      topicActions.startFavoriteTopic(topic.topic.favorite_url)
+    }
+  }
+
+  _onThankBtnClick(){
+    //console.log('onThankBtnClick');
+    const { topicActions, topic, auth } = this.props;
+    if(!auth.user){
+      this.setState({moreModalVisible:false, unLoginModalVisible:true})
+    }else{
+      topicActions.startThankTopic(topic.topic.thank_url);
+    }
+  }
+
+  _onTweetBtnClick(){
+    //console.log('onTweetBtnClick');
+    const { topic, auth } = this.props;
+    if(!auth.user){
+      this.setState({moreModalVisible:false, unLoginModalVisible:true})
+    }else{
+      console.log(topic.topic.twitter_url);
+      Linking.openURL(topic.topic.twitter_url).catch(err => console.log('error', err));
+    }
+  }
+
+  _onWeiboBtnClick(){
+    //console.log('onWeiboBtnClick');
+    const { topic, auth } = this.props;
+    if(!auth.user){
+      this.setState({moreModalVisible:false, unLoginModalVisible:true})
+    }else{
+      console.log(topic.topic.weibo_url);
+      Linking.openURL(topic.topic.weibo_url).catch(err => console.log('error', err));
+    }
+  }
+
+  _onSafariBtnClick(){
+    //console.log('onSafariBtnClick');
+    const { topic } = this.props;
+    //console.log('topic', topic);
+    let url = SITE.HOST + topic.topic.topic_url.split('#')[0];
+    //console.log('url', url);
+    Linking.openURL(url).catch(err => console.log('error', err));
+  }
+
+  _onReplyBtnClick(){
+    console.log('onReplyBtnClick');
+    this.setState({moreModalVisible:false});
+    const { navigator, topic, topicActions } = this.props;
+    navigator.push({
+      component : ReplyTopicPage,
+      name : 'ReplyTopicPage',
+      topic : topic, 
+      topicActions : topicActions,
+    });
+  }
+
+  _onCancelBtnClick(){
+    this.setState({moreModalVisible:false});
+  }
+
+  _onUnLoginModalClick(){
+    //console.log('onUnLoginModalClick');
+    const { navigator } = this.props;
+    this.setState({unLoginModalVisible:false});
+    navigator.push({
+        component : AccountContainer,
+        name:'Account'
+    });
+  }
+
 
   render() {
     const { topic, route } = this.props;
@@ -214,12 +311,17 @@ class TopicPage extends React.Component {
     }
 
     const { navigator } = this.props;
-    var leftButtonConfig = {
+    let leftButtonConfig = {
       title: 'Back',
       handler: function onBack() {
         navigator.pop();
       }
     };
+
+    let rightButtonConfig = {
+      title:'...',
+      handler:this._onMore.bind(this),
+    }
 
     let currentTopic = route.topic;
     if(topic.topic){
@@ -243,9 +345,34 @@ class TopicPage extends React.Component {
     //console.log('rows',rows,topic);
     return (
       <View style={{flex:1}}>
+
         <NavigationBar
-              title={titleConfig}
-              leftButton={leftButtonConfig}/>
+            title={titleConfig}
+            leftButton={leftButtonConfig}
+            rightButton={
+              <TouchableOpacity onPress={this._onMore.bind(this)}>
+                <Icon name="ios-more" size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
+              </TouchableOpacity> 
+            }
+        />
+        
+        <VXMoreModal 
+          visible={this.state.moreModalVisible}
+          onFavoriteBtnClick={this._onFavoriteBtnClick.bind(this)}
+          onThankBtnClick={this._onThankBtnClick.bind(this)}
+          onTweetBtnClick={this._onTweetBtnClick.bind(this)}
+          onWeiboBtnClick={this._onWeiboBtnClick.bind(this)}
+          onSafariBtnClick={this._onSafariBtnClick.bind(this)}
+          onReplyBtnClick={this._onReplyBtnClick.bind(this)}
+          onCancelBtnClick={this._onCancelBtnClick.bind(this)}/>
+
+        <VXModal
+          visible={this.state.unLoginModalVisible}
+          title={'尚未登录，请先登录'}
+          btnText={'确定'}
+          btnClick={ this._onUnLoginModalClick.bind(this) }
+        />
+
         <ListView
           initialListSize = {5}
           dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
@@ -265,6 +392,13 @@ class TopicPage extends React.Component {
             />
           }
         />
+
+        <ActivityIndicator
+          animating={topic.isWorking}
+          style={styles.front}
+          size="large"
+        />
+
       </View>
 
     );
@@ -329,6 +463,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     marginLeft: 10
+  },
+
+  front:{
+    position: 'absolute',
+    top:300,
+    left: (375-50)/2,
+    width: 50,
+    height:50,
+    zIndex: 1,
   },
 
 });

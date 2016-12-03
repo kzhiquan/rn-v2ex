@@ -11,7 +11,7 @@ function* fetchTopicListSagas(isRefreshing, isLoading, isLoadingMore, path, page
 	try{
 
 		const topicList = yield call(fetchTopicList, path, page); 
-		console.log('topicList:', topicList);
+		//console.log('topicList:', topicList);
 		if(!Array.isArray(topicList) ){
 			toastShort(topicList);
 			yield put(receiveTopicList());
