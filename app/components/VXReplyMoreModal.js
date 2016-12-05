@@ -13,7 +13,7 @@ import ASIcon from 'react-native-vector-icons/FontAwesome'
 import Button from './Button'
 
 
-class VXMoreModal extends React.Component {
+class VXReplyMoreModal extends React.Component {
   constructor(props){
     super(props);
   }
@@ -27,48 +27,12 @@ class VXMoreModal extends React.Component {
 
             <View style={[styles.innerContainer, styles.innerContainerTransparentStyle]}>
               
-              <View style={{flexDirection:'row', justifyContent:'space-around', borderWidth:1,}}>
-
-                <TouchableHighlight
-                   onPress={this.props.onFavoriteBtnClick}>
-                  <View style={{alignItems:'center'}}>
-                    <Icon name="ios-star" size={40} />
-                    <Text>收藏</Text>
-                  </View>
-                </TouchableHighlight>
-
-                <TouchableHighlight
-                   onPress={this.props.onThankBtnClick}>
-                  <View style={{alignItems:'center'}}>
-                    <Icon name="ios-heart" size={40} />
-                    <Text>感谢</Text>
-                  </View>
-                </TouchableHighlight>
-
-                <TouchableHighlight
-                   onPress={this.props.onTweetBtnClick}>
-                  <View style={{alignItems:'center'}}>
-                    <Icon name="logo-twitter" size={40} />
-                    <Text>Tweet</Text>
-                  </View>
-                </TouchableHighlight>
-
-                <TouchableHighlight
-                   onPress={this.props.onWeiboBtnClick}>
-                  <View style={{alignItems:'center'}}>
-                    <ASIcon name="weibo" size={40} />
-                    <Text>Weibo</Text>
-                  </View>
-                </TouchableHighlight>
-
-                <TouchableHighlight
-                   onPress={this.props.onSafariBtnClick}>
-                  <View style={{alignItems:'center'}}>
-                    <Icon name="ios-compass" size={40} />
-                    <Text>Safari</Text>
-                  </View>
-                </TouchableHighlight>
-
+              <View style={{borderWidth:1,paddingTop:10,}}>
+                <Button
+                  style={styles.button}
+                  onPress={this.props.onThankBtnClick}>
+                  感谢
+                </Button>
               </View>
 
               <View style={{borderWidth:1,paddingTop:10,}}>
@@ -76,6 +40,14 @@ class VXMoreModal extends React.Component {
                   style={styles.button}
                   onPress={this.props.onReplyBtnClick}>
                   回复
+                </Button>
+              </View>
+
+              <View style={{borderWidth:1,paddingTop:10,}}>
+                <Button
+                  style={styles.button}
+                  onPress={this.props.onDialogBtnClick}>
+                  查看对话
                 </Button>
               </View>
 
@@ -128,4 +100,4 @@ var styles = StyleSheet.create({
 });
 
 
-export default VXMoreModal;
+export default VXReplyMoreModal;

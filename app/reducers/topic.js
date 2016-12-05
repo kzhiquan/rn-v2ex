@@ -9,7 +9,8 @@ const initialState = {
 	isLoadingMore : false,
 	topic : null,
 
-	isWorking: false,
+	isTopicMoreWorking: false,
+	isReplyMoreWorking: false,
 }
 
 //console.log('REHYDRATE:', REHYDRATE);
@@ -32,31 +33,41 @@ export default function topic(state = initialState, action){
 
 		case types.START_FAVORITE_TOPIC:
 			return Object.assign({}, state, {
-				isWorking:true,
+				isTopicMoreWorking:true,
 			})
 		case types.END_FAVORITE_TOPIC:
 			return Object.assign({}, state, {
-				isWorking:false
+				isTopicMoreWorking:false
 			})
 
 
 		case types.START_THANK_TOPIC:
 			return Object.assign({}, state, {
-				isWorking:true,
+				isTopicMoreWorking:true,
 			})
 		case types.END_THANK_TOPIC:
 			return Object.assign({}, state, {
-				isWorking:false
+				isTopicMoreWorking:false
 			})
 
 
 		case types.START_REPLY_TOPIC:
 			return Object.assign({}, state, {
-				isWorking:true,
+				isTopicMoreWorking:true,
 			})
 		case types.END_REPLY_TOPIC:
 			return Object.assign({}, state, {
-				isWorking:false
+				isTopicMoreWorking:false
+			})
+
+
+		case types.START_THANK_REPLY:
+			return Object.assign({}, state, {
+				isReplyMoreWorking:true,
+			})
+		case types.END_THANK_REPLY:
+			return Object.assign({}, state, {
+				isReplyMoreWorking:false
 			})
 
 

@@ -28,7 +28,8 @@ import AccountContainer from '../containers/AccountContainer';
 import UserContainer from '../containers/UserContainer';
 import ReplyTopicPage from './ReplyTopicPage'
 import { toastShort } from '../utils/ToastUtil';
-import VXMoreModal from '../components/VXMoreModal';
+import VXTopicMoreModal from '../components/VXTopicMoreModal';
+import VXReplyMoreModal from '../components/VXReplyMoreModal';
 import VXModal from '../components/VXModal';
 import SITE from '../constants/Config'
 
@@ -36,6 +37,7 @@ import SITE from '../constants/Config'
 let canLoadMore;
 let page = 1;
 let loadMoreTime = 0;
+let reply = null;
 
 const maxHeight = Dimensions.get('window').height;
 const maxWidth = Dimensions.get('window').width;
@@ -49,13 +51,10 @@ class TopicPage extends React.Component {
         sectionHeaderHasChanged: (h1, h2) => h1 !== h2,  
       }),
       modalVisible: false,
-      moreModalVisible:false,
+      topicMoreModalVisible:false,
+      replyMoreModalVisible:false,
       unLoginModalVisible:false,
     };
-    this.renderItem = this.renderItem.bind(this);
-    this.renderFooter = this.renderFooter.bind(this);
-    this.onEndReached = this.onEndReached.bind(this);
-    this.onScroll = this.onScroll.bind(this);
     canLoadMore = false;
     page = 1;
   }
@@ -72,8 +71,12 @@ class TopicPage extends React.Component {
   componentWillReceiveProps(nextProps){
     //console.log('nextProps', nextProps);
     const { topic } = nextProps;
-    if( topic.isWorking ){
-      this.setState({moreModalVisible:false});
+    if( topic.isTopicMoreWorking ){
+      this.setState({topicMoreModalVisible:false});
+    }
+
+    if( topic.isReplyMoreWorking ){
+      this.setState({replyMoreModalVisible:false})
     }
   }
 
@@ -123,9 +126,7 @@ class TopicPage extends React.Component {
     });
   }
 
-  renderItem(item, sectionID, rowID, highlightRow){
-    const { navigator } = this.props;
-    if(sectionID == 'topic'){
+  _renderTopic(item, sectionID, rowID, highlightRow){
       return (
         <View style={styles.containerTopic}>
           <View style={styles.topicHeader}><Text style={{fontWeight:'bold'}}>{item.topic_title}</Text></View>
@@ -143,30 +144,39 @@ class TopicPage extends React.Component {
           </View>
         </View>
       );
-    }
+  }
 
-    //console.log('item', item);
-
+  _renderReply(item, sectionID, rowID, highlightRow){
     return (
-      <View style={styles.containerReply}>
-        <TouchableOpacity onPress={this._userClick} navigator={navigator} path={item.member_url}>
-          <Image style={styles.replyHeader} source={{uri:item.member_avatar}} />
-        </TouchableOpacity>
-        <View style={styles.replyBody}>
-          <HtmlRender
-            key={`${sectionID}-${rowID}`}
-            value={'<div>' + item.content + '</div>'}
-            stylesheet={topicTitleStyle}
-            onLinkPress={this._onLinkPress.bind(this)}
-            renderNode={this._renderNode}
-          />
-          <View style={styles.replyBodyDetail}>
-            <Text>{item.member_name}</Text>
+      <TouchableOpacity onPress={this._onReplyMore} reply={item} that={this}>
+        <View style={styles.containerReply}>
+          <TouchableOpacity onPress={this._userClick} navigator={navigator} path={item.member_url}>
+            <Image style={styles.replyHeader} source={{uri:item.member_avatar}} />
+          </TouchableOpacity>
+          <View style={styles.replyBody}>
+            <HtmlRender
+              key={`${sectionID}-${rowID}`}
+              value={'<div>' + item.content + '</div>'}
+              stylesheet={topicTitleStyle}
+              onLinkPress={this._onLinkPress.bind(this)}
+              renderNode={this._renderNode}
+            />
+            <View style={styles.replyBodyDetail}>
+              <Text>{item.member_name}</Text>
+            </View>
           </View>
+          <Text style={styles.replyFooter}>{item.floor_number}</Text>
         </View>
-        <Text style={styles.replyFooter}>{item.floor_number}</Text>
-      </View>
+      </TouchableOpacity>
     );
+  }
+
+  renderItem(item, sectionID, rowID, highlightRow){
+    const { navigator } = this.props;
+    if(sectionID == 'topic'){
+      return this._renderTopic(item, sectionID, rowID, highlightRow);
+    }
+    return this._renderReply(item, sectionID, rowID, highlightRow);
   }
 
   renderFooter(){
@@ -220,26 +230,34 @@ class TopicPage extends React.Component {
     }
   }
 
-  _onMore(){
-    //console.log('more');
-    this.setState({moreModalVisible:true});
+  _onTopicMore(){
+    this.setState({topicMoreModalVisible:true});
+  }
+
+  _onReplyMore(){
+    //console.log('onReplyMore');
+    //console.log(this, reply);
+    const { that } = this;
+    reply = this.reply;
+    //console.log(this, reply);
+    that.setState({replyMoreModalVisible:true});
   }
 
   _onFavoriteBtnClick(){
     //console.log('_onFavoriteBtnClick');
     const { topicActions, topic, auth } = this.props;
     if(!auth.user){
-      this.setState({moreModalVisible:false, unLoginModalVisible:true})
+      this.setState({topicMoreModalVisible:false, unLoginModalVisible:true})
     }else{
       topicActions.startFavoriteTopic(topic.topic.favorite_url)
     }
   }
 
-  _onThankBtnClick(){
+  _onTopicThankBtnClick(){
     //console.log('onThankBtnClick');
     const { topicActions, topic, auth } = this.props;
     if(!auth.user){
-      this.setState({moreModalVisible:false, unLoginModalVisible:true})
+      this.setState({topicMoreModalVisible:false, unLoginModalVisible:true})
     }else{
       topicActions.startThankTopic(topic.topic.thank_url);
     }
@@ -249,7 +267,7 @@ class TopicPage extends React.Component {
     //console.log('onTweetBtnClick');
     const { topic, auth } = this.props;
     if(!auth.user){
-      this.setState({moreModalVisible:false, unLoginModalVisible:true})
+      this.setState({topicMoreModalVisible:false, unLoginModalVisible:true})
     }else{
       console.log(topic.topic.twitter_url);
       Linking.openURL(topic.topic.twitter_url).catch(err => console.log('error', err));
@@ -260,7 +278,7 @@ class TopicPage extends React.Component {
     //console.log('onWeiboBtnClick');
     const { topic, auth } = this.props;
     if(!auth.user){
-      this.setState({moreModalVisible:false, unLoginModalVisible:true})
+      this.setState({topicMoreModalVisible:false, unLoginModalVisible:true})
     }else{
       console.log(topic.topic.weibo_url);
       Linking.openURL(topic.topic.weibo_url).catch(err => console.log('error', err));
@@ -276,9 +294,9 @@ class TopicPage extends React.Component {
     Linking.openURL(url).catch(err => console.log('error', err));
   }
 
-  _onReplyBtnClick(){
+  _onTopicReplyBtnClick(){
     console.log('onReplyBtnClick');
-    this.setState({moreModalVisible:false});
+    this.setState({topicMoreModalVisible:false});
     const { navigator, topic, topicActions } = this.props;
     navigator.push({
       component : ReplyTopicPage,
@@ -288,8 +306,45 @@ class TopicPage extends React.Component {
     });
   }
 
-  _onCancelBtnClick(){
-    this.setState({moreModalVisible:false});
+  _onTopicCancelBtnClick(){
+    this.setState({topicMoreModalVisible:false});
+  }
+
+
+  _onReplyThankBtnClick(){
+    //console.log('onReplyThankBtnClick');
+
+    const { topicActions, topic, auth } = this.props;
+    if(!auth.user){
+      this.setState({replyMoreModalVisible:false, unLoginModalVisible:true})
+    }else{
+      topicActions.startThankReply(reply.thank_url);
+    }
+
+  }
+
+  _onReplyReplyBtnClick(){
+    //console.log('onReplyReplyBtnClick', reply);
+    this.setState({replyMoreModalVisible:false});
+    const { navigator, topic, topicActions } = this.props;
+    navigator.push({
+      component : ReplyTopicPage,
+      name : 'ReplyTopicPage',
+      topic : topic, 
+      reply: reply,
+      topicActions : topicActions,
+    });
+  }
+
+  _onReplyCancelBtnClick(){
+    //console.log('onReplyCancelBtnClick');
+    this.setState({replyMoreModalVisible:false});
+  }
+
+  _onDialogBtnClick(){
+    console.log('onDialogBtnClick');
+
+
   }
 
   _onUnLoginModalClick(){
@@ -318,11 +373,6 @@ class TopicPage extends React.Component {
       }
     };
 
-    let rightButtonConfig = {
-      title:'...',
-      handler:this._onMore.bind(this),
-    }
-
     let currentTopic = route.topic;
     if(topic.topic){
       currentTopic = topic.topic;
@@ -350,21 +400,28 @@ class TopicPage extends React.Component {
             title={titleConfig}
             leftButton={leftButtonConfig}
             rightButton={
-              <TouchableOpacity onPress={this._onMore.bind(this)}>
+              <TouchableOpacity onPress={this._onTopicMore.bind(this)}>
                 <Icon name="ios-more" size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
               </TouchableOpacity> 
             }
         />
         
-        <VXMoreModal 
-          visible={this.state.moreModalVisible}
+        <VXTopicMoreModal 
+          visible={this.state.topicMoreModalVisible}
           onFavoriteBtnClick={this._onFavoriteBtnClick.bind(this)}
-          onThankBtnClick={this._onThankBtnClick.bind(this)}
+          onThankBtnClick={this._onTopicThankBtnClick.bind(this)}
           onTweetBtnClick={this._onTweetBtnClick.bind(this)}
           onWeiboBtnClick={this._onWeiboBtnClick.bind(this)}
           onSafariBtnClick={this._onSafariBtnClick.bind(this)}
-          onReplyBtnClick={this._onReplyBtnClick.bind(this)}
-          onCancelBtnClick={this._onCancelBtnClick.bind(this)}/>
+          onReplyBtnClick={this._onTopicReplyBtnClick.bind(this)}
+          onCancelBtnClick={this._onTopicCancelBtnClick.bind(this)}/>
+
+        <VXReplyMoreModal 
+          visible={this.state.replyMoreModalVisible}
+          onThankBtnClick={this._onReplyThankBtnClick.bind(this)}
+          onReplyBtnClick={this._onReplyReplyBtnClick.bind(this)}
+          onDialogBtnClick={this._onDialogBtnClick.bind(this)}
+          onCancelBtnClick={this._onReplyCancelBtnClick.bind(this)}/>
 
         <VXModal
           visible={this.state.unLoginModalVisible}
@@ -376,10 +433,10 @@ class TopicPage extends React.Component {
         <ListView
           initialListSize = {5}
           dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
-          renderRow={this.renderItem}
-          renderFooter={this.renderFooter}
-          onEndReached={this.onEndReached}
-          onScroll={this.onScroll}
+          renderRow={this.renderItem.bind(this)}
+          renderFooter={this.renderFooter.bind(this)}
+          onEndReached={this.onEndReached.bind(this)}
+          onScroll={this.onScroll.bind(this)}
           onEndReachedThreshold={-20}
           enableEmptySections={true}
           removeClippedSubviews = {false}
@@ -394,7 +451,7 @@ class TopicPage extends React.Component {
         />
 
         <ActivityIndicator
-          animating={topic.isWorking}
+          animating={topic.isTopicMoreWorking || topic.isReplyMoreWorking }
           style={styles.front}
           size="large"
         />

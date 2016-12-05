@@ -2,8 +2,21 @@ import { put, take, call, fork } from 'redux-saga/effects'
 import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
-import { receiveTopic, endFavoriteTopic, endThankTopic, endReplyTopic } from '../actions/topic';
-import { fetchTopic, favoriteTopic, thankTopic, replyTopic} from '../utils/SiteUtil'
+import { 
+	receiveTopic, 
+	endFavoriteTopic, 
+	endThankTopic, 
+	endReplyTopic,
+	endThankReply,
+} from '../actions/topic';
+
+import { 
+	fetchTopic, 
+	favoriteTopic, 
+	thankTopic, 
+	replyTopic,
+	thankReply,
+} from '../utils/SiteUtil'
 
 
 
@@ -117,6 +130,34 @@ export function* watchReplyTopic(){
 	while (true){
 		const { topicUrl, once, content } = yield take(types.START_REPLY_TOPIC);
 		yield fork(replyTopicSagas, topicUrl, once, content);
+	}
+}
+
+
+function* thankReplySagas(thankUrl){
+	try{
+
+		const thankResult = yield call(thankReply, thankUrl);
+		if(thankResult){
+			toastShort('感谢已发送!');
+		}else{
+			toastShort('感谢发送失败!');
+		}
+
+		yield put(endThankReply());
+
+	}catch (error){
+		console.log('error:', error);
+		toastShort('网络发生错误, 请稍后重试');
+		yield put(endThankReply());
+	}
+}
+
+
+export function* watchThankReply(){
+	while (true) {
+		const { thankUrl } = yield take(types.START_THANK_REPLY);
+		yield fork(thankReplySagas, thankUrl);
 	}
 }
 

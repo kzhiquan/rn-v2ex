@@ -134,6 +134,14 @@ export function fetchTopic(topic, page=1){
 				reply.member_url = $(this).find('td[width="auto"] strong a').first().attr('href');
 				reply.floor_number = $(this).find('td[width="auto"] .fr span').first().text();
 				reply.content = $(this).find('.reply_content').html();
+				if($(this).find('.thank_area a').html()){
+					let ignore = $(this).find('.thank_area a').eq(0).attr('onclick').match(/ignoreReply\((\d+), '(.+)'\)/i);
+					reply.ignore_url = '/ignore/reply/' + ignore[1] + '?once=' + ignore[2];
+
+					let thank = $(this).find('.thank_area a').eq(1).attr('onclick').match(/thankReply\((\d+), '(.+)'\)/i);
+					reply.thank_url = '/thank/reply/' + thank[1] + '?t=' + thank[2];
+				}
+
 				if(reply.content){
 					newReplyList.push(reply);
 				}
@@ -246,6 +254,31 @@ export function replyTopic(url, once, content){
 			reject(error);
 		});	
 	});
+}
+
+export function thankReply(url){
+	let thankUrl = SITE.HOST + url;
+	console.log('thankUrl', thankUrl);
+	return new Promise( (resolve, reject) => {
+		fetch(thankUrl,{
+			method: 'post',
+			headers : {
+				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
+			},
+			credentials:'include'
+		})
+		.then( (response) => {
+			//console.log(response);
+			if(response.status === 200 && response.ok){
+				resolve(true);
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error)=>{
+			reject(error);
+		});	
+	});	
 }
 
 export function getLoginToken(name, password, url){

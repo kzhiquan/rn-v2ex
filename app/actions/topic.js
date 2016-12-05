@@ -63,3 +63,20 @@ export function endReplyTopic(){
 		type : types.END_REPLY_TOPIC,
 	}
 }
+
+
+
+export function startThankReply(thankUrl){
+	return {
+		type : types.START_THANK_REPLY,
+		thankUrl,
+	}
+}
+
+export function endThankReply(thankUrl){
+	return {
+		type : types.END_THANK_REPLY,
+	}
+}
+
+

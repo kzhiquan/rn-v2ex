@@ -17,8 +17,14 @@ import Icon from 'react-native-vector-icons/Ionicons';
 class ReplyTopicPage extends React.Component {
 	constructor(props) {
 	    super(props);
+	    const { route } = this.props;
+	    let initText = '';
+	    if (route.reply){
+	    	initText = '@' + route.reply.member_name + ' ';
+	    }
+
 	    this.state = {
-	    	text:'',
+	    	text:initText,
 	    	placeholder : '请输入你的回复!', 
 	    	height : 0,
 	    }
