@@ -110,23 +110,25 @@ class TopicDialogPage extends React.Component {
     };
 
     //console.log('route.reply.content', unescape(route.reply.content), route.reply.content.match(/@<a href="\/member\/(.+)">/ig))
-    let pattern = /@<a href="\/member\/(.+)">.+<\/a>/g;
+    let pattern = /@<a href="\/member\/[^"]*">([^<]*)<\/a> /g;
     let matches = pattern.exec(route.reply.content);
     let user_names = [];
     while(matches){
-      console.log('matches', matches);
+      //console.log('matches', matches);
       user_names.push(matches[1]);
       matches = pattern.exec(route.reply.content);
-      console.log('2->matches', matches);
+      //console.log('2->matches', matches);
     }
     user_names.push(route.reply.member_name);
-    console.log('user_names:', user_names);
+    //console.log('user_names:', user_names);
     let rows = [];
 
+
+    //try to find an algorith to get dialog
     for (let reply of route.topic.topic.replyList){
 
       let index = user_names.findIndex(function(value, index, arr){
-        return value == reply.member_name
+        return (value == reply.member_name );
       });
 
       console.log(reply, index);
