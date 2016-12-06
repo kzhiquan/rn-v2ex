@@ -32,6 +32,8 @@ class App extends React.Component{
 		switch(route.name){
 			case 'ReplyTopicPage' :
 				return Navigator.SceneConfigs.FloatFromBottom;
+			case 'TopicDialogPage' : 
+				return Navigator.SceneConfigs.FloatFromBottom;
 			default:
 				return Navigator.SceneConfigs.FloatFromRight;
 		}

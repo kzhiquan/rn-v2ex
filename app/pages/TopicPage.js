@@ -26,7 +26,8 @@ import ResizableImage from '../components/ResizableImage'
 import LoadingView from '../components/LoadingView';
 import AccountContainer from '../containers/AccountContainer';
 import UserContainer from '../containers/UserContainer';
-import ReplyTopicPage from './ReplyTopicPage'
+import ReplyTopicPage from './ReplyTopicPage';
+import TopicDialogPage from './TopicDialogPage';
 import { toastShort } from '../utils/ToastUtil';
 import VXTopicMoreModal from '../components/VXTopicMoreModal';
 import VXReplyMoreModal from '../components/VXReplyMoreModal';
@@ -223,7 +224,6 @@ class TopicPage extends React.Component {
     }
   }
 
-
   onScroll() {
     if (!canLoadMore) {
       canLoadMore = true;
@@ -310,7 +310,6 @@ class TopicPage extends React.Component {
     this.setState({topicMoreModalVisible:false});
   }
 
-
   _onReplyThankBtnClick(){
     //console.log('onReplyThankBtnClick');
 
@@ -324,16 +323,21 @@ class TopicPage extends React.Component {
   }
 
   _onReplyReplyBtnClick(){
-    //console.log('onReplyReplyBtnClick', reply);
-    this.setState({replyMoreModalVisible:false});
-    const { navigator, topic, topicActions } = this.props;
-    navigator.push({
-      component : ReplyTopicPage,
-      name : 'ReplyTopicPage',
-      topic : topic, 
-      reply: reply,
-      topicActions : topicActions,
-    });
+
+    const { navigator, topic, auth, topicActions } = this.props;
+    if(!auth.user){
+      this.setState({replyMoreModalVisible:false, unLoginModalVisible:true});
+    }else{
+      this.setState({replyMoreModalVisible:false});
+      navigator.push({
+        component : ReplyTopicPage,
+        name : 'ReplyTopicPage',
+        topic : topic, 
+        reply: reply,
+        topicActions : topicActions,
+      });
+    }
+
   }
 
   _onReplyCancelBtnClick(){
@@ -344,6 +348,18 @@ class TopicPage extends React.Component {
   _onDialogBtnClick(){
     console.log('onDialogBtnClick');
 
+    const { navigator, auth, topic } = this.props;
+    if(!auth.user){
+      this.setState({replyMoreModalVisible:false, unLoginModalVisible:true});
+    }else{
+      this.setState({replyMoreModalVisible:false});
+      navigator.push({
+        component : TopicDialogPage,
+        name : 'TopicDialogPage',
+        topic : topic, 
+        reply: reply,
+      });
+    }
 
   }
 
@@ -356,7 +372,6 @@ class TopicPage extends React.Component {
         name:'Account'
     });
   }
-
 
   render() {
     const { topic, route } = this.props;
