@@ -761,5 +761,43 @@ export async function fetchNode(){
 }
 
 
+export function fetchSearch(searchText){
+	//console.log('searchText', searchText);
+	let searchUrl = 'https://www.google.com/search?q=site:v2ex.com/t%20' + searchText;
+	//console.log('searchUrl:', searchUrl);
+	return new Promise( (resolve, reject) => {
+
+		fetch(searchUrl)
+		.then((response) => {
+			//console.log(response.headers);
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			const $ = cheerio.load(body);
+			let topicList = [];
+			$('.g').each(function(i, el){
+				let topic = {}
+				topic.topic_title = $(this).find('h3 a').text();
+				topic.topic_url = $(this).find('.kv cite').text().replace(SITE.HOST, '');
+				topic.brief_content = $(this).find('.st').html();
+				topicList.push(topic);
+			});
+
+			let nextPageUrl = 'https://www.google.com' + $('#foot .fl').attr('href');
+			resolve({
+				topicList : topicList,
+				nextPageUrl :  nextPageUrl,
+			});
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+
+	});	
+}
+
+
 
 

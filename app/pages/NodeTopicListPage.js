@@ -13,12 +13,15 @@ import {
   ActivityIndicator,
   RecyclerViewBackedScrollView,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import LoadingView from '../components/LoadingView';
 import AccountContainer from '../containers/AccountContainer';
+import SearchContainer from '../containers/SearchContainer';
 import TopicContainer from '../containers/TopicContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
@@ -125,6 +128,15 @@ class NodeTopicListPage extends React.Component {
     }
   }
 
+  _searchBarFocus(){
+    //console.log('_searchBarFocus');
+    const { navigator } = this.props;
+    navigator.push({
+      component : SearchContainer,
+      name : 'Search',
+    });
+  }
+
 
   render() {
     const { topicList } = this.props;
@@ -153,9 +165,27 @@ class NodeTopicListPage extends React.Component {
     //console.log('rows', rows.length);
     return (
       <View>
-        <NavigationBar
+
+        { (route.node.path == '/recent') ? 
+            (<NavigationBar
+              title={
+                <TextInput
+                  returnKeyType="search"  
+                  style={{height:40, borderColor:'gray', borderWidth:1, marginRight:30}}
+                  onChangeText = {(text) => console.log(text)}
+                  onFocus = { this._searchBarFocus.bind(this)}
+                />}
+              rightButton={
+                <TouchableOpacity>
+                  <Icon name="ios-add" size={30} style={{marginRight:10}} color="blue"/>
+                </TouchableOpacity> }
+            />)
+            :
+            (<NavigationBar
               title={titleConfig}
-              leftButton={leftButtonConfig}/>
+              leftButton={leftButtonConfig}/>)
+        }
+
 
         <ListView
           initialListSize = {5}

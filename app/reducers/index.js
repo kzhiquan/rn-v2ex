@@ -8,6 +8,7 @@ import account from './account'
 import topic from './topic'
 import nodeList from './nodeList'
 import user from './user'
+import search from './search'
 
 const rootReducer = combineReducers({
 	test,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
 	account,
 	nodeList,
 	user,
+	search,
 });
 
 export default rootReducer;
