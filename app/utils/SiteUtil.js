@@ -761,10 +761,15 @@ export async function fetchNode(){
 }
 
 
-export function fetchSearch(searchText){
-	//console.log('searchText', searchText);
-	let searchUrl = 'https://www.google.com/search?q=site:v2ex.com/t%20' + searchText;
-	//console.log('searchUrl:', searchUrl);
+export function fetchGoogleSearch(searchText, nextPageUrl){
+	console.log('searchText', searchText, nextPageUrl);
+	let searchUrl;
+	if(nextPageUrl){
+		searchUrl = nextPageUrl
+	}else{
+		searchUrl = 'https://www.google.com/search?q=site:v2ex.com/t%20' + searchText;
+	}
+	console.log('searchUrl:', searchUrl);
 	return new Promise( (resolve, reject) => {
 
 		fetch(searchUrl)
@@ -773,7 +778,7 @@ export function fetchSearch(searchText){
 			return response.text();
 		})
 		.then((body) => {
-			//console.log('body', body);
+			console.log('body', body);
 			const $ = cheerio.load(body);
 			let topicList = [];
 			$('.g').each(function(i, el){
@@ -796,6 +801,49 @@ export function fetchSearch(searchText){
 		})
 
 	});	
+}
+
+export function FetchBingSearch(searchText, nextPageUrl){
+	console.log('searchText', searchText, nextPageUrl);
+	let searchUrl;
+	if(nextPageUrl){
+		searchUrl = 'http://cn.bing.com' + nextPageUrl
+	}else{
+		searchUrl = 'http://cn.bing.com/search?q=site:v2ex.com/t%20' + searchText
+		//searchUrl = 'https://www.google.com/search?q=site:v2ex.com/t%20' + searchText;
+	}
+	console.log('searchUrl:', searchUrl);
+	return new Promise( (resolve, reject) => {
+
+		fetch(searchUrl)
+		.then((response) => {
+			//console.log(response.headers);
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			const $ = cheerio.load(body);
+			let topicList = [];
+			$('.b_algo').each(function(i, el){
+				let topic = {}
+				topic.topic_title = $(this).find('h2 a').html();
+				topic.topic_url = $(this).find('h2 a').attr('href').replace(SITE.HOST, '');
+				topic.brief_content = $(this).find('.b_caption p').html();
+				topic.takein_search_date = $(this).find('.b_attribution').text();
+				topicList.push(topic);
+			});
+
+			let nextPageUrl = $('.b_pag .sb_pagN').attr('href');
+			resolve({
+				topicList : topicList,
+				nextPageUrl :  nextPageUrl,
+			});
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});		
 }
 
 

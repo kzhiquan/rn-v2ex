@@ -1,16 +1,17 @@
-import { put, take, call, fork } from 'redux-saga/effects'
+import { put, take, call, fork, } from 'redux-saga/effects'
+import { takeLatest } from 'redux-saga'
 
 import { toastShort } from '../utils/ToastUtil';
 import * as types from '../constants/ActionTypes';
 import { receiveSearch } from '../actions/search';
-import { fetchSearch } from '../utils/SiteUtil';
+import { FetchBingSearch } from '../utils/SiteUtil';
 
 
-function* searchSaga(searchText){
+function* searchSaga(action){
 	try{
-		
-		const searchReceived = yield call(fetchSearch, searchText); 
-		//console.log('searchReceived:', searchReceived);
+		const { searchText, nextPageUrl } = action;
+		const searchReceived = yield call(FetchBingSearch, searchText, nextPageUrl); 
+		console.log('searchReceived:', searchReceived);
 
 		if( typeof(searchReceived) !== 'object' ){
 			toastShort(searchReceived);
@@ -30,7 +31,8 @@ function* searchSaga(searchText){
 
 export function* watchSearch(){
 	while (true) {
-		const { searchText, searchNextPage } = yield take([types.START_SEARCH, types.REFRESH_SEARCH, types.SEARCH_NEXT_PAGE]);
-		yield fork(searchSaga, searchText, searchNextPage);
+		//const { searchText, nextPageUrl } = yield take([types.START_SEARCH, types.REFRESH_SEARCH, types.SEARCH_NEXT_PAGE]);
+		//yield fork(searchSaga, searchText, nextPageUrl);
+		yield* takeLatest([types.START_SEARCH, types.REFRESH_SEARCH, types.SEARCH_NEXT_PAGE], searchSaga);
 	}
 }

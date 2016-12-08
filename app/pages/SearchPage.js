@@ -14,6 +14,7 @@ import {
   RecyclerViewBackedScrollView,
   TouchableOpacity,
   TextInput,
+  Keyboard,
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
@@ -54,13 +55,21 @@ class SearchPage extends React.Component {
   }
 
   _searchTextChange(text){
+    //console.log('text', text);
     this.setState({searchText: text});
+    //console.log('this.state.searchText', this.state.searchText);
+    const { searchActions } = this.props;
+    searchActions.startSearch(text);
   }
 
   _searchSubmit(event){
     //console.log('event text', event.nativeEvent.text);
     const { searchActions } = this.props;
     searchActions.startSearch(this.state.searchText);
+  }
+
+  _searchEndEditing(event){
+    console.log('_searchEndEditing', event.nativeEvent.text);
   }
 
   _renderNode(node, index, parent, type) {
@@ -90,7 +99,9 @@ class SearchPage extends React.Component {
 
   _onTopicClick(){
     const { topic, that } = this;
-    const { navigator } = that.props;
+    const { navigator, searchActions } = that.props;
+    //console.log('topClick', that.state.searchText);
+    searchActions.addSearchHistory(that.state.searchText);
     navigator.push({
       component : TopicContainer,
       name : 'Topic',
@@ -100,13 +111,20 @@ class SearchPage extends React.Component {
 
   _renderItem(item, sectionID, rowID, highlightRow){
     //console.log(item);
+    //<View><Text style={{fontSize:16, fontWeight: 'bold'}}>{item.topic_title.replace('- V2EX', '')}</Text></View>
     return (
       <TouchableOpacity onPress={this._onTopicClick} topic={item} that={this}>
         <View style={{flex:1, flexDirection:'column', borderBottomWidth:1}}>
-          <View><Text style={{fontSize:16, fontWeight: 'bold'}}>{item.topic_title.replace('- V2EX', '')}</Text></View>
+          <HtmlRender
+              stylesheet={titleContentStyle}
+              key={`${sectionID}-${rowID}-title`}
+              value={'<div>' + item.topic_title + '</div>'}
+              onLinkPress={this._onLinkPress.bind(this)}
+              renderNode={this._renderNode}
+          />
           <HtmlRender
               stylesheet={briefTopicContentStyle}
-              key={`${sectionID}-${rowID}`}
+              key={`${sectionID}-${rowID}-content`}
               value={'<div>' + item.brief_content.replace('<br>', '').replace('\n', '') + '</div>'}
               onLinkPress={this._onLinkPress.bind(this)}
               renderNode={this._renderNode}
@@ -139,21 +157,60 @@ class SearchPage extends React.Component {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
       const { searchActions, search } = this.props;
-      //topicActions.requestTopic(false, false, true, route.topic, page);
-      searchActions.searchNextPage(this.state.searchText, search.searchResult.nextPageUrl);
+
+      console.log('searchResult', search.searchResult)
+      if(search.searchResult && search.searchResult.nextPageUrl){
+        searchActions.searchNextPage(this.state.searchText, search.searchResult.nextPageUrl);
+      }
     }
 
   }
 
   _onScroll() {
+    console.log('onScroll');
     if (!canLoadMore) {
       canLoadMore = true;
     }
+
+    //Keyboard.dismiss();
   }
 
   _onRefresh(){
     const { searchActions } = this.props;
     searchActions.refreshSearch(this.state.searchText)
+  }
+
+  _removeHistoryItem(){
+    const { item, that } = this;
+    const { searchActions } = that.props;
+    console.log('removeHistoryItem', item);
+    searchActions.removeSearchHistory(item);
+  }
+
+  _historyItemPress(){
+    const { item, that } = this;
+    const { searchActions } = that.props;
+    console.log('historyItemPress', item);
+    that.setState({searchText:item});
+    searchActions.startSearch(item);
+  }
+
+  _renderHistroyItem(item, sectionID, rowID, highlightRow){
+    return (
+      <TouchableOpacity onPress={this._historyItemPress} item={item} that={this}>
+        <View style={{flex:1, flexDirection:'row', borderBottomWidth:1, justifyContent:'space-between'}}>
+          <View style={{flex:1, flexDirection:'row'}}>
+            <Icon name="ios-time" size={30} style={{marginRight:30}} />
+            <View style={{marginTop:5}}>
+              <Text>{item}</Text>
+            </View>
+          </View>
+          <TouchableOpacity onPress={this._removeHistoryItem} item={item} that={this}>
+            <Icon name="ios-close" size={30} style={{marginRight:10}} />
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
   }
 
   render() {
@@ -173,6 +230,11 @@ class SearchPage extends React.Component {
       rows = search.searchResult.topicList;
     }
 
+    let historyRows = [];
+    historyRows = search.history;
+
+    //console.log('search', search.searchResult);
+
     return (
       <View>
 
@@ -181,31 +243,50 @@ class SearchPage extends React.Component {
                     ref="searchBar"
                     returnKeyType="search" 
                     style={{height:40, borderColor:'gray', borderWidth:1, marginRight:50}}
-                    onChangeText = { this._searchTextChange.bind(this) } 
+                    onChangeText = { this._searchTextChange.bind(this) }
+                    /*onEndEditing = { this._searchEndEditing.bind(this) }*/
+                    value = { this.state.searchText } 
                     onSubmitEditing = { this._searchSubmit.bind(this) } />}
 
           rightButton={rightButtonConfig}
         />
 
+        {this.state.searchText !== '' ?
+          (<ListView
+              initialListSize = {5}
+              dataSource={this.state.dataSource.cloneWithRows(rows)}          
+              renderRow={this._renderItem.bind(this)}
+              renderFooter={this._renderFooter.bind(this)}
+              onEndReached={this._onEndReached.bind(this)}
+              onScroll={this._onScroll.bind(this)}
+              onEndReachedThreshold={-20}
+              enableEmptySections={true}
+              removeClippedSubviews = {false}
+              renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+              refreshControl={
+                <RefreshControl
+                  refreshing={search.isRefreshing}
+                  onRefresh={this._onRefresh.bind(this)}
+                  title="Loading..."
+                />
+              }
+          />)
+          :
+          (<ListView
+              initialListSize = {5}
+              dataSource={this.state.dataSource.cloneWithRows(historyRows)}          
+              renderRow={this._renderHistroyItem.bind(this)}
+              enableEmptySections={true}
+              removeClippedSubviews = {false}
+              renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+          />)
+        }
 
-        <ListView
-          initialListSize = {5}
-          dataSource={this.state.dataSource.cloneWithRows(rows)}          
-          renderRow={this._renderItem.bind(this)}
-          renderFooter={this._renderFooter.bind(this)}
-          onEndReached={this._onEndReached.bind(this)}
-          onScroll={this._onScroll.bind(this)}
-          onEndReachedThreshold={-20}
-          enableEmptySections={true}
-          removeClippedSubviews = {false}
-          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-          refreshControl={
-            <RefreshControl
-              refreshing={search.isRefreshing}
-              onRefresh={this._onRefresh.bind(this)}
-              title="Loading..."
-            />
-          }
+
+        <ActivityIndicator
+          animating={ search.isSearching }
+          style={styles.front}
+          size="large"
         />
 
 
@@ -259,13 +340,34 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
 
+  front:{
+    position: 'absolute',
+    top:300,
+    left: (375-50)/2,
+    width: 50,
+    height:50,
+    zIndex: 1,
+  },
+
 });
 
 const briefTopicContentStyle = StyleSheet.create({
-  b: {
+  strong: {
     fontWeight: '300',
     color: '#FF3366', // pink links
   },
+
+});
+
+const titleContentStyle = StyleSheet.create({
+  strong: {
+    fontWeight: '300',
+    color: '#FF3366', // pink links
+  },
+
+  div : {
+    fontWeight : 'bold',
+  }
 
 });
 

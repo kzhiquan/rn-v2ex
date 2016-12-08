@@ -31,6 +31,7 @@ let canLoadMore;
 let page = 1;
 let loadMoreTime = 0;
 
+
 class NodeTopicListPage extends React.Component {
   constructor(props) {
     super(props);
@@ -48,7 +49,13 @@ class NodeTopicListPage extends React.Component {
 
   componentWillMount() {
     //console.log("componentWillMount");
-    const { topicListActions } = this.props;
+    //const { topicListActions } = this.props;
+    //this.keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', this._keyboardWillShow);
+  }
+
+  _keyboardWillShow(){
+    console.log('keyboardWillShow');
+    Keyboard.dismiss();
   }
 
   componentDidMount() {
@@ -128,13 +135,21 @@ class NodeTopicListPage extends React.Component {
     }
   }
 
-  _searchBarFocus(){
+  _searchBarFocus(event){
     //console.log('_searchBarFocus');
+    //this.refs.searchBar.blur();
+    //console.log('event', event);
+
+    //event.preventDefault();
+
+    //return false;
+
     const { navigator } = this.props;
     navigator.push({
       component : SearchContainer,
       name : 'Search',
     });
+
   }
 
 
@@ -169,12 +184,16 @@ class NodeTopicListPage extends React.Component {
         { (route.node.path == '/recent') ? 
             (<NavigationBar
               title={
-                <TextInput
-                  returnKeyType="search"  
-                  style={{height:40, borderColor:'gray', borderWidth:1, marginRight:30}}
-                  onChangeText = {(text) => console.log(text)}
-                  onFocus = { this._searchBarFocus.bind(this)}
-                />}
+                  <TouchableOpacity 
+                    onPress={this._searchBarFocus.bind(this)}>
+                    <TextInput
+                      editable={false}
+                      ref="searchBar"
+                      returnKeyType="search"  
+                      style={{height:40, width: 375-30, borderColor:'gray', borderWidth:1, marginRight:30}}
+                    />
+                  </TouchableOpacity>}
+
               rightButton={
                 <TouchableOpacity>
                   <Icon name="ios-add" size={30} style={{marginRight:10}} color="blue"/>

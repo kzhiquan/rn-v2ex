@@ -36,3 +36,18 @@ export function searchPageClose(){
 		type : types.SEARCH_PAGE_CLOSE,
 	}
 }
+
+
+export function addSearchHistory(searchText){
+	return {
+		type : types.ADD_SEARCH_HISTORY,
+		searchText,
+	}
+}
+
+export function removeSearchHistory(searchText){
+	return {
+		type : types.REMOVE_SEARCH_HISTORY,
+		searchText,
+	}
+}
