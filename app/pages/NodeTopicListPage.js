@@ -25,6 +25,7 @@ import SearchContainer from '../containers/SearchContainer';
 import TopicContainer from '../containers/TopicContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
+import NewTopicTitlePage from './NewTopicTitlePage';
 
 
 let canLoadMore;
@@ -135,7 +136,7 @@ class NodeTopicListPage extends React.Component {
     }
   }
 
-  _searchBarFocus(event){
+  _onSearchBarFocus(event){
     //console.log('_searchBarFocus');
     //this.refs.searchBar.blur();
     //console.log('event', event);
@@ -150,6 +151,15 @@ class NodeTopicListPage extends React.Component {
       name : 'Search',
     });
 
+  }
+
+  _onNewTopic(){
+    const { navigator } = this.props;
+    //console.log('newTopicClick');
+    navigator.push({
+      component : NewTopicTitlePage,
+      name : 'NewTopicTitlePage',
+    });
   }
 
 
@@ -185,7 +195,7 @@ class NodeTopicListPage extends React.Component {
             (<NavigationBar
               title={
                   <TouchableOpacity 
-                    onPress={this._searchBarFocus.bind(this)}>
+                    onPress={this._onSearchBarFocus.bind(this)}>
                     <TextInput
                       editable={false}
                       ref="searchBar"
@@ -195,7 +205,7 @@ class NodeTopicListPage extends React.Component {
                   </TouchableOpacity>}
 
               rightButton={
-                <TouchableOpacity>
+                <TouchableOpacity onPress={this._onNewTopic.bind(this)}>
                   <Icon name="ios-add" size={30} style={{marginRight:10}} color="blue"/>
                 </TouchableOpacity> }
             />)
