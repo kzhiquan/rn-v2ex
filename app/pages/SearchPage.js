@@ -172,7 +172,7 @@ class SearchPage extends React.Component {
       canLoadMore = true;
     }
 
-    //Keyboard.dismiss();
+    Keyboard.dismiss();
   }
 
   _onRefresh(){
@@ -278,6 +278,7 @@ class SearchPage extends React.Component {
               renderRow={this._renderHistroyItem.bind(this)}
               enableEmptySections={true}
               removeClippedSubviews = {false}
+              keyboardShouldPersistTaps = {true}
               renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
           />)
         }
