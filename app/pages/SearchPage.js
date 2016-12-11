@@ -79,7 +79,6 @@ class SearchPage extends React.Component {
         if(uri.indexOf('http') == -1){
           uri = 'http:' + uri;
         }
-
         return (
                 <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
                   <Image 
