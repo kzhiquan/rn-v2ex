@@ -13,6 +13,7 @@ import {
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NewTopicNodePage from './NewTopicNodePage';
+import NewTopicNodeContainer from '../containers/NewTopicNodeContainer';
 
 
 class NewTopicContentPage extends React.Component {
@@ -34,8 +35,9 @@ class NewTopicContentPage extends React.Component {
 		console.log('newPostNextStep');
 		const { navigator, route } = this.props;
 		navigator.push({
-			component : NewTopicNodePage,
-			name : 'NewTopicNodePage',
+			//component : NewTopicNodePage,
+			component : NewTopicNodeContainer,
+			name : 'NewTopicNodeContainer',
 			newTopicTitle : route.newTopicTitle,
 			newTopicContent : this.state.text,
 		});

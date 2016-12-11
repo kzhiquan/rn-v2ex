@@ -97,7 +97,7 @@ export function fetchTopic(topic, page=1){
 			topic.post_date = $('#Main .box .header .gray').first().text().split('·')[1];
 			topic.reply_count = $('#Main .box .cell .gray').first().text().split('回复')[0].replace(' ', '');
 			
-			//this part, should the user have login in
+			//this part, should the user have login in, but not conside the own topic.
 			//console.log($('#Main .topic_buttons').html())
 			if($('#Main .topic_buttons').html()){
 
@@ -173,6 +173,71 @@ export function fetchTopic(topic, page=1){
 			reject(error);
 		});
 	});
+}
+
+export function fetchNewTopic(){
+	let url = SITE.HOST + '/new';
+	console.log('url', url);
+	return new Promise( (resolve, reject) => {
+		fetch(url)
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			const $ = cheerio.load(body);
+			let nodes = {};
+			$('#nodes').children('option').each(function(i, elem){
+				if($(this).text()){
+					nodes[$(this).text()] = $(this).attr('value');
+				}
+			});
+			let once = $('#compose input').eq(1).attr('value');
+
+			resolve({
+				nodes : nodes,
+				once : once,
+			});
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});	
+}
+
+export function postNewTopic(title, content, node, once){
+	let postUrl = SITE.HOST + '/new';
+	console.log('postUrl', postUrl, title, content, node, once);
+	return new Promise( (resolve, reject) => {
+		let body = 'title=' + encodeURIComponent(title)+
+				   '&content=' + encodeURIComponent(content)+ 
+				   '&node_name=' + encodeURIComponent(node) + 
+				   '&once=' + encodeURIComponent(once);
+		fetch(postUrl,{
+			method: 'post',
+			headers : {
+				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
+				'Content-Type':'application/x-www-form-urlencoded',
+				'Content-Length': body.length,
+				'Referer': postUrl,
+			},
+			credentials:'include',
+			body: body,
+		})
+		.then( (response) => {
+			console.log(response);
+			if(response.status === 200 && response.ok){
+				resolve(response.url.replace(SITE.HOST, ''));
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error)=>{
+			reject(error);
+		});
+		//resolve('/t/326874#reply0');
+	});	
 }
 
 export function favoriteTopic(url){

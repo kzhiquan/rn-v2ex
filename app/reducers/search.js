@@ -59,7 +59,7 @@ export default function search(state = initialState, action){
 				isRefreshing:false,
 				isLoadingMore:false,
 				searchResult : null,
-				history : action.payload.search.history,
+				history : action.payload.search ? action.payload.search.history : [],
 			});
 		default:
 			return state;

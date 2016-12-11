@@ -30,6 +30,11 @@ import {
 
 import { watchSearch } from './search';
 
+import { 
+	watchFetchNewTopic,
+	watchPostNewTopic,
+} from './newTopic';
+
 export default function* rootSaga(){
 	yield[
 		fork(watchTest),
@@ -53,5 +58,8 @@ export default function* rootSaga(){
 		fork(watchUserReplyList),
 
 		fork(watchSearch),
+
+		fork(watchFetchNewTopic),
+		fork(watchPostNewTopic),
 	]
 }

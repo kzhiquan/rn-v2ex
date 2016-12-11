@@ -9,6 +9,7 @@ import topic from './topic'
 import nodeList from './nodeList'
 import user from './user'
 import search from './search'
+import newTopic from './newTopic'
 
 const rootReducer = combineReducers({
 	test,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
 	nodeList,
 	user,
 	search,
+	newTopic,
 });
 
 export default rootReducer;
