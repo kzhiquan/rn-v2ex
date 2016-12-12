@@ -655,6 +655,37 @@ export function fetchMyReply(path, page=1){
 	});	
 }
 
+export function fetchMyNode(){
+	let nodeUrl = SITE.HOST + '/my/nodes';
+	return new Promise( (resolve, reject) => {
+		fetch(nodeUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			let nodeList = [];
+			let $ = cheerio.load(body);
+			$('#MyNodes').children('a').each(function(i, el){
+				node = {};
+				node.path = $(this).attr('href');
+				node.img_url = 'https:' + $(this).find('img').first().attr('src');
+				node.name = $(this).find('div').first().text().split(' ')[0];
+				node.topic_count = $(this).find('div').first().text().split(' ')[1];
+				nodeList.push(node);
+			})
+
+			resolve(nodeList);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});	
+}
+
 export function fetchUser(path){
 	const url = SITE.HOST + path;
 	console.log('url', url);

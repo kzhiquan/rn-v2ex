@@ -3,9 +3,9 @@ import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
 
-import { receiveMyTopic, receiveMyReply, userLogin } from '../actions/auth'
+import { receiveMyTopic, receiveMyReply, userLogin, receiveMyNode } from '../actions/auth'
 import { changeUserEnd } from '../actions/account'
-import { fetchMyTopic, fetchMyReply, login } from '../utils/SiteUtil'
+import { fetchMyTopic, fetchMyReply, login, fetchMyNode } from '../utils/SiteUtil'
 
 
 
@@ -90,6 +90,30 @@ export function * wathChangeUser(){
 	while (true){
 		const { user } = yield take(types.CHANGE_USER_START);
 		yield fork(changeUserSagas, user);
+	}
+}
+
+
+function* fetchMyNodeSagas(myReplyUrl, page){
+	try{
+
+		const result = yield call(fetchMyNode); 
+
+		console.log('result', result);
+
+		yield put(receiveMyNode(result));
+
+	} catch ( error ){
+		console.log('error', error);
+		toastShort('网络发生错误，请重试');
+		yield put(receiveMyNode());
+	}
+}
+
+export function* watchAuthNode(){
+	while (true) {
+		yield take(types.REQUEST_MY_NODE);
+		yield fork(fetchMyNodeSagas);
 	}
 }
 

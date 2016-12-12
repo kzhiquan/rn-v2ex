@@ -14,6 +14,7 @@ import { toastShort } from '../utils/ToastUtil';
 import AccountContainer from '../containers/AccountContainer';
 import MyTopicListContainer from '../containers/MyTopicListContainer';
 import MyReplyListContainer from '../containers/MyReplyListContainer';
+import MyNodeListContainer from '../containers/MyNodeListContainer';
 
 
 class AuthPage extends React.Component {
@@ -53,16 +54,21 @@ class AuthPage extends React.Component {
 		//console.log('onFavoriteClick', this);
 		const { item, navigator } = this;
 
-		if( item.name === '我的主题'){
+		if(item.name === '我的主题'){
 			navigator.push({
 				component : MyTopicListContainer,
 				name : 'My Topic'
 			})
-		}else{
+		}else if(item.name === '我的回复'){
 			navigator.push({
 				component : MyReplyListContainer,
 				name : 'My Reply'
 			})
+		}else if(item.name === '节点收藏'){
+			navigator.push({
+				component : MyNodeListContainer,
+				name : 'My NodeList'
+			});
 		}
 
 
@@ -144,7 +150,7 @@ class AuthPage extends React.Component {
 		};
 
 		let rows;
-		if ( auth.user ){
+		if (auth.user){
 			rows = {
 				'account' : [auth.user],
 				'favorite' : [{
@@ -155,7 +161,11 @@ class AuthPage extends React.Component {
 							  	name: '我的回复',
 							  	icon: 'ios-chatbubbles-outline',
 							  	onClick: this.onFavoriteClick,
-							 }],
+							  },{
+							  	name : '节点收藏',
+							  	icon : 'ios-star-outline',
+							  	onClick : this.onFavoriteClick,
+							  }],
 			}
 		}else{
 			rows = {

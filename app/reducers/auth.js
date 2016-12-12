@@ -7,6 +7,10 @@ const initialState = {
 	isLoadingMore : false,
 	myTopic:null,
 	myReply:null,
+	myNode:{
+		isLoading : false,
+		nodeList : [],
+	}
 }
 
 
@@ -70,6 +74,23 @@ export default function auth(state = initialState, action){
 				isLoadingMore: false,
 				myReply : state.isLoadingMore ? loadMoreReply(state, action) : combineReply(state, action),
 			});
+
+		//node
+		case types.REQUEST_MY_NODE:
+			return Object.assign({}, state, {
+				myNode : {
+					isLoading : true,
+					nodeList : [],
+				}
+			})
+
+		case types.RECEIVE_MY_NODE:
+			return Object.assign({}, state, {
+				myNode : {
+					isLoading : false,
+					nodeList : action.nodeList,
+				}
+			})
 
 		default:
 			return state;

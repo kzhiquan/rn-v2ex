@@ -73,3 +73,18 @@ export function requestMoreMyReply(user, page){
 		page,
 	}
 }
+
+
+export function requestMyNode(){
+	return {
+		type : types.REQUEST_MY_NODE,
+	}
+}
+
+export function receiveMyNode(nodeList){
+	return {
+		type :  types.RECEIVE_MY_NODE,
+		nodeList,
+	}
+}
+

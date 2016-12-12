@@ -15,7 +15,8 @@ import {
 import { watchAccount } from './account';
 import { 
 	watchAuthTopic, 
-	watchAuthReply, 
+	watchAuthReply,
+	watchAuthNode, 
 	wathChangeUser 
 } from './auth';
 
@@ -49,6 +50,7 @@ export default function* rootSaga(){
 		fork(watchAccount),
 		fork(watchAuthTopic),
 		fork(watchAuthReply),
+		fork(watchAuthNode),
 		fork(wathChangeUser),
 		
 		fork(watchNodeList),
