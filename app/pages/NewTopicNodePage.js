@@ -37,16 +37,16 @@ class NewTopicNodePage extends React.Component {
 
 	componentWillReceiveProps(nextProps){
   		const { newTopic, navigator } = nextProps;
-  		console.log('componentWillReceiveProps', newTopic);
+  		//console.log('componentWillReceiveProps', newTopic);
   		if(newTopic.topic_url){
-  			console.log(navigator.getCurrentRoutes());
+  			//console.log(navigator.getCurrentRoutes());
   			let oldRoutes = navigator.getCurrentRoutes();
   			let limit = oldRoutes.length - 3;
   			let newRoutes = oldRoutes.filter( (elem, index) => {
   				return index < limit;
   			})
 
-  			console.log(newRoutes);
+  			//console.log(newRoutes);
   			newRoutes.push({
   				component : TopicContainer,
   				name : 'Topic',
@@ -55,7 +55,7 @@ class NewTopicNodePage extends React.Component {
       			}
   			});
   			navigator.immediatelyResetRouteStack(newRoutes);
-  			console.log(navigator.getCurrentRoutes());
+  			//console.log(navigator.getCurrentRoutes());
 
   			/*setTimeout(function(){
   				navigator.push({

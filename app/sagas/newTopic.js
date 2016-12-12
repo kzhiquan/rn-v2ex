@@ -46,7 +46,7 @@ function* postNewTopicSagas(title, content, node, once){
 	try{
 
 		const result = yield call(postNewTopic, title, content, node, once); 
-		console.log('result:', result);
+		//console.log('result:', result);
 		if( !result || result.indexOf('/new') >= 0 ){
 			toastShort('发生错误,请稍后再试！');
 			yield put(endPostNewTopic());

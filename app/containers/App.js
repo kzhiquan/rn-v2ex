@@ -48,18 +48,18 @@ class App extends React.Component{
 					renderScene={this.renderScene.bind(this)}
 					configureScene={this.configureScene.bind(this)}
 					initialRoute={{
-						//component : Main,
+						component : Main,
 						//component : AccountContainer,
 						//component : MyTopicContainer,
 						//component: TestPage,
 						//component : NodeListContainer,
 						//component : UserContainer,
-						component : NodeTopicListContainer,
+						/*component : NodeTopicListContainer,
 						name : 'RecentTopic', 
 						node : {
 							name : '最近主题',
 							path : '/recent',
-						}
+						}*/
 					}}
 				/>
 			</View>

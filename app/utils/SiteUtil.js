@@ -95,8 +95,12 @@ export function fetchTopic(topic, page=1){
 			topic.vote_count = $('#topic_' + topicId + '_votes').find('a').first().text();
 			topic.click_count = $('#Main .box .header .gray').first().text().split('·')[2];
 			topic.post_date = $('#Main .box .header .gray').first().text().split('·')[1];
-			topic.reply_count = $('#Main .box .cell .gray').first().text().split('回复')[0].replace(' ', '');
-			
+
+			if($('#Main .transparent .inner span').first().text() == '目前尚无回复'){
+				topic.reply_count = 0;
+			}else{
+				topic.reply_count = $('#Main .box .cell .gray').first().text().split('回复')[0].replace(' ', '');
+			}
 			//this part, should the user have login in, but not conside the own topic.
 			//console.log($('#Main .topic_buttons').html())
 			if($('#Main .topic_buttons').html()){
@@ -111,7 +115,12 @@ export function fetchTopic(topic, page=1){
 
 				topic.twitter_url = $('#Main .topic_buttons a').eq(1).attr('onclick').match(/window.open\('(.+)', '_blank/i)[1];
 				topic.weibo_url = $('#Main .topic_buttons a').eq(2).attr('onclick').match(/window.open\('(.+)', '_blank/i)[1];
-				topic.ignore_url = $('#Main .topic_buttons a').eq(3).attr('onclick').match(/location.href = '(.+)'/i)[1];
+				
+				//console.log($('#Main .topic_buttons a').eq(3).html());
+				if($('#Main .topic_buttons a').eq(3).html()){
+					topic.ignore_url = $('#Main .topic_buttons a').eq(3).attr('onclick').match(/location.href = '(.+)'/i)[1];	
+				}
+				
 				//https://www.v2ex.com/thank/topic/324495?t=qrrthxvtcebhkvabkjlxfgalpufakjyo post method
 				if($('#topic_thank a').html()){
 					let thank = $('#topic_thank a').eq(0).attr('onclick').match(/thankTopic\((\d+), '(.+)'\)/i);
@@ -206,7 +215,7 @@ export function fetchNewTopic(){
 	});	
 }
 
-export function postNewTopic(title, content, node, once){
+export function postTopic(title, content, node, once){
 	let postUrl = SITE.HOST + '/new';
 	console.log('postUrl', postUrl, title, content, node, once);
 	return new Promise( (resolve, reject) => {
@@ -238,6 +247,49 @@ export function postNewTopic(title, content, node, once){
 		});
 		//resolve('/t/326874#reply0');
 	});	
+}
+
+export function getPostNewTopicOnce(){
+	let getUrl = SITE.HOST + '/new';
+	return new Promise( (resolve, reject) => {
+		fetch(getUrl,{
+			credentials : 'include',
+		})
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			const $ = cheerio.load(body);
+			let once = $('#compose input').eq(1).attr('value');
+			resolve(once);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});
+}
+
+
+export async function postNewTopic(title, content, node, once){
+	let relocation = await postTopic(title, content, node, once);
+	console.log('relocation', relocation);
+
+	if( !relocation && relocation.indexOf('/new')){
+
+		let newOnce = getPostNewTopicOnce();
+
+		console.log('newOnce', newOnce);
+
+		let newRelocation = await postTopic(title, content, node, newOnce);
+
+		return newRelocation;
+
+	}else{
+		return relocation;
+	}
+	//return '/t/326988#reply0';
 }
 
 export function favoriteTopic(url){
