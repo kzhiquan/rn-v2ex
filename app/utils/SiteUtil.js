@@ -271,7 +271,6 @@ export function getPostNewTopicOnce(){
 	});
 }
 
-
 export async function postNewTopic(title, content, node, once){
 	let relocation = await postTopic(title, content, node, once);
 	console.log('relocation', relocation);
@@ -678,6 +677,57 @@ export function fetchMyNode(){
 			})
 
 			resolve(nodeList);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});	
+}
+
+export function fetchMyFavoriteTopic(page=1){
+	let myFavoriteTopicUrl = SITE.HOST + '/my' + '/topics?p=' + page;
+	console.log('myFavoriteTopicUrl:', myFavoriteTopicUrl);
+	return new Promise( (resolve, reject) => {
+
+		fetch(myFavoriteTopicUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			let topicList = []
+			const $ = cheerio.load(body);
+			$('.box').children('.item').each(function(i, el){
+				topic = {}
+				topic.member_url = $(this).find('.small strong a').first().attr('href');
+				topic.member_name = $(this).find('.small strong a').first().text();
+				topic.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
+				topic.topic_url = $(this).find('.item_title a').first().attr('href');
+				topic.topic_title = $(this).find('.item_title a').first().text();
+				topic.node_url = $(this).find('.node').first().attr('href');
+				topic.node_name = $(this).find('.node').first().text();
+
+				//console.log($(this).find('.small'), $(this).find('.small strong a'), $(this).find('td[width="70"] a'));
+				topic.latest_reply_date = $(this).find('.small').text().split('•')[2];
+
+				topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
+				topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
+
+				topic.reply_count = $(this).find('td[width="70"] a').first().text();
+				topic.reply_url = $(this).find('td[width="70"] a').first().attr('href');
+
+				topicList.push(topic);
+			});
+			let total_count = $('#Main .header .fr .gray').first().text();
+
+			const result = {
+				topicList : topicList,
+				totalCount : total_count,
+			}
+			resolve(result);
 		})
 		.catch( (error) => {
 			console.log(error);

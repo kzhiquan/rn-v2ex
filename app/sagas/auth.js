@@ -3,9 +3,23 @@ import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
 
-import { receiveMyTopic, receiveMyReply, userLogin, receiveMyNode } from '../actions/auth'
+import { 
+	receiveMyTopic, 
+	receiveMyReply, 
+	userLogin, 
+	receiveMyNode,
+	receiveMyFavoriteTopic
+} from '../actions/auth'
+
 import { changeUserEnd } from '../actions/account'
-import { fetchMyTopic, fetchMyReply, login, fetchMyNode } from '../utils/SiteUtil'
+
+import { 
+	fetchMyTopic, 
+	fetchMyReply, 
+	login, 
+	fetchMyNode,
+	fetchMyFavoriteTopic,
+} from '../utils/SiteUtil'
 
 
 
@@ -114,6 +128,33 @@ export function* watchAuthNode(){
 	while (true) {
 		yield take(types.REQUEST_MY_NODE);
 		yield fork(fetchMyNodeSagas);
+	}
+}
+
+
+function* fetchMyFavoriteTopicSagas(page){
+	try{
+
+		const result = yield call(fetchMyFavoriteTopic, page); 
+
+		console.log('result', result);
+
+		yield put(receiveMyFavoriteTopic(result.topicList, result.totalCount));
+
+	} catch ( error ){
+		toastShort('网络发生错误，请重试');
+		console.log('error', error);
+		yield put(receiveMyFavoriteTopic());
+	}
+}
+
+export function* watchAuthFavoriteTopic(){
+	while (true) {
+		const { page } = yield take([types.REQUEST_MY_FAVORITE_TOPIC, 
+									 types.REFRESH_MY_FAVORITE_TOPIC, 
+									 types.REQUEST_MORE_MY_FAVORITE_TOPIC]);
+
+		yield fork(fetchMyFavoriteTopicSagas, page);
 	}
 }
 

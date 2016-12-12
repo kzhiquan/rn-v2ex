@@ -15,6 +15,7 @@ import AccountContainer from '../containers/AccountContainer';
 import MyTopicListContainer from '../containers/MyTopicListContainer';
 import MyReplyListContainer from '../containers/MyReplyListContainer';
 import MyNodeListContainer from '../containers/MyNodeListContainer';
+import MyFavoriteTopicListContainer from '../containers/MyFavoriteTopicListContainer'
 
 
 class AuthPage extends React.Component {
@@ -69,6 +70,11 @@ class AuthPage extends React.Component {
 				component : MyNodeListContainer,
 				name : 'My NodeList'
 			});
+		}else if(item.name === '主题收藏'){
+			navigator.push({
+				component : MyFavoriteTopicListContainer,
+				name : 'My Favorite TopicList'
+			})
 		}
 
 
@@ -164,6 +170,10 @@ class AuthPage extends React.Component {
 							  },{
 							  	name : '节点收藏',
 							  	icon : 'ios-star-outline',
+							  	onClick : this.onFavoriteClick,
+							  },{
+							  	name : '主题收藏',
+							  	icon : 'ios-heart-outline',
 							  	onClick : this.onFavoriteClick,
 							  }],
 			}

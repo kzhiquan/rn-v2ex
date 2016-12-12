@@ -10,6 +10,12 @@ const initialState = {
 	myNode:{
 		isLoading : false,
 		nodeList : [],
+	},
+	myFavoriteTopic:{
+		isLoading:false,
+		isRefreshing : false,
+		isLoadingMore : false,
+		topicList : [],
 	}
 }
 
@@ -92,6 +98,43 @@ export default function auth(state = initialState, action){
 				}
 			})
 
+		//my favorite topic
+		case types.REQUEST_MY_FAVORITE_TOPIC:
+
+			return Object.assign({}, state, {
+				myFavoriteTopic : Object.assign({}, state.myFavoriteTopic, {
+					isLoading : true,
+				}),
+			});
+
+		case types.REFRESH_MY_FAVORITE_TOPIC:
+
+			return Object.assign({}, state, {
+				myFavoriteTopic : Object.assign({}, state.myFavoriteTopic, {
+					isRefreshing : true,
+				}),
+			});
+
+		case types.REQUEST_MORE_MY_FAVORITE_TOPIC:
+
+			return Object.assign({}, state, {
+				myFavoriteTopic : Object.assign({}, state.myFavoriteTopic, {
+					isLoadingMore : true,
+				})
+			})
+
+		case types.RECEIVE_MY_FAVORITE_TOPIC:
+
+			return Object.assign({}, state, {
+				myFavoriteTopic : Object.assign({}, state.myFavoriteTopic,{
+					isLoading : false,
+					isRefreshing : false,
+					isLoadingMore : false,
+					topicList : state.myFavoriteTopic.isLoadingMore ? loadMoreFavoriteTopic(state, action) : combineFavoriteTopic(state, action),
+					totalCount : action.totalCount,
+				}),
+			});
+
 		default:
 			return state;
 	}
@@ -124,5 +167,18 @@ function loadMoreReply(state, action) {
 		state.myReply.replyList = state.myReply.replyList.concat(action.myReply.replyList);
 	}
   	return state.myReply;
+}
+
+
+function combineFavoriteTopic(state, action) {
+	return action.topicList;
+}
+
+function loadMoreFavoriteTopic(state, action, countPerPage=20) {
+	if(state.myFavoriteTopic.topicList.length % countPerPage == 0){
+		state.myFavoriteTopic.topicList = state.myFavoriteTopic.topicList.concat(action.topicList);
+	}
+	
+  	return state.myFavoriteTopic.topicList;
 }
 

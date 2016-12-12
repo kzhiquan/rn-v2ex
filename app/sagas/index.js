@@ -17,7 +17,8 @@ import {
 	watchAuthTopic, 
 	watchAuthReply,
 	watchAuthNode, 
-	wathChangeUser 
+	wathChangeUser,
+	watchAuthFavoriteTopic, 
 } from './auth';
 
 import { watchNodeList } from './nodeList';
@@ -52,6 +53,7 @@ export default function* rootSaga(){
 		fork(watchAuthReply),
 		fork(watchAuthNode),
 		fork(wathChangeUser),
+		fork(watchAuthFavoriteTopic),
 		
 		fork(watchNodeList),
 
