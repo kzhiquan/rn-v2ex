@@ -217,7 +217,7 @@ export function fetchNewTopic(){
 
 export function postTopic(title, content, node, once){
 	let postUrl = SITE.HOST + '/new';
-	console.log('postUrl', postUrl, title, content, node, once);
+	//console.log('postUrl', postUrl, title, content, node, once);
 	return new Promise( (resolve, reject) => {
 		let body = 'title=' + encodeURIComponent(title)+
 				   '&content=' + encodeURIComponent(content)+ 
@@ -235,7 +235,7 @@ export function postTopic(title, content, node, once){
 			body: body,
 		})
 		.then( (response) => {
-			console.log(response);
+			//console.log(response);
 			if(response.status === 200 && response.ok){
 				resolve(response.url.replace(SITE.HOST, ''));
 			}else{
@@ -374,7 +374,7 @@ export function replyTopic(url, once, content){
 
 export function thankReply(url){
 	let thankUrl = SITE.HOST + url;
-	console.log('thankUrl', thankUrl);
+	//console.log('thankUrl', thankUrl);
 	return new Promise( (resolve, reject) => {
 		fetch(thankUrl,{
 			method: 'post',
@@ -735,6 +735,84 @@ export function fetchMyFavoriteTopic(path, page=1){
 			reject(error);
 		})
 	});	
+}
+
+export function fetchMyNotification(page = 1){
+	let myNotificationUrl = SITE.HOST + '/notifications' + '?p=' + page;
+	console.log('myNotificationUrl:', myNotificationUrl);
+	return new Promise( (resolve, reject) => {
+
+		fetch(myNotificationUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			//console.log('body', body);
+			let notificationList = []
+			const $ = cheerio.load(body);
+			$('#Main .box').children('.cell').each(function(i, el){
+				notification = {}
+				notification.member_url = $(this).find('td[width="32"] a').first().attr('href');
+				//console.log(i, notification.member_url)
+				if(notification.member_url){
+					notification.member_avatar = 'https:' + $(this).find('td[width="32"] img').first().attr('src');
+					notification.member_name = $(this).find('.fade a strong').first().text();
+					notification.operation = $(this).find('.fade').first().text();
+
+					notification.topic_title = $(this).find('.fade a').eq(1).text();
+					notification.topic_url = $(this).find('.fade a').eq(1).attr('href');
+
+					notification.post_date = $(this).find('.snow').first().text();
+					notification.content = $(this).find('.payload').first().html();
+	
+					let deleteOperation = $(this).find('.node').first().attr('onclick').match(/deleteNotification\((\d+), (\d+)\)/i);
+
+					notification.delete_url = '/delete/notification/' + deleteOperation[1] + '?once=' + deleteOperation[2];	
+					notificationList.push(notification);
+				}
+
+			});
+			let total_count = $('#Main .header .fr .gray').first().text();
+
+			const result = {
+				notificationList : notificationList,
+				totalCount : total_count,
+			}
+			resolve(result);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});		
+}
+
+export function deleteNotification(path){
+	let delete_url = SITE.HOST + path;
+	return new Promise( (resolve, reject) => {
+		fetch(delete_url, {
+			method : 'post',
+			headers : {
+				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
+				'Referer': "https://www.v2ex.com/notifications",
+			},
+			credentials: 'include'
+		})
+		.then( (response) => {
+			console.log(response);
+			if(response.status === 200 && response.ok){
+				resolve(true);
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error) => {
+			console.log('error', error);
+			reject(error);
+		});
+	});
 }
 
 export function fetchUser(path){

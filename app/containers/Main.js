@@ -15,6 +15,7 @@ import TopicListContainer from './TopicListContainer';
 import AccountContainer from './AccountContainer';
 import AuthContainer from './AuthContainer';
 import NodeListContainer from './NodeListContainer';
+import MyNotificationContainer from './MyNotificationContainer';
 
 
 class Main extends React.Component{
@@ -34,9 +35,8 @@ class Main extends React.Component{
 			      <NodeListContainer tabLabel="ios-compass-outline" {...this.props}>
 			      </NodeListContainer>
 
-			      <ScrollView tabLabel="ios-notifications" {...this.props}>
-			          <Text>Notifications</Text>
-			      </ScrollView>
+			      <MyNotificationContainer tabLabel="ios-notifications" {...this.props}>
+			      </MyNotificationContainer>
 
 			      <AuthContainer tabLabel="ios-person" {...this.props}>
 			      </AuthContainer>

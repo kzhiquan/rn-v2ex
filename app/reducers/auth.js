@@ -16,6 +16,13 @@ const initialState = {
 		isRefreshing : false,
 		isLoadingMore : false,
 		topicList : [],
+	},
+	myNotification:{
+		isLoading : false,
+		isRefreshing : false,
+		isLoadingMore : false,
+		notificationList : false,
+		deletedNotification : null,
 	}
 }
 
@@ -122,7 +129,6 @@ export default function auth(state = initialState, action){
 					isLoadingMore : true,
 				})
 			})
-
 		case types.RECEIVE_MY_FAVORITE_TOPIC:
 
 			return Object.assign({}, state, {
@@ -134,6 +140,56 @@ export default function auth(state = initialState, action){
 					totalCount : action.totalCount,
 				}),
 			});
+
+		//my notification
+		case types.REQUEST_MY_NOTIFICATION:
+			return Object.assign({}, state, {
+				myNotification : Object.assign({}, state.myNotification, {
+					isLoading : true,
+				})
+			});
+
+		case types.REFRESH_MY_NOTIFICATION:
+			return Object.assign({}, state, {
+				myNotification : Object.assign({}, state.myNotification, {
+					isRefreshing : true,
+				})
+			});
+
+		case types.REQUEST_MORE_MY_NOTIFICATION:
+			return Object.assign({}, state, {
+				myNotification : Object.assign({}, state.myNotification,{
+					isLoadingMore : true,
+				})
+			});
+
+		case types.RECEIVE_MY_NOTIFICATION:
+			return Object.assign({}, state, {
+				myNotification : Object.assign({}, state.myNotification, {
+					isLoading : false,
+					isRefreshing : false,
+					isLoadingMore : false,
+					deletedNotification : null,
+					notificationList : state.myNotification.isLoadingMore ? loadMoreNotificationList(state, action) : combineNotificationList(state, action),
+					totalCount : action.totalCount,
+				})
+			});
+		case types.DELETE_MY_NOTIFICATION:
+			return Object.assign({}, state, {
+				myNotification : Object.assign({}, state.myNotification,{
+					isLoading : true,
+					deletedNotification : null,
+				})
+			});
+
+		case types.END_DELETE_MY_NOTIFICATION:{
+			return Object.assign({}, state, {
+				myNotification : Object.assign({}, state.myNotification, {
+					isLoading : false,
+					deletedNotification : action.notification,
+				})
+			});
+		}
 
 		default:
 			return state;
@@ -153,6 +209,8 @@ function loadMoreTopic(state, action, countPerPage=20) {
   	return state.myTopic;
 }
 
+
+
 function combineReply(state, action) {
 	return action.myReply;
 }
@@ -170,6 +228,7 @@ function loadMoreReply(state, action) {
 }
 
 
+
 function combineFavoriteTopic(state, action) {
 	return action.topicList;
 }
@@ -180,5 +239,18 @@ function loadMoreFavoriteTopic(state, action, countPerPage=20) {
 	}
 	
   	return state.myFavoriteTopic.topicList;
+}
+
+
+function combineNotificationList(state, action) {
+	return action.notificationList;
+}
+
+function loadMoreNotificationList(state, action, countPerPage=10) {
+	if(state.myNotification.notificationList.length % countPerPage == 0){
+		state.myNotification.notificationList = state.myNotification.notificationList.concat(action.notificationList);
+	}
+	
+  	return state.myNotification.notificationList;
 }
 

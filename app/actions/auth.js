@@ -110,6 +110,49 @@ export function receiveMyFavoriteTopic(topicList, totalCount){
 }
 
 
+//the notification the login user.
+export function requestMyNotification(){
+	return {
+		type: types.REQUEST_MY_NOTIFICATION,
+	}
+}
+
+export function refreshMyNotification(){
+	return {
+		type : types.REFRESH_MY_NOTIFICATION,
+	}
+}
+
+export function requestMoreMyNotification(page){
+	return {
+		type : types.REQUEST_MORE_MY_NOTIFICATION,
+		page,
+	}
+}
+
+export function receiveMyNotification(notificationList, totalCount){
+	return {
+		type : types.RECEIVE_MY_NOTIFICATION,
+		notificationList,
+		totalCount,
+	}
+}
+
+export function deleteMyNotification(notification){
+	return {
+		type : types.DELETE_MY_NOTIFICATION,
+		notification,
+	}
+}
+
+export function endDeleteMyNotification(notification) {
+	return {
+		type : types.END_DELETE_MY_NOTIFICATION,
+		notification,
+	}
+}
+
+
 
 
 //the favorite node the login user interested

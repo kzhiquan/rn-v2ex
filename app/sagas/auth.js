@@ -8,7 +8,9 @@ import {
 	receiveMyReply, 
 	userLogin, 
 	receiveMyNode,
-	receiveMyFavoriteTopic
+	receiveMyFavoriteTopic,
+	receiveMyNotification,
+	endDeleteMyNotification,
 } from '../actions/auth'
 
 import { changeUserEnd } from '../actions/account'
@@ -19,6 +21,8 @@ import {
 	login, 
 	fetchMyNode,
 	fetchMyFavoriteTopic,
+	fetchMyNotification,
+	deleteNotification,
 } from '../utils/SiteUtil'
 
 
@@ -155,6 +159,63 @@ export function* watchAuthFavoriteTopic(){
 									 		types.REQUEST_MORE_MY_FAVORITE_TOPIC]);
 
 		yield fork(fetchMyFavoriteTopicSagas, path, page);
+	}
+}
+
+
+function* fetchMyNotificationSagas(page){
+	try{
+
+		const result = yield call(fetchMyNotification, page); 
+
+		console.log('result', result);
+
+		yield put(receiveMyNotification(result.notificationList, result.totalCount));
+
+	} catch ( error ){
+		toastShort('网络发生错误,请重试');
+		console.log('error', error);
+		yield put(receiveMyNotification());
+	}
+}
+
+export function* watchAuthNotification(){
+	while (true) {
+		const { page } = yield take([ types.REQUEST_MY_NOTIFICATION, 
+									 		types.REFRESH_MY_NOTIFICATION, 
+									 		types.REQUEST_MORE_MY_NOTIFICATION]);
+
+		yield fork(fetchMyNotificationSagas, page);
+	}
+}
+
+
+function* fetchDeleteNotificationSagas(notification){
+	try{
+
+		const result = yield call(deleteNotification, notification.delete_url); 
+		if(result){
+			toastShort('删除成功');
+			yield put(endDeleteMyNotification(notification));
+		}else{
+			toastShort('删除失败');
+			yield put(endDeleteMyNotification());
+		}
+
+		console.log('result', result);
+
+	} catch ( error ){
+		toastShort('网络发生错误,请重试');
+		console.log('error', error);
+		yield put(endDeleteMyNotification());
+	}
+}
+
+export function* watchDeleteNotification(){
+	while (true) {
+		const { notification } = yield take(types.DELETE_MY_NOTIFICATION);
+
+		yield fork(fetchDeleteNotificationSagas, notification);
 	}
 }
 
