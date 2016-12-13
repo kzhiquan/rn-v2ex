@@ -65,6 +65,26 @@ export default function user(state = initialState, action){
 				replyList: state.isReplyListLoadingMore ? loadMoreReply(state, action) : combineReply(state, action),
 			});
 
+		case types.REQUEST_FOCUS_USER:
+			return Object.assign({}, state, {
+				isLoading : true,
+			});
+
+		case types.END_REQUEST_FOCUS_USER:
+			return Object.assign({}, state, {
+				isLoading : false,
+			});
+
+		case types.REQUEST_BLOCK_USER:
+			return Object.assign({}, state, {
+				isLoading : true,
+			});
+
+		case types.END_REQUEST_BLOCK_USER:
+			return Object.assign({}, state, {
+				isLoading : false,
+			})
+
 		default:
 			return state;
 	}

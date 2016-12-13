@@ -49,3 +49,30 @@ export function receiveUserReplyList(replyList){
 		replyList : replyList,
 	}
 }
+
+export function requestFocusUser(user){
+	return {
+		type : types.REQUEST_FOCUS_USER,
+		user,
+	}
+}
+
+export function endRequestFocusUser() {
+	return {
+		type : types.END_REQUEST_FOCUS_USER,
+	}
+}
+
+export function requestBlockUser(user){
+	return {
+		type : types.REQUEST_BLOCK_USER,
+		user,
+	}
+}
+
+export function endRequestBlockUser(){
+	return {
+		type : types.END_REQUEST_BLOCK_USER,
+	}
+}
+

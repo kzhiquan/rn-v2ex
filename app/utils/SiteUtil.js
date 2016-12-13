@@ -299,7 +299,7 @@ export function favoriteTopic(url){
 			credentials:'include'
 		})
 		.then( (response) => {
-			console.log(response);
+			//console.log(response);
 			if(response.status === 200 && response.ok){
 				resolve(true);
 			}else{
@@ -841,9 +841,17 @@ export function fetchUser(path){
 			user.gold_count = $('#Main .box .cell .balance_area').text().split(' ')[2];
 			
 			user.active_num = $('#Main .box').eq(0).children('.cell').first().find('a').text();
-			user.active_url = $('#Main .box').eq(0).children('.cell').first().find('a').attr('href');		
-			user.linkList = [];
+			user.active_url = $('#Main .box').eq(0).children('.cell').first().find('a').attr('href');
 
+			let focus = $('#Main .box').eq(0).children('.cell').first().find('input').first().attr('onclick').match(/location.href = \'(.+)\'/i);
+			//console.log('focus', focus);
+			user.focus_url = focus[1]
+			//user.focus_url = focus[1]; 
+			let block = $('#Main .box').eq(0).children('.cell').first().find('input').eq(1).attr('onclick').match(/location.href = \'(.+)\'/i);
+			//console.log('block', block);
+			user.block_url = block[1];
+
+			user.linkList = [];
 			$('#Main .box').eq(0).children('.markdown_body').find('a').each(function(){
 				let link = {};
 				link.url = $(this).attr('href');
@@ -958,6 +966,27 @@ export function fetchUserReplyList(path, page=1){
 	});	
 }
 
+export function requestFocusUser(path){
+	let focusUserUrl = SITE.HOST + path;
+	//console.log('focusUserUrl', focusUserUrl)
+	return new Promise( (resolve, reject) => {
+		fetch(focusUserUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			//console.log(response);
+			if(response.status === 200 && response.ok){
+				resolve(true);
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});	
+}
 
 export function fetchCategoryNode(){
 	let url = SITE.HOST;
@@ -1036,7 +1065,6 @@ export async function fetchNode(){
 		allNode : allNode,
 	}
 }
-
 
 export function fetchGoogleSearch(searchText, nextPageUrl){
 	console.log('searchText', searchText, nextPageUrl);

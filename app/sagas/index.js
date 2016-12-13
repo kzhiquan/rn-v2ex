@@ -28,7 +28,8 @@ import { watchNodeList } from './nodeList';
 import { 
 	watchUser, 
 	watchUserTopicList,
-	watchUserReplyList 
+	watchUserReplyList,
+	watchFocusUser, 
 } from './user'
 
 
@@ -64,6 +65,7 @@ export default function* rootSaga(){
 		fork(watchUser),
 		fork(watchUserTopicList),
 		fork(watchUserReplyList),
+		fork(watchFocusUser),
 
 		fork(watchSearch),
 

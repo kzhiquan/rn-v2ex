@@ -90,7 +90,6 @@ class UserPage extends React.Component {
 		    </View>
 		  </TouchableOpacity>
 		);
-      //return null;
 	}
 
 	_renderNode(node, index, parent, type) {
@@ -221,9 +220,7 @@ class UserPage extends React.Component {
 	}
 
     renderSectionHeader(sectionData, sectionID){
-		//console.log('sectionID', sectionID);
 		if(sectionID === 'activity'){
-			//console.log('this', this);
 			return (
 				<View style={{flex:1, flexDirection:'row', justifyContent:'space-around', backgroundColor:'gray'}}>
 					<TouchableOpacity onPress={ () => this._onShowTopicClick() }>
@@ -234,17 +231,46 @@ class UserPage extends React.Component {
 					</TouchableOpacity>
 				</View>
 			);
+		}else{
+			return null;
 		}
-		return null;
     }
 
     renderSeparator(sectionID, rowID, adjacentRowHighlighted){
     	return null;
     }
 
-	render() {
-		const { user, navigator } = this.props;
-		let titleConfig = {
+    _onFocusUser(){
+    	//console.log('_onFocusUser');
+    	const { userActions, user } = this.props;
+    	//console.log('user', user);
+    	userActions.requestFocusUser(user.user);
+    }
+
+    _onBlockUser(){
+    	//console.log('_onBlockUser');
+    	const { userActions, user } = this.props;
+    	userActions.requestBlockUser(user.user);
+    }
+
+    _renderNavigator(){
+    	const { user, navigator } = this.props;
+    	let hasRightButton = false;
+    	let focusIconName = 'ios-heart-outline';
+    	let blockIconName = 'ios-eye-outline';
+    	if(user.user){
+    		hasRightButton = true;
+    		console.log(user.user.focus_url);
+    		if(user.user.focus_url.indexOf('unfollow') > 0){
+    			focusIconName = 'ios-heart';
+    		}
+    		console.log(user.user.block_url);
+    		if(user.user.block_url.indexOf('unblock') > 0){
+    			blockIconName = 'ios-eye';
+    		}
+    	}
+
+    	let titleConfig = {
 			title: '个人'
 		};
 		var leftButtonConfig = {
@@ -254,6 +280,29 @@ class UserPage extends React.Component {
 			}
 	    };
 
+	    return (
+				<NavigationBar
+					title={titleConfig}
+					leftButton={leftButtonConfig}
+		            rightButton={
+		            	hasRightButton ? 
+			            	(<View style={{flexDirection:'row'}}>
+			            		<TouchableOpacity onPress={this._onFocusUser.bind(this)}>
+					                <Icon name={focusIconName} size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
+					            </TouchableOpacity> 
+					            <TouchableOpacity onPress={this._onBlockUser.bind(this)}>
+					                <Icon name={blockIconName} size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
+					            </TouchableOpacity> 
+			            	</View>) : null
+		            }
+				/>
+	    )
+
+    }
+
+	render() {
+		const { user, navigator } = this.props;
+
 		let rows = {
 			'account' : [],
 			'activity' : [null]
@@ -261,6 +310,7 @@ class UserPage extends React.Component {
 
 		if(user.user){
 			rows['account'] = [user.user];
+
 		}
 
 		if(user.topicList && this.state.topicShowing){
@@ -271,33 +321,31 @@ class UserPage extends React.Component {
 			rows['activity'] = user.replyList.replyList;
 		}
 
+
 		//console.log('rows', rows);
 		return (
 			<View style={{flex:1}}>
 
-				<NavigationBar
-					title={titleConfig}
-					leftButton={leftButtonConfig}
+				{ this._renderNavigator() }
+    			<ListView
+					initialListSize = {5}
+					dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
+					renderRow={this.renderItem.bind(this)}
+					renderSectionHeader = {this.renderSectionHeader.bind(this)}
+					renderSeparator = {this.renderSeparator.bind(this)}
+					renderFooter={this.renderFooter.bind(this)}
+					onEndReachedThreshold={-50}
+      				onEndReached={this.onEndReached.bind(this)}
+      				onScroll={this.onScroll}
+      				ref="list"
+      				enableEmptySections = {true}
+					removeClippedSubviews = {false}
 				/>
-
-				{
-		          	(user.isLoading || user.isTopicListLoading) ? 
-		          	<LoadingView /> : 
-					<ListView
-						initialListSize = {5}
-						dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
-						renderRow={this.renderItem.bind(this)}
-						renderSectionHeader = {this.renderSectionHeader.bind(this)}
-						renderSeparator = {this.renderSeparator.bind(this)}
-						renderFooter={this.renderFooter.bind(this)}
-						onEndReachedThreshold={-50}
-          				onEndReached={this.onEndReached.bind(this)}
-          				onScroll={this.onScroll}
-          				ref="list"
-          				enableEmptySections = {true}
-						removeClippedSubviews = {false}
-					/>
-        		}
+				<ActivityIndicator
+		            animating={ user.isLoading || user.isTopicListLoading }
+		            style={styles.front}
+		            size="large"
+		        />
 
 			</View>
 		);
@@ -337,6 +385,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     marginLeft: 10
+  },
+
+  front:{
+    position: 'absolute',
+    top:300,
+    left: (375-50)/2,
+    width: 50,
+    height:50,
+    zIndex: 1,
   },
 
 });

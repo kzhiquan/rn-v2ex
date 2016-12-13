@@ -2,8 +2,20 @@ import { put, take, call, fork } from 'redux-saga/effects'
 import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
-import { receiveUser, receiveUserTopicList, receiveUserReplyList } from '../actions/user';
-import { fetchUser, fetchUserTopicList, fetchUserReplyList } from '../utils/SiteUtil'
+
+import { 
+	receiveUser, 
+	receiveUserTopicList, 
+	receiveUserReplyList,
+	endRequestFocusUser, 
+} from '../actions/user';
+
+import { 
+	fetchUser, 
+	fetchUserTopicList, 
+	fetchUserReplyList,
+	requestFocusUser, 
+} from '../utils/SiteUtil'
 
 
 
@@ -94,3 +106,75 @@ export function* watchUserReplyList(){
 		yield fork(fetchUserReplyListSagas, path, page);
 	}
 }
+
+
+function* requestFocusUserSagas(user){
+	try{
+		const result = yield call(requestFocusUser, user.focus_url); 
+		if(result){
+			if(user.focus_url.indexOf('unfollow') > 0){
+				toastShort('取消关注成功');
+				user.focus_url = user.focus_url.replace('unfollow', 'follow')
+			}else{
+				toastShort('关注成功');
+				user.focus_url = user.focus_url.replace('follow', 'unfollow');
+			}
+		}else{
+			toastShort("操作失败");
+		}
+
+		//console.log('user', user);
+
+		yield put(endRequestFocusUser());
+
+	} catch ( error ){
+		console.log('error:', error);
+		toastShort('网络发生错误，请重试');
+		yield put(endRequestFocusUser());
+	}
+}
+
+
+
+export function* watchFocusUser(){
+	while (true) {
+		const { user } = yield take(types.REQUEST_FOCUS_USER);
+		yield fork(requestFocusUserSagas, user);
+	}
+}
+
+function* requestBlockUserSagas(user){
+	try{
+		const result = yield call(requestBlockUser, user.block_url); 
+		if(result){
+			if(user.block_url.indexOf('unblock') > 0){
+				toastShort('取消关注成功');
+				user.focus_url = user.focus_url.replace('unfollow', 'follow')
+			}else{
+				toastShort('关注成功');
+				user.focus_url = user.focus_url.replace('follow', 'unfollow');
+			}
+		}else{
+			toastShort("操作失败");
+		}
+
+		//console.log('user', user);
+
+		yield put(endRequestBlockUser());
+
+	} catch ( error ){
+		console.log('error:', error);
+		toastShort('网络发生错误，请重试');
+		yield put(endRequestBlockUser());
+	}
+}
+
+
+
+export function* watchBlockUser(){
+	while (true) {
+		const { user } = yield take(types.REQUEST_FOCUS_USER);
+		yield fork(requestBlockUserSagas, user);
+	}
+}
+
