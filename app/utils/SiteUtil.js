@@ -685,8 +685,9 @@ export function fetchMyNode(){
 	});	
 }
 
-export function fetchMyFavoriteTopic(page=1){
-	let myFavoriteTopicUrl = SITE.HOST + '/my' + '/topics?p=' + page;
+export function fetchMyFavoriteTopic(path, page=1){
+	//let myFavoriteTopicUrl = SITE.HOST + '/my' + '/topics?p=' + page;
+	let myFavoriteTopicUrl = SITE.HOST + path + '?p=' + page;
 	console.log('myFavoriteTopicUrl:', myFavoriteTopicUrl);
 	return new Promise( (resolve, reject) => {
 

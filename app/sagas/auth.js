@@ -132,17 +132,17 @@ export function* watchAuthNode(){
 }
 
 
-function* fetchMyFavoriteTopicSagas(page){
+function* fetchMyFavoriteTopicSagas(path, page){
 	try{
 
-		const result = yield call(fetchMyFavoriteTopic, page); 
+		const result = yield call(fetchMyFavoriteTopic, path, page); 
 
 		console.log('result', result);
 
 		yield put(receiveMyFavoriteTopic(result.topicList, result.totalCount));
 
 	} catch ( error ){
-		toastShort('网络发生错误，请重试');
+		toastShort('网络发生错误,请重试');
 		console.log('error', error);
 		yield put(receiveMyFavoriteTopic());
 	}
@@ -150,11 +150,11 @@ function* fetchMyFavoriteTopicSagas(page){
 
 export function* watchAuthFavoriteTopic(){
 	while (true) {
-		const { page } = yield take([types.REQUEST_MY_FAVORITE_TOPIC, 
-									 types.REFRESH_MY_FAVORITE_TOPIC, 
-									 types.REQUEST_MORE_MY_FAVORITE_TOPIC]);
+		const { path, page } = yield take([ types.REQUEST_MY_FAVORITE_TOPIC, 
+									 		types.REFRESH_MY_FAVORITE_TOPIC, 
+									 		types.REQUEST_MORE_MY_FAVORITE_TOPIC]);
 
-		yield fork(fetchMyFavoriteTopicSagas, page);
+		yield fork(fetchMyFavoriteTopicSagas, path, page);
 	}
 }
 

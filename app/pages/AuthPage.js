@@ -73,8 +73,21 @@ class AuthPage extends React.Component {
 		}else if(item.name === '主题收藏'){
 			navigator.push({
 				component : MyFavoriteTopicListContainer,
-				name : 'My Favorite TopicList'
+				name : 'My Favorite TopicList',
+				node : {
+					name : '我收藏的主题',
+					path : '/my/topics',
+				}
 			})
+		}else if(item.name === '特别关注'){
+			navigator.push({
+				component : MyFavoriteTopicListContainer,
+				name : 'My Focus TopicList',
+				node : {
+					name : '我关注的主题',
+					path : '/my/following',
+				}
+			});
 		}
 
 
@@ -174,6 +187,10 @@ class AuthPage extends React.Component {
 							  },{
 							  	name : '主题收藏',
 							  	icon : 'ios-heart-outline',
+							  	onClick : this.onFavoriteClick,
+							  },{
+							  	name : '特别关注',
+							  	icon : 'ios-eye-outline',
 							  	onClick : this.onFavoriteClick,
 							  }],
 			}

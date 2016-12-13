@@ -50,15 +50,15 @@ class MyFavoriteTopicListPage extends React.Component {
   }
 
   componentDidMount() {
-    const { authActions, auth } = this.props;
-    authActions.requestMyFavoriteTopic();
+    const { authActions, auth, route } = this.props;
+    authActions.requestMyFavoriteTopic(route.node.path);
   }
 
   onRefresh(){
     canLoadMore = false;
     page = 1;
-    const { authActions, auth } = this.props;
-    authActions.refreshMyFavoriteTopic();
+    const { authActions, auth, route } = this.props;
+    authActions.refreshMyFavoriteTopic(route.node.path);
   }
 
   _topicClick(){
@@ -134,11 +134,11 @@ class MyFavoriteTopicListPage extends React.Component {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
 
-      const { authActions, auth } = this.props;
+      const { authActions, auth, route } = this.props;
       if(this._isCurrentPageFilled()){
         page += 1;
       }
-      authActions.requestMoreMyFavoriteTopic(page);
+      authActions.requestMoreMyFavoriteTopic(route.node.path, page);
     }
   }
 
@@ -149,7 +149,7 @@ class MyFavoriteTopicListPage extends React.Component {
   }
 
   render() {
-    const { navigator, auth } = this.props;
+    const { navigator, auth, route } = this.props;
 
     var leftButtonConfig = {
       title: 'Back',
@@ -159,7 +159,7 @@ class MyFavoriteTopicListPage extends React.Component {
     };
 
     var titleConfig = {
-      title: '我收藏的主题',
+      title: route.node.name,
     };
 
     let rows = []

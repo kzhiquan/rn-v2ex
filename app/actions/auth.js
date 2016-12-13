@@ -79,21 +79,24 @@ export function requestMoreMyReply(user, page){
 
 
 //the favorite topic the login user interested.
-export function requestMyFavoriteTopic(){
+export function requestMyFavoriteTopic(path){
 	return {
 		type: types.REQUEST_MY_FAVORITE_TOPIC,
+		path
 	}
 }
 
-export function refreshMyFavoriteTopic(){
+export function refreshMyFavoriteTopic(path){
 	return {
 		type : types.REFRESH_MY_FAVORITE_TOPIC,
+		path,
 	}
 }
 
-export function requestMoreMyFavoriteTopic(page){
+export function requestMoreMyFavoriteTopic(path, page){
 	return {
 		type : types.REQUEST_MORE_MY_FAVORITE_TOPIC,
+		path,
 		page,
 	}
 }
