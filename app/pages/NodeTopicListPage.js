@@ -187,6 +187,13 @@ class NodeTopicListPage extends React.Component {
     if(topicList.topicList && route.node.path in topicList.topicList){
       rows = topicList.topicList[route.node.path];
     }
+
+    /*let IconName = 'ios-heart-outline';
+    if(route.node){
+      if(route.node.favorite_url.indexOf('unfavorite') > 0){
+        focusIconName = 'ios-heart';
+      }
+    }*/
     //console.log('rows', rows.length);
     return (
       <View>

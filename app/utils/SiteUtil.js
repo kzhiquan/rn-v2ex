@@ -54,6 +54,7 @@ export function fetchTopicList(path, page=1){
 			topic.topic_title = $(this).find('.item_title a').first().text();
 			topic.node_url = $(this).find('.node').first().attr('href');
 			topic.node_name = $(this).find('.node').first().text();
+			topic.node_favorite_url = $('#Main .box .header .f12 a').attr('href');
 			topic.latest_reply_date = $(this).find('.small').text().split('•')[1];
 			topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
 			topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
