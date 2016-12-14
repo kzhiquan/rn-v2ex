@@ -30,6 +30,7 @@ import {
 	watchUserTopicList,
 	watchUserReplyList,
 	watchFocusUser, 
+	watchBlockUser,
 } from './user'
 
 
@@ -66,6 +67,7 @@ export default function* rootSaga(){
 		fork(watchUserTopicList),
 		fork(watchUserReplyList),
 		fork(watchFocusUser),
+		fork(watchBlockUser),
 
 		fork(watchSearch),
 

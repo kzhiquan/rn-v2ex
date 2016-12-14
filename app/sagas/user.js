@@ -8,6 +8,7 @@ import {
 	receiveUserTopicList, 
 	receiveUserReplyList,
 	endRequestFocusUser, 
+	endRequestBlockUser,
 } from '../actions/user';
 
 import { 
@@ -15,6 +16,7 @@ import {
 	fetchUserTopicList, 
 	fetchUserReplyList,
 	requestFocusUser, 
+	requestBlockUser,
 } from '../utils/SiteUtil'
 
 
@@ -148,11 +150,11 @@ function* requestBlockUserSagas(user){
 		const result = yield call(requestBlockUser, user.block_url); 
 		if(result){
 			if(user.block_url.indexOf('unblock') > 0){
-				toastShort('取消关注成功');
-				user.focus_url = user.focus_url.replace('unfollow', 'follow')
+				toastShort('取消屏蔽成功');
+				user.block_url = user.block_url.replace('unblock', 'block')
 			}else{
-				toastShort('关注成功');
-				user.focus_url = user.focus_url.replace('follow', 'unfollow');
+				toastShort('屏蔽成功');
+				user.block_url = user.block_url.replace('block', 'unblock');
 			}
 		}else{
 			toastShort("操作失败");
@@ -173,7 +175,7 @@ function* requestBlockUserSagas(user){
 
 export function* watchBlockUser(){
 	while (true) {
-		const { user } = yield take(types.REQUEST_FOCUS_USER);
+		const { user } = yield take(types.REQUEST_BLOCK_USER);
 		yield fork(requestBlockUserSagas, user);
 	}
 }

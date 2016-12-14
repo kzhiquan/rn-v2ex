@@ -260,11 +260,11 @@ class UserPage extends React.Component {
     	let blockIconName = 'ios-eye-outline';
     	if(user.user){
     		hasRightButton = true;
-    		console.log(user.user.focus_url);
+    		//console.log(user.user.focus_url);
     		if(user.user.focus_url.indexOf('unfollow') > 0){
     			focusIconName = 'ios-heart';
     		}
-    		console.log(user.user.block_url);
+    		//console.log(user.user.block_url);
     		if(user.user.block_url.indexOf('unblock') > 0){
     			blockIconName = 'ios-eye';
     		}

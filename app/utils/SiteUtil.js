@@ -988,6 +988,28 @@ export function requestFocusUser(path){
 	});	
 }
 
+export function requestBlockUser(path){
+	let blockUserUrl = SITE.HOST + path;
+	console.log('blockUserUrl', blockUserUrl)
+	return new Promise( (resolve, reject) => {
+		fetch(blockUserUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			//console.log(response);
+			if(response.status === 200 && response.ok){
+				resolve(true);
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});		
+}
+
 export function fetchCategoryNode(){
 	let url = SITE.HOST;
 	//console.log('url', url);
