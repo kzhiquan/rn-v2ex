@@ -3,11 +3,15 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import configureStore from './store/configureStore';
 
-import { View, Text } from 'react-native'
+import { 
+	View, 
+	Text 
+} from 'react-native'
 
 
 import rootSaga from './sagas/index'
-import App from './containers/App'
+//import App from './containers/App'
+import AppContainer from './containers/AppContainer';
 import LoadingView from './components/LoadingView';
 
 /*const store = configureStore(undefined, ()=>{
@@ -38,14 +42,14 @@ class V2ex extends React.Component{
 	}
 
 	render(){
-
+		
 		if(!this.state.rehydrated){
 			return <LoadingView />
 		}
 
 		return(
 			<Provider store={this.store}>
-				<App />
+				<AppContainer />
 			</Provider>
 		)
 	}

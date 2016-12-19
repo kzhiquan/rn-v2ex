@@ -7,13 +7,14 @@ import {
 	Navigator 
 } from 'react-native';
 
-import Main from './Main.js';
-import AccountContainer from './AccountContainer';
-import MyTopicListContainer from './MyTopicListContainer';
-import NodeListContainer from './NodeListContainer';
-import UserContainer from './UserContainer';
-import NodeTopicListContainer from './NodeTopicListContainer';
-import TestPage from '../pages/TestPage';
+import MainPage from './MainPage';
+import AccountContainer from '../containers/AccountContainer';
+import MyTopicListContainer from '../containers/MyTopicListContainer';
+import NodeListContainer from '../containers/NodeListContainer';
+import UserContainer from '../containers/UserContainer';
+import NodeTopicListContainer from '../containers/NodeTopicListContainer';
+
+import LoginContainer from '../containers/LoginContainer';
 
 
 class App extends React.Component{
@@ -40,7 +41,21 @@ class App extends React.Component{
 		}
 	}
 
+	_renderLoginPage(){
+		return <LoginContainer />
+	}
+
 	render(){
+		const { auth } = this.props;
+		//console.log('auth', auth);
+		//auth.user = null;
+		let currentComponent;
+		if( auth.user == null ){
+			currentComponent = LoginContainer;
+		}else{
+			currentComponent = MainPage;
+		}
+
 		return (
 			<View style={{flex : 1}}>
 				<Navigator
@@ -48,7 +63,7 @@ class App extends React.Component{
 					renderScene={this.renderScene.bind(this)}
 					configureScene={this.configureScene.bind(this)}
 					initialRoute={{
-						component : Main,
+						component : currentComponent,
 						//component : AccountContainer,
 						//component : MyTopicContainer,
 						//component: TestPage,

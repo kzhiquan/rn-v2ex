@@ -11,19 +11,20 @@ import {
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 
 import Tarbar from '../components/TabBar';
-import TopicListContainer from './TopicListContainer';
-import AccountContainer from './AccountContainer';
-import AuthContainer from './AuthContainer';
-import NodeListContainer from './NodeListContainer';
-import MyNotificationContainer from './MyNotificationContainer';
+import TopicListContainer from '../containers/TopicListContainer';
+import AccountContainer from '../containers/AccountContainer';
+import AuthContainer from '../containers/AuthContainer';
+import NodeListContainer from '../containers/NodeListContainer';
+import MyNotificationContainer from '../containers/MyNotificationContainer';
 
 
-class Main extends React.Component{
+class MainPage extends React.Component{
 	render(){
 		return (
 			<ScrollableTabView
 				locked={true}
 	      		initialPage={0}
+	      		activeTextColor="red"
 	      		tabBarPosition="bottom"
 	      		scrollWithoutAnimation={true}
 	      		renderTabBar={() => <Tarbar />}
@@ -38,7 +39,7 @@ class Main extends React.Component{
 			      <MyNotificationContainer tabLabel="ios-notifications" {...this.props}>
 			      </MyNotificationContainer>
 
-			      <AuthContainer tabLabel="ios-person" {...this.props}>
+			      <AuthContainer tabLabel="ios-person-outline" {...this.props}>
 			      </AuthContainer>
 
 	    	</ScrollableTabView>
@@ -49,4 +50,4 @@ class Main extends React.Component{
 
 
 
-export default Main;
+export default MainPage;

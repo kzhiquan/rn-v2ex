@@ -1,12 +1,15 @@
 import * as types from '../constants/ActionTypes'
+import {REHYDRATE} from 'redux-persist/constants'
 
 const initialState = {
 	user:null,
-	isLoading : true,
+	isLoading : false,
 	isRefreshing : false,
 	isLoadingMore : false,
+
 	myTopic:null,
 	myReply:null,
+
 	myNode:{
 		isLoading : false,
 		nodeList : [],
@@ -23,6 +26,11 @@ const initialState = {
 		isLoadingMore : false,
 		notificationList : false,
 		deletedNotification : null,
+	},
+
+	addAccount:{
+		isChecking : false,
+		addSuccess : false,
 	}
 }
 
@@ -182,14 +190,35 @@ export default function auth(state = initialState, action){
 				})
 			});
 
-		case types.END_DELETE_MY_NOTIFICATION:{
+		case types.END_DELETE_MY_NOTIFICATION:
 			return Object.assign({}, state, {
 				myNotification : Object.assign({}, state.myNotification, {
 					isLoading : false,
 					deletedNotification : action.notification,
 				})
 			});
-		}
+
+		//add account
+		case types.ADD_ACCOUNT:
+			return Object.assign({}, state, {
+				addAccount : Object.assign({}, state.addAccount, {
+					isChecking : true,
+					addSuccess : false,
+				})
+			});
+
+		case types.END_ADD_ACCOUNT:
+			return Object.assign({}, state, {
+				addAccount : Object.assign({}, state.addAccount, {
+					isChecking : false,
+					addSuccess : action.addSuccess,
+				})
+			});
+
+		/*case REHYDRATE:
+			return Object.assign({}, state, {
+				user : null,
+			});*/
 
 		default:
 			return state;

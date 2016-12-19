@@ -16,10 +16,15 @@ class AddAccountContainer extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { account } = state;
+  /*const { account } = state;
   return {
     account
+  };*/
+  const { auth } = state;
+  return {
+    auth
   };
+  
 };
 
 const mapDispatchToProps = (dispatch) => {

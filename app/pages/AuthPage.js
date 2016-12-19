@@ -5,6 +5,7 @@ import {
 	ListView,
 	StyleSheet,
 	TouchableOpacity, 
+	Image,
 } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
@@ -89,39 +90,83 @@ class AuthPage extends React.Component {
 				}
 			});
 		}
+	}
 
+	_renderAccountMeta(item, sectionID, rowID, highlightRow){
+		const { navigator, auth } = this.props;
+		return (
+			/*<TouchableOpacity onPress={this.onPressButton}>
+			 	<View style={styles.containerItem}>
+			 		<Icon name="ios-contact-outline" size={48} />
+			        <View style={styles.itemBody}>
+			          <Text>{item.name}</Text>
+			        </View>
+			        <Icon name="ios-arrow-forward" size={24} style={{top:16}}/>
+			    </View>
+			</TouchableOpacity>*/
+			<View style={{backgroundColor:'white', borderBottomWidth:1, borderBottomColor:'#B2B2B2'}}>
+				<View style={{flexDirection:'row'}}>
+					<Image
+						style={{width:42, height:42}}
+        				source={require('../static/imgs/logo.png')}
+      				/>
+      				<View>
+      					<View><Text>知了</Text></View>
+      					<View style={{flexDirection:'row'}}>
+	      					<View style={{flexDirection:'row'}}>
+	      						<View><Text>10</Text></View> 
+	      						<Image source={require('../static/imgs/silver.png')}/>
+	      					</View>
+	      					<View style={{flexDirection:'row'}}>
+	      						<View><Text>7</Text></View> 
+	      						<Image source={require('../static/imgs/gold.png')}/>
+	      					</View>
+      					</View>
+      				</View>
+				</View>
 
+				<View><Text>Code And Life</Text></View>
+
+  				<View style={{flexDirection:'row'}}>
+					<View style={{flexDirection:'row'}}>
+						<View><Text>38 个主题</Text></View>
+					 	<Image source={require('../static/imgs/topic.png')}/>
+					</View>
+					<View style={{flexDirection:'row'}}>
+						<View><Text>4 个节点</Text></View> 
+						<Icon name="ios-bookmark-outline" />
+					</View>
+					<View style={{flexDirection:'row'}}>
+						<View><Text>10 个人</Text></View>
+						<Icon name="ios-person-outline" />
+					</View>
+				</View>
+			</View>
+		);
+	}
+
+	_renderAccountBody(item, sectionID, rowID, highlightRow){
+		const { navigator } = this.props;
+		return (
+			<TouchableOpacity onPress={item.onClick} item={item} navigator={navigator}>
+			 	<View style={styles.containerItem}>
+			 		<Icon name={item.icon} size={36} />
+			        <View style={styles.itemBody}>
+			          <Text>{item.name}</Text>
+			        </View>
+			        <Icon name="ios-arrow-forward" size={24} style={{top:16}}/>
+			    </View>
+			</TouchableOpacity>
+		);
 	}
 
 	renderItem(item, sectionID, rowID, highlightRow){
-		//console.log(item, sectionID, rowID);
 		const { navigator } = this.props;
 		if(sectionID == 'account'){
-			return (
-				<TouchableOpacity onPress={this.onPressButton}>
-				 	<View style={styles.containerItem}>
-				 		<Icon name="ios-contact-outline" size={48} />
-				        <View style={styles.itemBody}>
-				          <Text>{item.name}</Text>
-				        </View>
-				        <Icon name="ios-arrow-forward" size={24} style={{top:16}}/>
-				    </View>
-				</TouchableOpacity>
-			);
+			return this._renderAccountMeta(item, sectionID, rowID, highlightRow);
+		}else{
+			return this._renderAccountBody(item, sectionID, rowID, highlightRow);
 		}
-
-
-		return (
-				<TouchableOpacity onPress={item.onClick} item={item} navigator={navigator}>
-				 	<View style={styles.containerItem}>
-				 		<Icon name={item.icon} size={36} />
-				        <View style={styles.itemBody}>
-				          <Text>{item.name}</Text>
-				        </View>
-				        <Icon name="ios-arrow-forward" size={24} style={{top:16}}/>
-				    </View>
-				</TouchableOpacity>
-		);
 	}
 
     renderSectionHeader(sectionData, sectionID){
@@ -163,9 +208,8 @@ class AuthPage extends React.Component {
 
 	render() {
 		const { auth } = this.props;
-		let title = auth.user ? auth.user.name : '个人';
 		let titleConfig = {
-			title: title
+			title: '个人'
 		};
 
 		let rows;
@@ -204,18 +248,22 @@ class AuthPage extends React.Component {
 
 		//console.log('rows', rows, this.props);
 		return (
-			<View style={{flex:1}}>
+			<View style={styles.container}>
+
 				<NavigationBar
+					style={styles.navigatorBarStyle}
 					title={titleConfig}
 				/>
+
 				<ListView
 					initialListSize = {5}
 					dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
 					renderRow={this.renderItem}
-					renderSectionHeader = {this.renderSectionHeader}
-					renderSeparator = {this.renderSeparator}
+					//renderSectionHeader = {this.renderSectionHeader}
+					//renderSeparator = {this.renderSeparator}
 					removeClippedSubviews = {false}
 				/>
+
 			</View>
 		);
   	}
@@ -224,6 +272,17 @@ class AuthPage extends React.Component {
 
 
 const styles = StyleSheet.create({
+	container : {
+		flex : 1,
+		backgroundColor : '#EFEFF4',
+	},
+	navigatorBarStyle:{
+		backgroundColor : '#ffffff', 
+		borderBottomWidth : 1,
+		borderBottomColor : '#B2B2B2',
+	},
+
+
   containerItem:{
     flex:1,
     flexDirection:'row',

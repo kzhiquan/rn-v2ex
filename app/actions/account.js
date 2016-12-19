@@ -14,9 +14,9 @@ export function editAccountPageInit(account){
 	}
 }
 
-export function accountAdd(name, password){
+export function addAccount(name, password){
 	return {
-		type : types.ACCOUNT_ADD,
+		type : types.ADD_ACCOUNT,
 		name,
 		password
 	};

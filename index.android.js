@@ -4,7 +4,7 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+/*import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
@@ -50,4 +50,8 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('v2ex', () => v2ex);
+AppRegistry.registerComponent('v2ex', () => v2ex);*/
+import { AppRegistry } from 'react-native';
+import V2ex from './app/v2ex';
+
+AppRegistry.registerComponent('v2ex', () => V2ex );

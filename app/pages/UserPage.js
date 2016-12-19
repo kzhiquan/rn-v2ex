@@ -8,6 +8,7 @@ import {
 	Image,
 	Dimensions,
 	ActivityIndicator,
+	RecyclerViewBackedScrollView,
 } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
@@ -261,11 +262,11 @@ class UserPage extends React.Component {
     	if(user.user){
     		hasRightButton = true;
     		//console.log(user.user.focus_url);
-    		if(user.user.focus_url.indexOf('unfollow') > 0){
+    		if(user.user.focus_user && user.user.focus_url.indexOf('unfollow') > 0){
     			focusIconName = 'ios-heart';
     		}
     		//console.log(user.user.block_url);
-    		if(user.user.block_url.indexOf('unblock') > 0){
+    		if(user.user.block_url && user.user.block_url.indexOf('unblock') > 0){
     			blockIconName = 'ios-eye';
     		}
     	}
@@ -340,6 +341,7 @@ class UserPage extends React.Component {
       				ref="list"
       				enableEmptySections = {true}
 					removeClippedSubviews = {false}
+					renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
 				/>
 				<ActivityIndicator
 		            animating={ user.isLoading || user.isTopicListLoading }

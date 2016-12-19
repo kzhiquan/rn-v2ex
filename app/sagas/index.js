@@ -12,7 +12,7 @@ import {
 	watchThankReply, 
 } from './topic';
 
-import { watchAccount } from './account';
+import { watchAddAccount } from './account';
 import { 
 	watchAuthTopic, 
 	watchAuthReply,
@@ -52,7 +52,7 @@ export default function* rootSaga(){
 		fork(watchReplyTopic),
 		fork(watchThankReply),
 
-		fork(watchAccount),
+		fork(watchAddAccount),
 		fork(watchAuthTopic),
 		fork(watchAuthReply),
 		fork(watchAuthNode),

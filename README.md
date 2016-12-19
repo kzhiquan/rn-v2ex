@@ -12,3 +12,9 @@ rn-v2ex, which is an iOS/Android client app for https://www.v2ex.com/, implement
 2. wetoo from GitHub. 
 3. cheerio to parse html.
 
+## iOS
+1. react-native run-ios
+
+## android
+1. android avd
+2. react-native run-android

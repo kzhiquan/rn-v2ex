@@ -1157,7 +1157,7 @@ export function FetchBingSearch(searchText, nextPageUrl){
 				topic.topic_title = $(this).find('h2 a').html();
 				topic.topic_url = $(this).find('h2 a').attr('href').replace(SITE.HOST, '');
 				topic.brief_content = $(this).find('.b_caption p').html();
-				topic.takein_search_date = $(this).find('.b_attribution').text();
+				topic.takein_search_date = $(this).find('.b_attribution').text().replace(SITE.HOST,'').replace(topic.topic_url, '');
 				topicList.push(topic);
 			});
 

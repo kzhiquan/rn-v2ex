@@ -7,10 +7,13 @@ import {
 	accountDelete, 
 	userReceive,
 	userCheckStart,
-	userCheckEnd 
+	userCheckEnd, 
 } from '../actions/account';
 
-import { userLogin } from '../actions/auth'
+import { 
+	userLogin,
+	endAddAccount,
+ } from '../actions/auth'
 
 import { login } from '../utils/SiteUtil'
 
@@ -19,30 +22,34 @@ import { login } from '../utils/SiteUtil'
 export function* checkUser(name, password){
 	try{
 
-		yield put(userCheckStart());
+		//yield put(userCheckStart());
 		const user = yield call(login, name, password);
 		if(!user){
-			toastShort('验证失败，请检查邮箱／密码！');
+			toastShort('添加失败，检查用户名密码！');
+			yield put(endAddAccount(false));
 		}else{
-			toastShort('验证成功！');
+			toastShort('添加成功！');
 			yield put(userLogin(user));
+			yield put(endAddAccount(true));
 		}
 		
-		yield put(userReceive(user));
-		yield put(userCheckEnd());
+		//yield put(userReceive(user));
+		//yield put(userCheckEnd());
+		//yield put(endAddAccount(true));
 
 	} catch ( error ){
 		console.log('error:', error);
-		yield put(userCheckEnd());
-		toastShort('网络发生错误，请重试');
+		//yield put(userCheckEnd());
+		yield put(endAddAccount(false));
+		toastShort('网络发生错误,请重试');
 	}
 }
 
 
 
-export function* watchAccount(){
+export function* watchAddAccount(){
 	while (true) {
-		const { name, password } = yield take(types.ACCOUNT_ADD);
+		const { name, password } = yield take(types.ADD_ACCOUNT);
 		yield fork(checkUser, name, password);
 	}
 }

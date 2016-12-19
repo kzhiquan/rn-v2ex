@@ -15,6 +15,24 @@ export function userLogout(){
 }
 
 
+//Add User
+export function addAccount(name, password){
+	return {
+		type : types.ADD_ACCOUNT,
+		name,
+		password
+	};
+}
+
+
+export function endAddAccount(addSuccess){
+	return {
+		type : types.END_ADD_ACCOUNT,
+		addSuccess,
+	}
+}
+
+
 //the topic which the user created.
 export function requestMyTopic(user){
 	return {

@@ -16,7 +16,7 @@ const rootReducer = combineReducers({
 	topicList,
 	topic,
 	auth,
-	account,
+	//account,
 	nodeList,
 	user,
 	search,
