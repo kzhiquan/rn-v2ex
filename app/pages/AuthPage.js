@@ -164,6 +164,7 @@ class AuthPage extends React.Component {
 
 	_renderAccountBody(item, sectionID, rowID, highlightRow){
 		const { navigator } = this.props;
+
 		return (
 			<TouchableOpacity 
 				onPress={item.onClick} 
@@ -239,6 +240,7 @@ class AuthPage extends React.Component {
 				style={{
 				  height: 1,
 				  backgroundColor:'#EAEAEC',
+				  left:16,
 				}}
 			/>
 		);
@@ -297,7 +299,7 @@ class AuthPage extends React.Component {
 					dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
 					renderRow={this.renderItem}
 					renderSectionHeader = {this.renderSectionHeader}
-					renderSeparator = {this.renderSeparator}
+					//renderSeparator = {this.renderSeparator}
 					removeClippedSubviews = {false}
 				/>
 
