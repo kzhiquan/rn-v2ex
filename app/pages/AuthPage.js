@@ -11,12 +11,12 @@ import {
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import { toastShort } from '../utils/ToastUtil';
 import AccountContainer from '../containers/AccountContainer';
 import MyTopicListContainer from '../containers/MyTopicListContainer';
 import MyReplyListContainer from '../containers/MyReplyListContainer';
 import MyNodeListContainer from '../containers/MyNodeListContainer';
-import MyFavoriteTopicListContainer from '../containers/MyFavoriteTopicListContainer'
+import MyFavoriteTopicListContainer from '../containers/MyFavoriteTopicListContainer';
+import SetContainer from '../containers/SetContainer';
 
 
 class AuthPage extends React.Component {
@@ -29,10 +29,7 @@ class AuthPage extends React.Component {
         		sectionHeaderHasChanged: (h1, h2) => h1 !== h2, 
         	} )
     	};
-    	this.renderItem = this.renderItem.bind(this);
-    	this.onPressButton = this.onPressButton.bind(this);
 	}
-
 
 	componentWillMount(){
 		console.log('componentWillMount');
@@ -42,18 +39,16 @@ class AuthPage extends React.Component {
 		console.log('componentDidMount');
 	}
 
-
-	onPressButton(){
-		//console.log('onPressButton');
-		const { navigator } = this.props;
+	_onSetClick(){
+		const { navigator } = this;
 		navigator.push({
-	        component : AccountContainer,
-	        name:'Account'
+	        component : SetContainer,
+	        name:'SetPage'
 		});
 	}
 
-	onFavoriteClick(){
-		//console.log('onFavoriteClick', this);
+	_onFavoriteClick(){
+
 		const { item, navigator } = this;
 
 		if(item.name === '我的主题'){
@@ -80,52 +75,34 @@ class AuthPage extends React.Component {
 					path : '/my/topics',
 				}
 			})
-		}else if(item.name === '特别关注'){
-			navigator.push({
-				component : MyFavoriteTopicListContainer,
-				name : 'My Focus TopicList',
-				node : {
-					name : '我关注的主题',
-					path : '/my/following',
-				}
-			});
 		}
 	}
 
-	_renderAccountMeta(item, sectionID, rowID, highlightRow){
-		const { navigator, auth } = this.props;
+	_renderAccountMeta(user, sectionID, rowID, highlightRow){
+		//console.log('user', user);
 		return (
-			/*<TouchableOpacity onPress={this.onPressButton}>
-			 	<View style={styles.containerItem}>
-			 		<Icon name="ios-contact-outline" size={48} />
-			        <View style={styles.itemBody}>
-			          <Text>{item.name}</Text>
-			        </View>
-			        <Icon name="ios-arrow-forward" size={24} style={{top:16}}/>
-			    </View>
-			</TouchableOpacity>*/
-			<View style={styles.accountMetaContainer}>
-				<View style={styles.rowContainer}>
+			<View style={[styles.accountMetaContainer,styles.lastCellContainer]}>
+				<View style={styles.directionRow}>
 					<Image
-						style={{width:42, height:42}}
-        				source={require('../static/imgs/logo.png')}
+						style={styles.avatar_size_42}
+        				source={{uri:user.avatar_url}}
       				/>
       				<View style={styles.avartarMetaContainer}>
       					<View>
-      						<Text style={{fontSize:16}}>知了</Text>
+      						<Text style={{fontSize:16}}>{user.name}</Text>
       					</View>
-      					<View style={styles.rowContainer}>
+      					<View style={styles.directionRow}>
 
-	      					<View style={[styles.rowContainer,{marginRight:8}]}>
+	      					<View style={[styles.directionRow,{marginRight:8}]}>
 	      						<View>
-	      							<Text style={styles.metaTextStyle}>10</Text>
+	      							<Text style={styles.metaTextStyle}>{user.silver_count}</Text>
 	      						</View> 
 	      						<Image source={require('../static/imgs/silver.png')}/>
 	      					</View>
 
-	      					<View style={styles.rowContainer}>
+	      					<View style={styles.directionRow}>
 	      						<View>
-	      							<Text style={styles.metaTextStyle}>7</Text>
+	      							<Text style={styles.metaTextStyle}>{user.gold_count}</Text>
 	      						</View> 
 	      						<Image source={require('../static/imgs/gold.png')}/>
 	      					</View>
@@ -135,25 +112,25 @@ class AuthPage extends React.Component {
 				</View>
 
 				<View style={{marginTop:14}}>
-					<Text style={{fontSize:14}}>Code And Life</Text>
+					<Text style={{fontSize:14}}>{user.words}</Text>
 				</View>
 
-  				<View style={[styles.rowContainer, {marginTop:12}]}>
-					<View style={[styles.rowContainer, {marginRight:32}]}>
+  				<View style={[styles.directionRow, {marginTop:12}]}>
+					<View style={[styles.directionRow, {marginRight:32}]}>
 						<View>
-							<Text style={styles.metaTextStyle}>38 个主题</Text>
+							<Text style={styles.metaTextStyle}>{user.favorite_topic_count} 个主题</Text>
 						</View>
 					 	<Image style={{left:2, bottom:4}} source={require('../static/imgs/topic.png')}/>
 					</View>
-					<View style={[styles.rowContainer,{marginRight:32}]}>
+					<View style={[styles.directionRow,{marginRight:32}]}>
 						<View>
-							<Text style={styles.metaTextStyle}>4 个节点</Text>
+							<Text style={styles.metaTextStyle}>{user.favorite_node_count} 个节点</Text>
 						</View> 
 						<Image style={{left:2, bottom:3}} source={require('../static/imgs/bookmark.png')}/>
 					</View>
-					<View style={styles.rowContainer}>
+					<View style={styles.directionRow}>
 						<View>
-							<Text style={styles.metaTextStyle}>10 个人</Text>
+							<Text style={styles.metaTextStyle}>{user.focus_user_count} 个人</Text>
 						</View>
 						<Image style={{left:2}} source={require('../static/imgs/person.png')}/>
 					</View>
@@ -162,18 +139,17 @@ class AuthPage extends React.Component {
 		);
 	}
 
-	_renderAccountBody(item, sectionID, rowID, highlightRow){
+	_renderCell(item, sectionID, rowID, highlightRow, cellContainerStyle){
 		const { navigator } = this.props;
-
 		return (
 			<TouchableOpacity 
 				onPress={item.onClick} 
 				item={item} 
 				navigator={navigator}
-				style={{backgroundColor:'white'}}>
+				style={cellContainerStyle}>
 
-			 	<View style={styles.itemContainer}>
-			        <View style={{top:14}}>
+			 	<View style={styles.cellStyle}>
+			        <View style={{paddingTop:14}}>
 			          <Text>{item.name}</Text>
 			        </View>
 			        <Image style={{top:14, right:12}} source={require('../static/imgs/arrow.png')}/>
@@ -183,28 +159,29 @@ class AuthPage extends React.Component {
 		);
 	}
 
+	_renderAccountBody(item, sectionID, rowID, highlightRow){
+
+		let cellContainerStyle = {backgroundColor:'white'};
+		if(rowID == 0){
+			cellContainerStyle = [cellContainerStyle, styles.firstCellContainer];
+		}else if( rowID == 3){
+			cellContainerStyle = [cellContainerStyle, styles.lastCellContainer];
+		}
+
+		return this._renderCell(item, sectionID, rowID, highlightRow, cellContainerStyle);
+	}
+
 	_renderSet(item, sectionID, rowID, highlightRow){
-		const { navigator } = this.props;
-		return (
-			<TouchableOpacity 
-				onPress={item.onClick} 
-				item={item} 
-				navigator={navigator}
-				style={{backgroundColor:'white', borderBottomWidth:1, borderBottomColor:'#B2B2B2'}}>
 
-			 	<View style={styles.itemContainer}>
-			        <View style={{top:14}}>
-			          <Text>设置</Text>
-			        </View>
-			        <Image style={{top:14, right:12}} source={require('../static/imgs/arrow.png')}/>
-			    </View>
+		let cellContainerStyle = {backgroundColor:'white'};
+		if(rowID == 0){
+			cellContainerStyle = [cellContainerStyle, styles.firstCellContainer, styles.lastCellContainer];
+		}
 
-			</TouchableOpacity>
-		);
+		return this._renderCell(item, sectionID, rowID, highlightRow, cellContainerStyle);
 	}
 
 	renderItem(item, sectionID, rowID, highlightRow){
-		const { navigator } = this.props;
 		if(sectionID == 'account'){
 			return this._renderAccountMeta(item, sectionID, rowID, highlightRow);
 		}else if(sectionID == 'favorite'){
@@ -221,29 +198,10 @@ class AuthPage extends React.Component {
 			return (
 		      <View
 		        key={`${sectionID}`}
-		        style={{
-		          	height: 16,
-				  	borderBottomWidth:1, 
-				  	borderTopColor:'#B2B2B2',
-				  	borderTopWidth:1,
-					borderBottomColor:'#B2B2B2',
-		        }}
+		        style={styles.headerSection}
 		      />
 		    );
 		}
-    }
-
-    renderSeparator(sectionID, rowID, adjacentRowHighlighted){
-    	return (
-			<View
-				key={`${sectionID}-${rowID}`}
-				style={{
-				  height: 1,
-				  backgroundColor:'#EAEAEC',
-				  left:16,
-				}}
-			/>
-		);
     }
 
 	render() {
@@ -252,40 +210,31 @@ class AuthPage extends React.Component {
 			title: '个人'
 		};
 
-		let rows;
-		if (auth.user){
+		let rows = [];
+		if(auth.user){
 			rows = {
 				'account' : [auth.user],
 				'favorite' : [{
 								name: '我的主题',
-								icon: 'ios-bookmark-outline',
-								onClick : this.onFavoriteClick,
+								onClick : this._onFavoriteClick,
 							  },{
 							  	name: '我的回复',
-							  	icon: 'ios-chatbubbles-outline',
-							  	onClick: this.onFavoriteClick,
+							  	onClick: this._onFavoriteClick,
 							  },{
 							  	name : '主题收藏',
-							  	icon : 'ios-star-outline',
-							  	onClick : this.onFavoriteClick,
+							  	onClick : this._onFavoriteClick,
 							  },{
 							  	name : '节点收藏',
-							  	icon : 'ios-heart-outline',
-							  	onClick : this.onFavoriteClick,
+							  	onClick : this._onFavoriteClick,
 							  }],
 				'set' : [{
 							name:'设置',
+							onClick : this._onSetClick,
 						}],
-			}
-		}else{
-			rows = {
-				'account' : [{
-					name : '尚未登陆，请登陆'
-				}]
 			}
 		}
 
-		//console.log('rows', rows, this.props);
+
 		return (
 			<View style={styles.container}>
 
@@ -297,9 +246,8 @@ class AuthPage extends React.Component {
 				<ListView
 					initialListSize = {5}
 					dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
-					renderRow={this.renderItem}
-					renderSectionHeader = {this.renderSectionHeader}
-					//renderSeparator = {this.renderSeparator}
+					renderRow={this.renderItem.bind(this)}
+					renderSectionHeader = {this.renderSectionHeader.bind(this)}
 					removeClippedSubviews = {false}
 				/>
 
@@ -309,24 +257,36 @@ class AuthPage extends React.Component {
 
 }
 
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#BBC5CD';
+let backgroundColor = '#EFEFF4';
 
 const styles = StyleSheet.create({
-	rowContainer:{
+	//common
+	directionRow:{
 		flexDirection : 'row',
 	},
+
+	avatar_size_42:{
+		width:42,
+		height:42,
+	},
+
+
+
+
 	container : {
 		flex : 1,
-		backgroundColor : '#EFEFF4',
+		backgroundColor : backgroundColor,
 	},
 	navigatorBarStyle:{
-		backgroundColor : '#ffffff', 
+		backgroundColor : 'white', 
 		borderBottomWidth : 1,
-		borderBottomColor : '#B2B2B2',
+		borderBottomColor : borderColor,
 	},
 	accountMetaContainer:{
 		backgroundColor:'white', 
-		//borderBottomWidth:1, 
-		//borderBottomColor:'#B2B2B2',
 		paddingTop:12,
 		paddingLeft:16,
 		paddingBottom:12,
@@ -338,14 +298,37 @@ const styles = StyleSheet.create({
 
 	metaTextStyle:{
 		fontSize:12, 
-		color:'#BBC5CD',
+		color:noteTextColor,
 	},
 
-	itemContainer:{
+	headerSection :{
+	    height: 16,
+	  	//borderBottomWidth:1, 
+	  	//borderTopColor:'#B2B2B2',
+	  	//borderTopWidth:1,
+		//borderBottomColor:'#B2B2B2',
+	},
+
+	sectionBorder:{
+		borderBottomWidth:1, 
+		borderBottomColor:borderColor,
+	},
+
+	firstCellContainer:{
+		backgroundColor:'white',
+		borderTopWidth : 1,
+		borderTopColor : borderColor,
+	},
+	lastCellContainer:{
+		backgroundColor:'white',
+		borderBottomWidth : 1,
+		borderBottomColor : borderColor,
+	},
+	cellStyle:{
 		flex:1,
 		flexDirection:'row',
-		//borderBottomWidth:1,
-		//borderBottomColor:'#EAEAEC',
+		borderBottomWidth:1,
+		borderBottomColor:cellBorderColor,
 		height:44,
 		justifyContent: 'space-between',
 		marginLeft:16,

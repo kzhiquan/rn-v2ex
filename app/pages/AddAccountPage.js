@@ -148,7 +148,6 @@ class AddAccountPage extends React.Component {
 		);
 	}
 
-
 }
 
 const {height, width} = Dimensions.get('window');

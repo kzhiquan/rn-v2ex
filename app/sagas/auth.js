@@ -11,6 +11,7 @@ import {
 	receiveMyFavoriteTopic,
 	receiveMyNotification,
 	endDeleteMyNotification,
+	endUserLogout,
 } from '../actions/auth'
 
 import { changeUserEnd } from '../actions/account'
@@ -23,8 +24,35 @@ import {
 	fetchMyFavoriteTopic,
 	fetchMyNotification,
 	deleteNotification,
+	logout,
 } from '../utils/SiteUtil'
 
+
+function* requestLogoutSagas(user){
+	try{
+		const result = yield call(logout, user.logout_url); 
+		if(result){
+			toastShort('注销成功');
+		}else{
+			toastShort('注销失败');
+		}
+		
+		yield put(endUserLogout(result));
+
+	} catch ( error ){
+		console.log('error', error);
+		toastShort('网络发生错误，请重试');
+		
+		yield put(endUserLogout(false));
+	}
+}
+
+export function* watchLogout(){
+	while (true) {
+		const { user } = yield take(types.USER_LOGOUT);
+		yield fork(requestLogoutSagas, user);
+	}
+}
 
 
 

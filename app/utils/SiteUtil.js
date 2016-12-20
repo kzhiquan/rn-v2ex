@@ -457,10 +457,23 @@ export function loginWithToken(token, url){
 			if( !$('.content td a[href="#;"]').first().attr('onclick') ){
 				resolve(false);
 			}else{
+
 				user['logout_url'] = $('.content td a[href="#;"]').first().attr('onclick').match(/\/signout\?once=\d+/i)[0];
 				user['name'] = $('.content td a').eq(2).text();
 				user['member_url'] = $('.content td a').eq(2).attr('href');
 				user['avatar_url'] = 'https:' + $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
+				
+				user['words'] = $('#Rightbar .box').first().find('.cell').first().find('table').first().find('tr td .fade').first().text();
+				
+				user['favorite_node_count'] = $('#Rightbar .box td[width="33%"] .bigger').eq(0).text();
+				user['favorite_topic_count'] = $('#Rightbar .box td[width="34%"] .bigger').eq(0).text();
+				user['focus_user_count'] = $('#Rightbar .box td[width="33%"] .bigger').eq(1).text();
+				
+				user['notification_count'] = $('#Rightbar a[href="/notifications"]').first().text().replace(' 条未读提醒', '');
+				//console.log($('#Rightbar #money a').text().split(' '));
+				user['silver_count'] = $('#Rightbar #money a').text().split(' ')[0];
+				user['gold_count'] = $('#Rightbar #money a').text().split(' ')[2];
+				
 				resolve(user);   
 			}
 		})
@@ -476,8 +489,8 @@ export async function login(name, password){
 	console.log('checkUser:', checkUser)
 
 	if( typeof checkUser === 'object'){
-		let logoutUrl = SITE.HOST + checkUser.logout_url
-		let checkLogout = await logout(logoutUrl);
+		//let logoutUrl = SITE.HOST + checkUser.logout_url
+		let checkLogout = await tryLogout(checkUser.logout_url);
 		console.log('checkLogout', checkLogout);
 	}
 
@@ -511,11 +524,24 @@ export function isLogin(){
 
 			//console.log($('title').text().indexOf("最近"));
 			if( $('title').text().indexOf("最近")>= 0 ){
+
 				let user = {}
 				user['logout_url'] = $('#Top .content td a[href="#;"]').first().attr('onclick').match(/\/signout\?once=\d+/i)[0];
 				user['name'] = $('#Top .content td a').eq(2).text();
 				user['member_url'] = $('#Top .content td a').eq(2).attr('href');
 				user['avatar_url'] = 'https:' + $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
+				
+				user['words'] = $('#Rightbar .box').first().find('.cell').first().find('table').first().find('tr td .fade').first().text();
+				
+				user['favorite_node_count'] = $('#Rightbar .box td[width="33%"] .bigger').eq(0).text();
+				user['favorite_topic_count'] = $('#Rightbar .box td[width="34%"] .bigger').eq(0).text();
+				user['focus_user_count'] = $('#Rightbar .box td[width="33%"] .bigger').eq(1).text();
+				
+				user['notification_count'] = $('#Rightbar a[href="/notifications"]').first().text().replace(' 条未读提醒', '');
+				//console.log($('#Rightbar #money a').text().split(' '));
+				user['silver_count'] = $('#Rightbar #money a').text().split(' ')[0];
+				user['gold_count'] = $('#Rightbar #money a').text().split(' ')[2];
+
 				resolve(user);
 			}else{
 				resolve(false);
@@ -528,9 +554,11 @@ export function isLogin(){
 	});
 }
 
-export function logout(url){
+export function tryLogout(path){
+	let logout_url = SITE.HOST + path;
+	console.log('logout_url', logout_url);
 	return new Promise( (resolve, reject) => {
-		fetch(url, {
+		fetch(logout_url, {
 			method : 'get',
 			headers : {
 				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
@@ -556,6 +584,17 @@ export function logout(url){
 			reject(error);
 		});
 	});
+}
+
+export async function logout(path){
+	let result = await isLogin();
+	if(!result){
+		return true;
+	}else{
+		result = await tryLogout(result.logout_url);
+	}
+
+	return result;
 }
 
 export function fetchMyTopic(path, page=1){

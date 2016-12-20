@@ -30,6 +30,7 @@ export const RECEIVE_NODE_LIST = 'RECEIVE_NODE_LIST'
 
 export const USER_LOGIN = 'USER_LOGIN'
 export const USER_LOGOUT = 'USER_LOGOUT'
+export const END_USER_LOGOUT = 'END_USER_LOGOUT'
 
 export const REQUEST_USER = 'REQUEST_USER'
 export const RECEIVE_USER = 'RECEIVE_USER'

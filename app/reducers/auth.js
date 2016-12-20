@@ -28,10 +28,11 @@ const initialState = {
 		deletedNotification : null,
 	},
 
+	//add account page
 	addAccount:{
 		isChecking : false,
 		addSuccess : false,
-	}
+	},
 }
 
 
@@ -43,10 +44,20 @@ export default function auth(state = initialState, action){
 				user : action.user
 			} );
 
-		case types.USER_LOGOUT:
+		/*case types.USER_LOGOUT:
 			return Object.assign({}, state, {
 				user : null,
-			} );
+			} );*/
+		case types.USER_LOGOUT:
+			return Object.assign({}, state, {
+				isLoading : true,
+			})
+
+		case types.END_USER_LOGOUT:
+			return Object.assign({}, state, {
+				isLoading : false,
+				user : action.logoutSuccess ? null : state.user,
+			})
 	
 		//Topic
 		case types.REQUEST_MY_TOPIC:
@@ -215,10 +226,10 @@ export default function auth(state = initialState, action){
 				})
 			});
 
-		/*case REHYDRATE:
-			return Object.assign({}, state, {
-				user : null,
-			});*/
+		case REHYDRATE:
+			return Object.assign({}, state, action.payload.auth, {
+				isLoading : false,
+			});
 
 		default:
 			return state;

@@ -8,9 +8,17 @@ export function userLogin(user){
 	}
 }
 
-export function userLogout(){
+export function userLogout(user){
 	return {
 		type : types.USER_LOGOUT,
+		user,
+	}
+}
+
+export function endUserLogout(logoutSuccess){
+	return {
+		type : types.END_USER_LOGOUT,
+		logoutSuccess,
 	}
 }
 
