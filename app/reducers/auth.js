@@ -33,6 +33,8 @@ const initialState = {
 		isChecking : false,
 		addSuccess : false,
 	},
+
+	accounts:[],
 }
 
 
@@ -41,7 +43,8 @@ export default function auth(state = initialState, action){
 		//Login
 		case types.USER_LOGIN:
 			return Object.assign({}, state, { 
-				user : action.user
+				user : state.user ? state.user : action.user,
+				accounts : combineAccount(state, action),
 			} );
 
 		/*case types.USER_LOGOUT:
@@ -58,6 +61,36 @@ export default function auth(state = initialState, action){
 				isLoading : false,
 				user : action.logoutSuccess ? null : state.user,
 			})
+
+				//add account
+		case types.ADD_ACCOUNT:
+			return Object.assign({}, state, {
+				addAccount : Object.assign({}, state.addAccount, {
+					isChecking : true,
+					addSuccess : false,
+				})
+			});
+
+		case types.END_ADD_ACCOUNT:
+			return Object.assign({}, state, {
+				addAccount : Object.assign({}, state.addAccount, {
+					isChecking : false,
+					addSuccess : action.user ? true : false,
+				}),
+				user : action.user ? action.user : state.user,
+				accounts : combineAccount(state, action),
+			});
+
+
+		case types.CHANGE_USER:
+			return Object.assign({}, state, {
+				isLoading : true
+			});
+		case types.END_CHANGE_USER:
+			return Object.assign({}, state, {
+				isLoading : false,
+				user : action.user ? action.user : state.user,
+			});
 	
 		//Topic
 		case types.REQUEST_MY_TOPIC:
@@ -142,7 +175,6 @@ export default function auth(state = initialState, action){
 			});
 
 		case types.REQUEST_MORE_MY_FAVORITE_TOPIC:
-
 			return Object.assign({}, state, {
 				myFavoriteTopic : Object.assign({}, state.myFavoriteTopic, {
 					isLoadingMore : true,
@@ -209,26 +241,13 @@ export default function auth(state = initialState, action){
 				})
 			});
 
-		//add account
-		case types.ADD_ACCOUNT:
-			return Object.assign({}, state, {
-				addAccount : Object.assign({}, state.addAccount, {
-					isChecking : true,
-					addSuccess : false,
-				})
-			});
 
-		case types.END_ADD_ACCOUNT:
-			return Object.assign({}, state, {
-				addAccount : Object.assign({}, state.addAccount, {
-					isChecking : false,
-					addSuccess : action.addSuccess,
-				})
-			});
 
 		case REHYDRATE:
 			return Object.assign({}, state, action.payload.auth, {
-				isLoading : false,
+				/*isLoading : false,
+				user : null,
+				accounts : [],*/
 			});
 
 		default:
@@ -236,6 +255,21 @@ export default function auth(state = initialState, action){
 	}
 }
 
+
+function combineAccount(state, action){
+
+	if(!action.user) return state.accounts;
+
+	let foundUser = state.accounts.find( (user) => {
+		return user.name == action.user.name;
+	});
+
+	if(!foundUser){
+		state.accounts.push(action.user);
+	}
+
+	return state.accounts;
+}
 
 function combineTopic(state, action) {
 	return action.myTopic;

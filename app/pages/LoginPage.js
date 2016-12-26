@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import AddAccountContainer from '../containers/AddAccountContainer';
+import MainPage from './MainPage';
 
 class LoginPage extends React.Component{
 
@@ -18,13 +19,29 @@ class LoginPage extends React.Component{
 		super(props);
 	}
 
+	componentWillReceiveProps(nextProps){
+		const { navigator, auth } = nextProps;
+		if( auth.user ){
+			navigator.resetTo({
+				component: MainPage,
+				name : 'MainPage',
+			});
+		}
+	}
+
 	_onLoginButton(){
-		const { navigator } = this.props;
+		const { navigator, auth, authActions } = this.props;
 		//console.log('navigator', navigator);
-		navigator.push({
-			component : AddAccountContainer,
-			name : 'AddAccountPage',
-		})
+		if(auth.accounts.length !=0){
+
+			authActions.changeUser(auth.accounts[0]);
+
+		}else{
+			navigator.push({
+				component : AddAccountContainer,
+				name : 'AddAccountPage',
+			});
+		}
 	}
 
 	render(){

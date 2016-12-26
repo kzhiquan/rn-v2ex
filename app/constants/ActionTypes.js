@@ -82,12 +82,14 @@ export const USER_RECEIVE = 'USER_RECEIVE'
 export const USER_CHECK_START = 'USER_CHECK_START'
 export const USER_CHECK_END = 'USER_CHECK_END'
 export const CHANGE_USER_START = 'CHANGE_USER_START'
-export const CHANGE_USER = 'CHANGE_USER'
+//export const CHANGE_USER = 'CHANGE_USER'
 export const CHANGE_USER_END = 'CHANGE_USER_END'
 
 
 export const ADD_ACCOUNT = 'ADD_ACCOUNT'
 export const END_ADD_ACCOUNT = 'END_ADD_ACCOUNT'
+export const CHANGE_USER = 'CHANGE_USER'
+export const END_CHANGE_USER = 'END_CHANGE_USER'
 
 
 

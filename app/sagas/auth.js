@@ -12,9 +12,10 @@ import {
 	receiveMyNotification,
 	endDeleteMyNotification,
 	endUserLogout,
+	endChangeUser,
 } from '../actions/auth'
 
-import { changeUserEnd } from '../actions/account'
+//import { changeUserEnd } from '../actions/account'
 
 import { 
 	fetchMyTopic, 
@@ -119,22 +120,23 @@ function* changeUserSagas(newUser){
 			toastShort('切换失败，请检查用户名／密码！');
 		}else{
 			toastShort('切换成功！');
-			yield put(userLogin(user));
+			//yield put(userLogin(user));
 		}
 
-		yield put(changeUserEnd());
+		yield put(endChangeUser(user));
 
 	} catch (error){
 		console.log('error', error);
 		toastShort('网络发生错误，请重试');
-		yield put(changeUserEnd());
+		yield put(endChangeUser());
 	}
 
 }
 
 export function * wathChangeUser(){
 	while (true){
-		const { user } = yield take(types.CHANGE_USER_START);
+		const { user } = yield take(types.CHANGE_USER);
+		console.log('user', user);
 		yield fork(changeUserSagas, user);
 	}
 }

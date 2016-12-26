@@ -59,8 +59,18 @@ class AddAccountPage extends React.Component {
 
 	componentWillReceiveProps(nextProps){
 		const { navigator, auth } = nextProps;
+		console.log('auth', auth);
 		if( auth.addAccount.addSuccess ){
 			//navigator.pop();
+			/*console.log('old user', this.props.auth.user);
+			if(!this.props.auth.user){
+				navigator.resetTo({
+					component: MainPage,
+					name : 'main',
+				});
+			}else{
+				navigator.pop();
+			}*/
 			navigator.resetTo({
 				component: MainPage,
 				name : 'main',

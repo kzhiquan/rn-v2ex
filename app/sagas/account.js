@@ -26,11 +26,13 @@ export function* checkUser(name, password){
 		const user = yield call(login, name, password);
 		if(!user){
 			toastShort('添加失败，检查用户名密码！');
-			yield put(endAddAccount(false));
+			yield put(endAddAccount());
 		}else{
 			toastShort('添加成功！');
-			yield put(userLogin(user));
-			yield put(endAddAccount(true));
+			//yield put(userLogin(user));
+			user.name = name;
+			user.password = password;
+			yield put(endAddAccount(user));
 		}
 		
 		//yield put(userReceive(user));
@@ -40,7 +42,7 @@ export function* checkUser(name, password){
 	} catch ( error ){
 		console.log('error:', error);
 		//yield put(userCheckEnd());
-		yield put(endAddAccount(false));
+		yield put(endAddAccount());
 		toastShort('网络发生错误,请重试');
 	}
 }

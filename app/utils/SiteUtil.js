@@ -423,7 +423,7 @@ export function getLoginToken(name, password, url){
 			postForm[loginField.password] = password;
 			postForm['once'] = loginField.onceValue;
 			postForm['next'] = '/' 
-
+			console.log('postForm', postForm);
 			resolve(qs.stringify(postForm));
 
 		})

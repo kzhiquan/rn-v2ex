@@ -33,10 +33,24 @@ export function addAccount(name, password){
 }
 
 
-export function endAddAccount(addSuccess){
+export function endAddAccount(user){
 	return {
 		type : types.END_ADD_ACCOUNT,
-		addSuccess,
+		user,
+	}
+}
+
+export function changeUser(user){
+	return{
+		type : types.CHANGE_USER,
+		user,
+	}
+}
+
+export function endChangeUser(user){
+	return {
+		type : types.END_CHANGE_USER,
+		user,
 	}
 }
 

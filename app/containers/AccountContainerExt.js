@@ -2,13 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import LoginPage from '../pages/LoginPage';
+import AccountPageExt from '../pages/AccountPageExt';
 import * as authCreators from '../actions/auth';
 
-class LoginContainer extends React.Component {
+class AccountContainerExt extends React.Component {
   render() {
     return (
-      <LoginPage {...this.props} />
+      <AccountPageExt {...this.props} />
     );
   }
 }
@@ -16,9 +16,10 @@ class LoginContainer extends React.Component {
 const mapStateToProps = (state) => {
   const { auth } = state;
   return {
-    auth
+    auth,
   };
 };
+
 
 const mapDispatchToProps = (dispatch) => {;
   const authActions = bindActionCreators(authCreators, dispatch);
@@ -28,4 +29,6 @@ const mapDispatchToProps = (dispatch) => {;
 };
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginContainer);
+
+
+export default connect(mapStateToProps,mapDispatchToProps)(AccountContainerExt);
