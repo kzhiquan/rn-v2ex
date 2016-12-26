@@ -40,43 +40,49 @@ class AuthPage extends React.Component {
 	}
 
 	_onSetClick(){
-		const { navigator } = this;
+		const { navigator } = this.props;
 		navigator.push({
 	        component : SetContainer,
 	        name:'SetPage'
 		});
 	}
 
-	_onFavoriteClick(){
-
-		const { item, navigator } = this;
-
-		if(item.name === '我的主题'){
-			navigator.push({
-				component : MyTopicListContainer,
-				name : 'My Topic'
-			})
-		}else if(item.name === '我的回复'){
-			navigator.push({
-				component : MyReplyListContainer,
-				name : 'My Reply'
-			})
-		}else if(item.name === '节点收藏'){
-			navigator.push({
-				component : MyNodeListContainer,
-				name : 'My NodeList'
-			});
-		}else if(item.name === '主题收藏'){
-			navigator.push({
-				component : MyFavoriteTopicListContainer,
-				name : 'My Favorite TopicList',
-				node : {
-					name : '我收藏的主题',
-					path : '/my/topics',
-				}
-			})
-		}
+	_onMyTopicClick(){
+		const { navigator } = this.props;
+		navigator.push({
+			component : MyTopicListContainer,
+			name : 'MyTopicPage'
+		});
 	}
+
+	_onMyReplyClick(){
+		const { navigator } = this.props;
+		navigator.push({
+			component : MyReplyListContainer,
+			name : 'MyReplyPage'
+		});
+	}
+
+	_onMyNodeClick(){
+		const { navigator } = this.props;
+		navigator.push({
+			component : MyNodeListContainer,
+			name : 'MyNodePage'
+		});
+	}
+
+	_onMyFavoriteTopicClick(){
+		const { navigator } = this.props;
+		navigator.push({
+			component : MyFavoriteTopicListContainer,
+			name : 'MyFavoriteTopicPage',
+			node : {
+				name : '我收藏的主题',
+				path : '/my/topics',
+			}
+		});
+	}
+
 
 	_renderAccountMeta(user, sectionID, rowID, highlightRow){
 		//console.log('user', user);
@@ -216,20 +222,20 @@ class AuthPage extends React.Component {
 				'account' : [auth.user],
 				'favorite' : [{
 								name: '我的主题',
-								onClick : this._onFavoriteClick,
+								onClick : this._onMyTopicClick.bind(this),
 							  },{
 							  	name: '我的回复',
-							  	onClick: this._onFavoriteClick,
+							  	onClick: this._onMyReplyClick.bind(this),
 							  },{
 							  	name : '主题收藏',
-							  	onClick : this._onFavoriteClick,
+							  	onClick : this._onMyFavoriteTopicClick.bind(this),
 							  },{
 							  	name : '节点收藏',
-							  	onClick : this._onFavoriteClick,
+							  	onClick : this._onMyNodeClick.bind(this),
 							  }],
 				'set' : [{
 							name:'设置',
-							onClick : this._onSetClick,
+							onClick : this._onSetClick.bind(this),
 						}],
 			}
 		}

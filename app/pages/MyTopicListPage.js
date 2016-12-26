@@ -12,17 +12,17 @@ import {
   Image,
   ActivityIndicator,
   RecyclerViewBackedScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 
 import NavigationBar from 'react-native-navbar';
 
 
-import LoadingView from '../components/LoadingView'
-import AccountContainer from '../containers/AccountContainer'
-import TopicContainer from '../containers/TopicContainer'
-import { toastShort } from '../utils/ToastUtil';
+import LoadingView from '../components/LoadingView';
+import AccountContainer from '../containers/AccountContainer';
+import TopicContainer from '../containers/TopicContainer';
 
 
 let canLoadMore;
@@ -69,6 +69,11 @@ class MyTopicListPage extends React.Component {
       name : 'Topic',
       topic : topic,
     });
+  }
+
+  _onBackClick(){
+    const { navigator } = this.props;
+    navigator.pop();
   }
 
   renderItem(topic) {
@@ -141,13 +146,6 @@ class MyTopicListPage extends React.Component {
   render() {
     const { navigator, auth } = this.props;
 
-    var leftButtonConfig = {
-      title: 'Back',
-      handler: function onBack() {
-        navigator.pop();
-      }
-    };
-
     var titleConfig = {
       title: '我的主题',
     };
@@ -158,32 +156,43 @@ class MyTopicListPage extends React.Component {
     }
 
     return (
-      <View style={{flex:1}}>
-          <NavigationBar
-              title={titleConfig}
-              leftButton={leftButtonConfig}/>
+      <View style={styles.container}>
 
-          { auth.isLoading ? <LoadingView /> : 
-              <ListView
-                initialListSize = {5}
-                dataSource={this.state.dataSource.cloneWithRows(rows)}
-                renderRow={this.renderItem}
-                renderFooter={this.renderFooter}
-                onEndReached={this.onEndReached}
-                onScroll={this.onScroll}
-                onEndReachedThreshold={-20}
-                enableEmptySections={true}
-                removeClippedSubviews = {false}
-                renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={auth.isRefreshing}
-                    onRefresh={() => this.onRefresh()}
-                    title="Loading..."
-                  />
-                }
+          <NavigationBar
+            style={styles.navigatorBarStyle}
+            title={titleConfig}
+            leftButton={
+              <TouchableOpacity onPress={this._onBackClick.bind(this)}>
+                  <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+              </TouchableOpacity> 
+            }
+          />
+
+          <ListView
+            initialListSize = {5}
+            dataSource={this.state.dataSource.cloneWithRows(rows)}
+            renderRow={this.renderItem}
+            renderFooter={this.renderFooter}
+            onEndReached={this.onEndReached}
+            onScroll={this.onScroll}
+            onEndReachedThreshold={-20}
+            enableEmptySections={true}
+            removeClippedSubviews = {false}
+            renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+            refreshControl={
+              <RefreshControl
+                refreshing={auth.isRefreshing}
+                onRefresh={() => this.onRefresh()}
+                title="Loading..."
               />
-          }
+            }
+          />
+
+        <ActivityIndicator
+          animating={ auth.isLoading }
+          style={styles.front}
+          size="large"
+        />
 
 
       </View>
@@ -191,7 +200,15 @@ class MyTopicListPage extends React.Component {
   }
 }
 
+
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#BBC5CD';
+let backgroundColor = '#EFEFF4';
+
 const styles = StyleSheet.create({
+
   containerItem:{
     flex:1,
     flexDirection:'row',
@@ -224,6 +241,87 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10
   },
+
+  //common
+  directionRow:{
+    flexDirection : 'row',
+  },
+
+  avatar_size_42:{
+    width:42,
+    height:42,
+  },
+
+  front:{
+      position: 'absolute',
+      top:300,
+      left: (width-50)/2,
+      width: 50,
+      height:50,
+      zIndex: 1,
+  },
+
+  navigatorBarStyle:{
+    backgroundColor : 'white', 
+    borderBottomWidth : 1,
+    borderBottomColor : borderColor,
+  },
+
+  //custom
+  container : {
+    flex : 1,
+    backgroundColor : backgroundColor,
+  },
+
+  /*accountMetaContainer:{
+    backgroundColor:'white', 
+    paddingTop:12,
+    paddingLeft:16,
+    paddingBottom:12,
+  },
+  avartarMetaContainer:{
+    paddingLeft:10,
+    justifyContent:'space-between',
+  },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+
+  //table css
+  headerSection :{
+      height: 16,
+      //borderBottomWidth:1, 
+      //borderTopColor:'#B2B2B2',
+      //borderTopWidth:1,
+    //borderBottomColor:'#B2B2B2',
+  },
+
+  sectionBorder:{
+    borderBottomWidth:1, 
+    borderBottomColor:borderColor,
+  },
+
+  firstCellContainer:{
+    backgroundColor:'white',
+    borderTopWidth : 1,
+    borderTopColor : borderColor,
+  },
+  lastCellContainer:{
+    backgroundColor:'white',
+    borderBottomWidth : 1,
+    borderBottomColor : borderColor,
+  },
+  cellStyle:{
+    flex:1,
+    flexDirection:'row',
+    borderBottomWidth:1,
+    borderBottomColor:cellBorderColor,
+    height:60,
+    marginLeft:16,
+  },*/
 
 });
 
