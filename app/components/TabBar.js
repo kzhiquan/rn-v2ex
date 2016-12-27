@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     //borderBottomColor: 'rgba(0,0,0,0.05)',
     backgroundColor : '#FAFAFA',
     borderTopColor : '#A9A9A9',
+    borderBottomColor:'#A9A9A9',
   },
 });
 

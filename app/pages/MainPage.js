@@ -16,6 +16,7 @@ import AccountContainer from '../containers/AccountContainer';
 import AuthContainer from '../containers/AuthContainer';
 import NodeListContainer from '../containers/NodeListContainer';
 import MyNotificationContainer from '../containers/MyNotificationContainer';
+import NotificationPage from './NotificationPage';
 
 
 class MainPage extends React.Component{
@@ -24,20 +25,18 @@ class MainPage extends React.Component{
 			<ScrollableTabView
 				locked={true}
 	      		initialPage={0}
-	      		activeTextColor="red"
 	      		tabBarPosition="bottom"
 	      		scrollWithoutAnimation={true}
 	      		renderTabBar={() => <Tarbar />}
 	      		>
-
-			      <TopicListContainer tabLabel="ios-paper" {...this.props}>
+			      <TopicListContainer tabLabel="ios-home-outline" {...this.props}>
 			      </TopicListContainer>
 
 			      <NodeListContainer tabLabel="ios-compass-outline" {...this.props}>
 			      </NodeListContainer>
 
-			      <MyNotificationContainer tabLabel="ios-notifications" {...this.props}>
-			      </MyNotificationContainer>
+			      <NotificationPage tabLabel="ios-notifications-outline" {...this.props}>
+			      </NotificationPage>
 
 			      <AuthContainer tabLabel="ios-person-outline" {...this.props}>
 			      </AuthContainer>
