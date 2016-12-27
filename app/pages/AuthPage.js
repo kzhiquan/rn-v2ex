@@ -180,7 +180,6 @@ class AuthPage extends React.Component {
 	}
 
 	_renderSet(item, sectionID, rowID, highlightRow){
-
 		let cellContainerStyle = {backgroundColor:'white'};
 		if(rowID == 0){
 			cellContainerStyle = [cellContainerStyle, styles.firstCellContainer, styles.lastCellContainer];

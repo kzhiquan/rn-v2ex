@@ -756,6 +756,9 @@ export function fetchMyFavoriteTopic(path, page=1){
 
 				//console.log($(this).find('.small'), $(this).find('.small strong a'), $(this).find('td[width="70"] a'));
 				topic.latest_reply_date = $(this).find('.small').text().split('•')[2];
+				if(topic.latest_reply_date){
+					topic.latest_reply_date = topic.latest_reply_date.replace(' ', '');
+				}
 
 				topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
 				topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');

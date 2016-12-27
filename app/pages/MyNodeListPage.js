@@ -9,6 +9,7 @@ import {
 	ActivityIndicator,
 	TextInput,
 	RecyclerViewBackedScrollView,
+	Dimensions,
 } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
@@ -19,6 +20,7 @@ import NodeTopicListContainer from '../containers/NodeTopicListContainer';
 
 
 class MyNodeListPage extends React.Component {
+	
 	constructor(props) {
 	    super(props);
 	    this.state = {
@@ -43,36 +45,45 @@ class MyNodeListPage extends React.Component {
 		});
 	}
 
+	_onBackClick(){
+	    const { navigator } = this.props;
+	    navigator.pop();
+  	}
+
 	_renderItem(item, sectionID, rowID, highlightRow){
 		const { navigator } = this.props;
+		let nodeItemContainer = styles.nodeItemContainer;
+		if(rowID == 0){
+			nodeItemContainer = [nodeItemContainer, {top:4}];
+		}
 		return (
 			<TouchableOpacity onPress={this._onItemPress} node={item} navigator={navigator}>
-				<View style={{flex:1, flexDirection:'row', borderBottomWidth:1}}>
-					<Image style={{width:48, height:48}} source={{uri:item.img_url}} />
-					<View style={{marginTop:15}}>
-						<Text>{item.name}</Text>
+				<View style={nodeItemContainer}>
+					<Image 
+						style={styles.avatar_size_42} 
+						source={{uri:item.img_url}} />
+					<View style={[styles.avatarRightContent, {flexDirection:'row', justifyContent:'space-between', paddingTop:12}]}>
+						<View>
+							<Text style={{fontSize:16}}>{item.name}</Text>
+						</View>
+						<View style={styles.directionRow}>
+							<Text style={styles.metaTextStyle}>{item.topic_count}</Text>
+							<Image 
+								style={{left:8}}
+								source={require('../static/imgs/arrow.png')}
+							/>
+						</View>
 					</View>
-					<View style={{marginTop:15, marginRight:30}}>
-						<Text>{item.topic_count}</Text>
-					</View>			
 				</View>
 			</TouchableOpacity>
-
-		);
+		)
 	}	
-
 
 	render() {
 		const { navigator, auth } = this.props;
-		var leftButtonConfig = {
-	      title: 'Back',
-	      handler: function onBack() {
-	        navigator.pop();
-	      }
-	    };
 
 	    var titleConfig = {
-	      title: '我的节点',
+	      title: '节点收藏',
 	    };
 
 		let rows = [];
@@ -81,10 +92,17 @@ class MyNodeListPage extends React.Component {
 		}
 
 		return (
-			<View style={{flex:1}}>
-	          <NavigationBar
-	              title={titleConfig}
-	              leftButton={leftButtonConfig}/>
+			<View style={styles.container}>
+
+				<NavigationBar
+					style={styles.navigatorBarStyle}
+					title={titleConfig}
+					leftButton={
+					  <TouchableOpacity onPress={this._onBackClick.bind(this)}>
+					      <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+					  </TouchableOpacity> 
+					}
+				/>
 
        			<ListView
 	              initialListSize = {5}
@@ -105,59 +123,64 @@ class MyNodeListPage extends React.Component {
 	}
 }
 
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#BBC5CD';
+let backgroundColor = 'white';
 
 const styles = StyleSheet.create({
-  base: {
-    flex: 1
+
+  //common
+  directionRow:{
+    flexDirection : 'row',
   },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#FFF',
-  },
-  containerItem:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomWidth:1,
-    padding:5,
-    justifyContent: 'space-between'
-  },
-  itemHeader:{
-    width:48,
-    height:48
-  },
-  itemBody:{
-    width:280
-  },
-  itemBodyDetail:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent: 'space-between'
-  },
-  itemFooter:{
-    color:'blue',
-    paddingTop: 18
-  },
-  footerContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 5
-  },
-  footerText: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginLeft: 10
+
+  avatar_size_42:{
+    width:42,
+    height:42,
+    borderRadius:21,
   },
 
   front:{
-    position: 'absolute',
-    top:300,
-    left: (375-50)/2,
-    width: 50,
-    height:50,
-    zIndex: 1,
+      position: 'absolute',
+      top:300,
+      left: (width-50)/2,
+      width: 50,
+      height:50,
+      zIndex: 1,
+  },
+
+  navigatorBarStyle:{
+    backgroundColor : 'white', 
+    borderBottomWidth : 1,
+    borderBottomColor : borderColor,
+  },
+
+  container : {
+    flex : 1,
+    backgroundColor : backgroundColor,
+  },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+  avatarRightContent:{
+    left:10,
+    width : width-12-10-16-42-10,
+  },
+
+  nodeItemContainer : {
+  	flexDirection : 'row',
+    flex : 1, 
+    paddingTop:8, 
+    left:16, 
+    paddingBottom:10, 
+    height:60,
+    borderBottomWidth : 1, 
+    borderBottomColor : borderColor,
   },
 
 });

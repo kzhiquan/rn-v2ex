@@ -12,7 +12,8 @@ import {
   Image,
   ActivityIndicator,
   RecyclerViewBackedScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 
@@ -37,11 +38,6 @@ class MyFavoriteTopicListPage extends React.Component {
     this.state = {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } )
     };
-    this.renderItem = this.renderItem.bind(this);
-    this.renderFooter = this.renderFooter.bind(this);
-    this.onEndReached = this.onEndReached.bind(this);
-    this.onScroll = this.onScroll.bind(this);
-
     canLoadMore = false;
     page = 1;
   }
@@ -61,17 +57,16 @@ class MyFavoriteTopicListPage extends React.Component {
     authActions.refreshMyFavoriteTopic(route.node.path);
   }
 
-  _topicClick(){
+  _onTopicClick(){
     const { topic, navigator } = this;
     navigator.push({
       component : TopicContainer,
-      name : 'Topic',
+      name : 'TopicPage',
       topic : topic,
     });
   }
 
-  _userClick(){
-    console.log('user click');
+  _onUserClick(){
     const { navigator, path } = this;
     navigator.push({
       component : UserContainer,
@@ -80,25 +75,61 @@ class MyFavoriteTopicListPage extends React.Component {
     });
   }
 
+  _onBackClick(){
+    const { navigator } = this.props;
+    navigator.pop();
+  }
+
   renderItem(topic) {
-    //console.log('topic:',topic);
     const { navigator } = this.props;
     return (
-      <TouchableOpacity onPress={this._topicClick} topic={topic} navigator={navigator}>
-        <View style={styles.containerItem}>
-          <TouchableOpacity onPress={this._userClick} navigator={navigator} path={topic.member_url}>
-              <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
-          </TouchableOpacity>
-          <View style={styles.itemBody}>
-            <Text>{topic.topic_title}</Text>
-            <View style={styles.itemBodyDetail}>
-              <Text>{topic.node_name}</Text>
-              <Text>{topic.member_name}</Text>
-              <Text>{topic.date}</Text>
-              <Text>{topic.latest_reply_member_name}</Text>
+      <TouchableOpacity onPress={this._onTopicClick} topic={topic} navigator={navigator}>
+        <View style={styles.topicItemContainer}>
+
+            <TouchableOpacity onPress={this._onUserClick} navigator={navigator} path={topic.member_url}>
+              <Image
+                style={styles.avatar_size_42}
+                source={{uri:topic.member_avatar}}
+              />
+            </TouchableOpacity>
+
+            <View style={styles.avatarRightContent}>
+
+              <View>
+                <Text style={{fontSize:16}}>{topic.member_name}</Text>
+              </View>
+
+              <View style={[styles.directionRow, {paddingTop:4,}]}>
+                <View style={styles.nodeAreaContainer}>
+                  <Text style={styles.metaTextStyle}>{topic.node_name}</Text>
+                </View>
+                <View style={[styles.directionRow, {left:10, paddingTop:2}]}>
+                  <Text style={styles.metaTextStyle}>{topic.reply_count}</Text>
+                  <Image
+                    style={{bottom:3}}
+                    source={require('../static/imgs/chatbubble.png')}
+                  />
+                </View>
+              </View>
+
+              <View style={{paddingTop:4,}}>
+                <Text style={{fontSize:16}}>{topic.topic_title}</Text>
+              </View>
+
+              <View style={[styles.directionRow, {paddingTop:4,}]}>
+                <View>
+                  <Text style={styles.metaTextStyle}>{topic.latest_reply_date}</Text>
+                </View>
+                <Image
+                  style={{top:4,left:4}}
+                  source={require('../static/imgs/dot.png')}
+                />
+                <View style={{left:14}}>
+                  <Text style={styles.metaTextStyle}>{'最后回复' + topic.latest_reply_member_name}</Text>
+                </View>
+              </View>
+
             </View>
-          </View>
-          <Text style={styles.itemFooter}>{topic.reply_count}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -120,7 +151,6 @@ class MyFavoriteTopicListPage extends React.Component {
 
   _isCurrentPageFilled(countPerPage=20){
     const { auth } = this.props;
-
     if(auth.myFavoriteTopic.topicList.length % countPerPage === 0){
       return true;
     }else{
@@ -149,17 +179,10 @@ class MyFavoriteTopicListPage extends React.Component {
   }
 
   render() {
-    const { navigator, auth, route } = this.props;
-
-    var leftButtonConfig = {
-      title: 'Back',
-      handler: function onBack() {
-        navigator.pop();
-      }
-    };
+    const { navigator, auth, } = this.props;
 
     var titleConfig = {
-      title: route.node.name,
+      title: '主题收藏',
     };
 
     let rows = []
@@ -168,18 +191,25 @@ class MyFavoriteTopicListPage extends React.Component {
     }
 
     return (
-      <View style={{flex:1}}>
+      <View style={styles.container}>
+
           <NavigationBar
-              title={titleConfig}
-              leftButton={leftButtonConfig}/>
+            style={styles.navigatorBarStyle}
+            title={titleConfig}
+            leftButton={
+              <TouchableOpacity onPress={this._onBackClick.bind(this)}>
+                  <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+              </TouchableOpacity> 
+            }
+          />
 
           <ListView
             initialListSize = {5}
             dataSource={this.state.dataSource.cloneWithRows(rows)}
-            renderRow={this.renderItem}
-            renderFooter={this.renderFooter}
-            onEndReached={this.onEndReached}
-            onScroll={this.onScroll}
+            renderRow={this.renderItem.bind(this)}
+            renderFooter={this.renderFooter.bind(this)}
+            onEndReached={this.onEndReached.bind(this)}
+            onScroll={this.onScroll.bind(this)}
             onEndReachedThreshold={-20}
             enableEmptySections={true}
             removeClippedSubviews = {false}
@@ -204,53 +234,82 @@ class MyFavoriteTopicListPage extends React.Component {
   }
 }
 
+
+
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#BBC5CD';
+let backgroundColor = 'white';
+
+
 const styles = StyleSheet.create({
-  containerItem:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomWidth:1,
-    padding:5,
-    justifyContent: 'space-between'
-  },
-  itemHeader:{
-    width:48,
-    height:48
-  },
-  itemBody:{
-    width:280
-  },
-  itemBodyDetail:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent: 'space-between'
-  },
-  itemFooter:{
-    color:'blue',
-    paddingTop: 18
+ //common
+  directionRow:{
+    flexDirection : 'row',
   },
 
-  footerContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 5
+  avatar_size_42:{
+    width:42,
+    height:42,
+    borderRadius:8,
+  },
+
+  front:{
+      position: 'absolute',
+      top:300,
+      left: (width-50)/2,
+      width: 50,
+      height:50,
+      zIndex: 1,
+  },
+
+  navigatorBarStyle:{
+    backgroundColor : 'white', 
+    borderBottomWidth : 1,
+    borderBottomColor : borderColor,
+  },
+
+  //custom
+  container : {
+    flex : 1,
+    backgroundColor : backgroundColor,
+  },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+  avatarRightContent:{
+    left:10,
+    width : width-12-10-16-42-10,
+  },
+
+  topicItemContainer:{
+    flexDirection : 'row',
+    flex : 1, 
+    paddingTop:12, 
+    left:16, 
+    paddingBottom:10, 
+    borderBottomWidth : 1, 
+    borderBottomColor : borderColor,
+    paddingRight:12,
+  },
+
+  nodeAreaContainer:{
+    backgroundColor:'#E8F0FE', 
+    borderRadius:3, 
+    paddingTop:2, 
+    paddingBottom:2, 
+    paddingLeft:7, 
+    paddingRight:7,
   },
   footerText: {
     textAlign: 'center',
     fontSize: 16,
     marginLeft: 10
   },
-
-  front:{
-    position: 'absolute',
-    top:300,
-    left: (375-50)/2,
-    width: 50,
-    height:50,
-    zIndex: 1,
-  },
-
 });
 
 

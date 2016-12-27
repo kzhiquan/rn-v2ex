@@ -243,6 +243,7 @@ const styles = StyleSheet.create({
   avatar_size_42:{
     width:42,
     height:42,
+    borderRadius:8,
   },
 
   front:{
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
 
   avatarRightContent:{
     left:10,
-    width : width-12-10-16-42,
+    width : width-12-10-16-42-10,
   },
 
   topicItemContainer:{
