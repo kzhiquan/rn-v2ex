@@ -31,11 +31,11 @@ class SetPage extends React.Component {
 	}
 
 	componentWillMount(){
-		console.log('componentWillMount');
+		//console.log('componentWillMount');
 	}
 
 	componentDidMount(){
-		console.log('componentDidMount');
+		//console.log('componentDidMount');
 	}
 
 	componentWillReceiveProps(nextProps){

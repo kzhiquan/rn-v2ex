@@ -12,7 +12,8 @@ import {
   Image,
   ActivityIndicator,
   RecyclerViewBackedScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 
@@ -36,10 +37,6 @@ class MyReplyListPage extends React.Component {
     this.state = {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } )
     };
-    this.renderItem = this.renderItem.bind(this);
-    this.renderFooter = this.renderFooter.bind(this);
-    this.onEndReached = this.onEndReached.bind(this);
-    this.onScroll = this.onScroll.bind(this);
     page = 1;
     canLoadMore = false;
   }
@@ -61,7 +58,6 @@ class MyReplyListPage extends React.Component {
   }
 
   _renderNode(node, index, parent, type) {
-    //console.log('node:',node);
     if (node.name === 'img') {
         let uri = node.attribs.src;
         if(uri.indexOf('http') == -1){
@@ -69,52 +65,76 @@ class MyReplyListPage extends React.Component {
         }
 
         return (
-                <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
-                  <Image 
-                    source={{uri:uri}} 
-                    style={{
-                      width:maxWidth-30,
-                      height:maxWidth-30,
-                      resizeMode: Image.resizeMode.contain}} />
-                </View>
-                /*<ResizableImage 
-                    source={{uri:uri}}
-                    style={{}} />*/
+          <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
+            <Image 
+              source={{uri:uri}} 
+              style={{
+                width:maxWidth-30,
+                height:maxWidth-30,
+                resizeMode: Image.resizeMode.contain}} />
+          </View>
         )
-
     }
   }
 
   _onLinkPress(url){
-    console.log('url', url);
+    //console.log('url', url);
   }
 
-  _topicClick(){
+  _onTopicClick(){
     const { topic, navigator } = this;
     navigator.push({
       component : TopicContainer,
-      name : 'Topic',
+      name : 'TopicPage',
       topic : topic,
     });
   }
 
-  renderItem(reply, sectionID, rowID, highlightRow){   
+  _onBackClick(){
     const { navigator } = this.props;
-    return (
+    navigator.pop();
+  }
 
-      <TouchableOpacity onPress={this._topicClick} topic={reply.topic} navigator={navigator}>
-        <View style={styles.containerItem}>
-          <View>
-            <View><Text>{reply.date}:{reply.topic.topic_title}</Text></View>
-          </View>
-          <View>
-            <HtmlRender
-              key={`${sectionID}-${rowID}`}
-              value={'<div>' + reply.content + '</div>'}
-              onLinkPress={this._onLinkPress.bind(this)}
-              renderNode={this._renderNode}
+  renderItem(reply, sectionID, rowID, highlightRow){   
+    const { navigator, route } = this.props;
+    return (
+      <TouchableOpacity onPress={this._onTopicClick} topic={reply.topic} navigator={navigator}>
+        
+        <View style={[styles.userReplyItemContainer, ]}>
+
+            <Image
+              style={styles.avatar_size_42}
+              source={{uri:route.user.avatar_url}}
             />
-          </View>
+            <View style={styles.avatarRightContent}>
+
+              <View>
+                <Text style={{fontSize:16}}>{route.user.name}</Text>
+              </View>
+
+              <View style={{paddingTop:8}}>
+                <Text style={styles.metaTextStyle}>{reply.date}</Text>
+              </View>
+
+              <View style={{paddingTop:6}}>
+                <Text style={{fontSize:14}}>{reply.topic.topic_title}</Text>
+              </View>
+              <View>
+                <Image
+                  style={{left:32}}
+                  source={require('../static/imgs/triangle.png')}
+                  />
+                <View style={{backgroundColor:'#F2F2F2', borderRadius:2, paddingTop:2, paddingBottom:2, paddingRight:4, paddingLeft:4}}>
+                  <HtmlRender
+                    key={`${sectionID}-${rowID}`}
+                    value={'<div>' + reply.content + '</div>'}
+                    onLinkPress={this._onLinkPress.bind(this)}
+                    renderNode={this._renderNode}
+                  />
+                </View>
+              </View>
+
+            </View>
         </View>
       </TouchableOpacity>
     )
@@ -156,13 +176,6 @@ class MyReplyListPage extends React.Component {
   render() {
     const { navigator, auth } = this.props;
 
-    var leftButtonConfig = {
-      title: 'Back',
-      handler: function onBack() {
-        navigator.pop();
-      }
-    };
-
     var titleConfig = {
       title: '我的回复',
     };
@@ -173,66 +186,104 @@ class MyReplyListPage extends React.Component {
     }
 
     return (
-      <View style={{flex:1}}>
+      <View style={styles.container}>
+
           <NavigationBar
-              title={titleConfig}
-              leftButton={leftButtonConfig}/>
+            style={styles.navigatorBarStyle}
+            title={titleConfig}
+            leftButton={
+              <TouchableOpacity onPress={this._onBackClick.bind(this)}>
+                  <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+              </TouchableOpacity> 
+            }
+          />
 
-          { auth.isLoading ? <LoadingView /> : 
-              <ListView
-                initialListSize = {5}
-                dataSource={this.state.dataSource.cloneWithRows(rows)}
-                renderRow={this.renderItem}
-                renderFooter={this.renderFooter}
-                onEndReached={this.onEndReached}
-                onScroll={this.onScroll}
-                onEndReachedThreshold={-50}
-                enableEmptySections={true}
-                removeClippedSubviews = {false}
-                renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={auth.isRefreshing}
-                    onRefresh={() => this.onRefresh()}
-                    title="Loading..."
-                  />
-                }
+          <ListView
+            initialListSize = {5}
+            dataSource={this.state.dataSource.cloneWithRows(rows)}
+            renderRow={this.renderItem.bind(this)}
+            renderFooter={this.renderFooter.bind(this)}
+            onEndReached={this.onEndReached.bind(this)}
+            onScroll={this.onScroll.bind(this)}
+            onEndReachedThreshold={-50}
+            enableEmptySections={true}
+            removeClippedSubviews = {false}
+            renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+            refreshControl={
+              <RefreshControl
+                refreshing={auth.isRefreshing}
+                onRefresh={() => this.onRefresh()}
+                title="Loading..."
               />
-          }
+            }
+          />
 
-
+          <ActivityIndicator
+            animating={ auth.isLoading }
+            style={styles.front}
+            size="large"
+          />
       </View>
     );
   }
 }
 
+
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#BBC5CD';
+let backgroundColor = 'white';
+
 const styles = StyleSheet.create({
-  containerItem:{
-    flex:1,
-    flexDirection:'column',
-    borderBottomWidth:1,
-    padding:5,
-    justifyContent: 'space-between'
-  },
-  itemBody:{
-    width:280
-  },
-  itemBodyDetail:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent: 'space-between'
-  },
-  itemFooter:{
-    color:'blue',
-    paddingTop: 18
+  //common
+  directionRow:{
+    flexDirection : 'row',
   },
 
-  footerContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 5
+  avatar_size_42:{
+    width:42,
+    height:42,
+  },
+
+  front:{
+      position: 'absolute',
+      top:300,
+      left: (width-50)/2,
+      width: 50,
+      height:50,
+      zIndex: 1,
+  },
+
+  navigatorBarStyle:{
+    backgroundColor : 'white', 
+    borderBottomWidth : 1,
+    borderBottomColor : borderColor,
+  },
+
+  container : {
+    flex : 1,
+    backgroundColor : backgroundColor,
+  },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+  avatarRightContent:{
+    left:10,
+    width : width-12-10-16-42,
+  },
+
+  userReplyItemContainer:{
+    flexDirection : 'row',
+    flex : 1, 
+    paddingTop:12, 
+    left:16, 
+    paddingBottom:10, 
+    borderBottomWidth : 1, 
+    borderBottomColor : borderColor,
   },
   footerText: {
     textAlign: 'center',

@@ -82,7 +82,7 @@ class MyTopicListPage extends React.Component {
               style={styles.avatar_size_42}
               source={{uri:route.user.avatar_url}}
             />
-            <View style={{left:10}}>
+            <View style={styles.avatarRightContent}>
 
               <View>
                 <Text style={{fontSize:16}}>{topic.member_name}</Text>
@@ -115,7 +115,7 @@ class MyTopicListPage extends React.Component {
                     style={{top:4,left:4}}
                     source={require('../static/imgs/dot.png')}
                   />
-                  <View style={{left:12}}>
+                  <View style={{left:14}}>
                     <Text style={styles.metaTextStyle}>{'最后回复' + topic.latest_reply_member_name}</Text>
                   </View>
                 </View> }
@@ -271,6 +271,11 @@ const styles = StyleSheet.create({
     color:noteTextColor,
   },
 
+  avatarRightContent:{
+    left:10,
+    width : width-12-10-16-42,
+  },
+
   topicItemContainer:{
     flexDirection : 'row',
     flex : 1, 
@@ -279,6 +284,7 @@ const styles = StyleSheet.create({
     paddingBottom:10, 
     borderBottomWidth : 1, 
     borderBottomColor : borderColor,
+    paddingRight:12,
   },
 
   nodeAreaContainer:{

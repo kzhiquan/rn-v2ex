@@ -57,10 +57,11 @@ class AuthPage extends React.Component {
 	}
 
 	_onMyReplyClick(){
-		const { navigator } = this.props;
+		const { navigator, auth } = this.props;
 		navigator.push({
 			component : MyReplyListContainer,
-			name : 'MyReplyPage'
+			name : 'MyReplyPage',
+			user : auth.user,
 		});
 	}
 
@@ -279,9 +280,6 @@ const styles = StyleSheet.create({
 		width:42,
 		height:42,
 	},
-
-
-
 
 	container : {
 		flex : 1,
