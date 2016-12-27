@@ -32,11 +32,11 @@ class AuthPage extends React.Component {
 	}
 
 	componentWillMount(){
-		console.log('componentWillMount');
+		//console.log('componentWillMount');
 	}
 
 	componentDidMount(){
-		console.log('componentDidMount');
+		//console.log('componentDidMount');
 	}
 
 	_onSetClick(){
@@ -48,10 +48,11 @@ class AuthPage extends React.Component {
 	}
 
 	_onMyTopicClick(){
-		const { navigator } = this.props;
+		const { navigator, auth } = this.props;
 		navigator.push({
 			component : MyTopicListContainer,
-			name : 'MyTopicPage'
+			name : 'MyTopicPage',
+			user : auth.user,
 		});
 	}
 

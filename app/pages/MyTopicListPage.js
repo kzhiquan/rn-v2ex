@@ -36,11 +36,6 @@ class MyTopicListPage extends React.Component {
     this.state = {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } )
     };
-    this.renderItem = this.renderItem.bind(this);
-    this.renderFooter = this.renderFooter.bind(this);
-    this.onEndReached = this.onEndReached.bind(this);
-    this.onScroll = this.onScroll.bind(this);
-
     canLoadMore = false;
     page = 1;
   }
@@ -62,11 +57,11 @@ class MyTopicListPage extends React.Component {
     authActions.refreshMyTopic(auth.user);
   }
 
-  _topicClick(){
+  _onTopicClick(){
     const { topic, navigator } = this;
     navigator.push({
       component : TopicContainer,
-      name : 'Topic',
+      name : 'TopicPage',
       topic : topic,
     });
   }
@@ -77,28 +72,61 @@ class MyTopicListPage extends React.Component {
   }
 
   renderItem(topic) {
-    //console.log('topic:',topic);
-    const { navigator } = this.props;
+    const { navigator, route } = this.props;
+    let commentFlag = topic.reply_count ? true : false;
+    let replyFlag = topic.latest_reply_date ? true : false;
     return (
-      <TouchableOpacity onPress={this._topicClick} topic={topic} navigator={navigator}>
-        <View style={styles.containerItem}>
-          <View style={styles.itemBody}>
-            <Text>{topic.topic_title}</Text>
-            <View style={styles.itemBodyDetail}>
-              <Text>{topic.node_name}</Text>
-              <Text>{topic.member_name}</Text>
-              <Text>{topic.date}</Text>
-              <Text>{topic.latest_reply_member_name}</Text>
+      <TouchableOpacity onPress={this._onTopicClick} topic={topic} navigator={navigator}>
+        <View style={styles.topicItemContainer}>
+            <Image
+              style={styles.avatar_size_42}
+              source={{uri:route.user.avatar_url}}
+            />
+            <View style={{left:10}}>
+
+              <View>
+                <Text style={{fontSize:16}}>{topic.member_name}</Text>
+              </View>
+
+              <View style={[styles.directionRow, {paddingTop:4,}]}>
+                <View style={styles.nodeAreaContainer}>
+                  <Text style={styles.metaTextStyle}>{topic.node_name}</Text>
+                </View>
+                { commentFlag && 
+                  <View style={[styles.directionRow, {left:10, paddingTop:2}]}>
+                    <Text style={styles.metaTextStyle}>{topic.reply_count}</Text>
+                    <Image
+                      style={{bottom:3}}
+                      source={require('../static/imgs/chatbubble.png')}
+                    />
+                  </View>}
+              </View>
+
+              <View style={{paddingTop:4,}}>
+                <Text style={{fontSize:16}}>{topic.topic_title}</Text>
+              </View>
+
+              { replyFlag && 
+                <View style={[styles.directionRow, {paddingTop:4,}]}>
+                  <View>
+                    <Text style={styles.metaTextStyle}>{topic.latest_reply_date}</Text>
+                  </View>
+                  <Image
+                    style={{top:4,left:4}}
+                    source={require('../static/imgs/dot.png')}
+                  />
+                  <View style={{left:12}}>
+                    <Text style={styles.metaTextStyle}>{'最后回复' + topic.latest_reply_member_name}</Text>
+                  </View>
+                </View> }
+
             </View>
-          </View>
-          <Text style={styles.itemFooter}>{topic.reply_count}</Text>
         </View>
       </TouchableOpacity>
     )
   }
 
   renderFooter(){
-
     const { auth } = this.props;
     if(auth.isLoadingMore){
       return (
@@ -109,8 +137,7 @@ class MyTopicListPage extends React.Component {
           </Text>
         </View>
       );
-    }
-    
+    } 
   }
 
   _isCurrentPageFilled(countPerPage=20){
@@ -171,10 +198,10 @@ class MyTopicListPage extends React.Component {
           <ListView
             initialListSize = {5}
             dataSource={this.state.dataSource.cloneWithRows(rows)}
-            renderRow={this.renderItem}
-            renderFooter={this.renderFooter}
-            onEndReached={this.onEndReached}
-            onScroll={this.onScroll}
+            renderRow={this.renderItem.bind(this)}
+            renderFooter={this.renderFooter.bind(this)}
+            onEndReached={this.onEndReached.bind(this)}
+            onScroll={this.onScroll.bind(this)}
             onEndReachedThreshold={-20}
             enableEmptySections={true}
             removeClippedSubviews = {false}
@@ -205,43 +232,9 @@ const {height, width} = Dimensions.get('window');
 let borderColor = '#B2B2B2';
 let cellBorderColor = '#EAEAEC';
 let noteTextColor = '#BBC5CD';
-let backgroundColor = '#EFEFF4';
+let backgroundColor = 'white';
 
 const styles = StyleSheet.create({
-
-  containerItem:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomWidth:1,
-    padding:5,
-    justifyContent: 'space-between'
-  },
-  itemBody:{
-    width:280
-  },
-  itemBodyDetail:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent: 'space-between'
-  },
-  itemFooter:{
-    color:'blue',
-    paddingTop: 18
-  },
-
-  footerContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 5
-  },
-  footerText: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginLeft: 10
-  },
-
   //common
   directionRow:{
     flexDirection : 'row',
@@ -273,55 +266,35 @@ const styles = StyleSheet.create({
     backgroundColor : backgroundColor,
   },
 
-  /*accountMetaContainer:{
-    backgroundColor:'white', 
-    paddingTop:12,
-    paddingLeft:16,
-    paddingBottom:12,
-  },
-  avartarMetaContainer:{
-    paddingLeft:10,
-    justifyContent:'space-between',
-  },
-
   metaTextStyle:{
     fontSize:12, 
     color:noteTextColor,
   },
 
-
-  //table css
-  headerSection :{
-      height: 16,
-      //borderBottomWidth:1, 
-      //borderTopColor:'#B2B2B2',
-      //borderTopWidth:1,
-    //borderBottomColor:'#B2B2B2',
-  },
-
-  sectionBorder:{
-    borderBottomWidth:1, 
-    borderBottomColor:borderColor,
-  },
-
-  firstCellContainer:{
-    backgroundColor:'white',
-    borderTopWidth : 1,
-    borderTopColor : borderColor,
-  },
-  lastCellContainer:{
-    backgroundColor:'white',
-    borderBottomWidth : 1,
+  topicItemContainer:{
+    flexDirection : 'row',
+    flex : 1, 
+    paddingTop:12, 
+    left:16, 
+    paddingBottom:10, 
+    borderBottomWidth : 1, 
     borderBottomColor : borderColor,
   },
-  cellStyle:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomWidth:1,
-    borderBottomColor:cellBorderColor,
-    height:60,
-    marginLeft:16,
-  },*/
+
+  nodeAreaContainer:{
+    backgroundColor:'#E8F0FE', 
+    borderRadius:3, 
+    paddingTop:2, 
+    paddingBottom:2, 
+    paddingLeft:7, 
+    paddingRight:7,
+  },
+
+  footerText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginLeft: 10
+  },
 
 });
 
