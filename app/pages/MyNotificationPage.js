@@ -12,7 +12,8 @@ import {
   Image,
   ActivityIndicator,
   RecyclerViewBackedScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 
@@ -40,10 +41,6 @@ class MyNotificationPage extends React.Component {
     this.state = {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } )
     };
-    this.renderItem = this.renderItem.bind(this);
-    this.renderFooter = this.renderFooter.bind(this);
-    this.onEndReached = this.onEndReached.bind(this);
-    this.onScroll = this.onScroll.bind(this);
     this.deletedNotifications = [];
 
     canLoadMore = false;
@@ -73,44 +70,34 @@ class MyNotificationPage extends React.Component {
     this.deletedNotifications = [];
   }
 
-  _topicClick(){
-    const { topic, navigator } = this;
-    navigator.push({
-      component : TopicContainer,
-      name : 'Topic',
-      topic : topic,
-    });
-  }
-
-  _userClick(){
-    console.log('user click');
+  _onUserClick(){
     const { navigator, path } = this;
     navigator.push({
       component : UserContainer,
-      name : 'User', 
+      name : 'UserPage', 
       path : path,
     });
   }
 
   _renderNode(node, index, parent, type) {
-    //console.log('node:',node);
+
     if (node.name === 'img') {
+
         let uri = node.attribs.src;
         if(uri.indexOf('http') == -1){
           uri = 'http:' + uri;
         }
 
         return (
-                <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
-                  <Image 
-                    source={{uri:uri}} 
-                    style={{
-                      width:maxWidth-30,
-                      height:maxWidth-30,
-                      resizeMode: Image.resizeMode.contain}} />
-                </View>
+          <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
+            <Image 
+              source={{uri:uri}} 
+              style={{
+                width:maxWidth-30,
+                height:maxWidth-30,
+                resizeMode: Image.resizeMode.contain}} />
+          </View>
         )
-
     }
   }
 
@@ -124,23 +111,20 @@ class MyNotificationPage extends React.Component {
     authActions.deleteMyNotification(notification);
   }
 
-  _onClickNotification(){
+  _onNotificationClick(){
     const { navigator, notification } = this;
-
     let topic ={
       topic_url : notification.topic_url,
     }
 
     navigator.push({
       component : TopicContainer,
-      name : 'Topic',
+      name : 'TopicPage',
       topic : topic,
     });
-
   }
 
   renderItem(notification, sectionID, rowID, highlightRow) {
-
     //console.log('deletedNotifications', this.deletedNotifications);
     let found = this.deletedNotifications.find( (item) => {
       return item == notification;
@@ -151,42 +135,69 @@ class MyNotificationPage extends React.Component {
     }
 
     const { navigator } = this.props;
-    return (
-      <TouchableOpacity onPress={this._onClickNotification} navigator={navigator} notification={notification}>
-        <View style={styles.containerItem}>
-            <TouchableOpacity onPress={this._userClick} navigator={navigator} path={notification.member_url}>
-                <Image style={styles.itemHeader} source={{uri:notification.member_avatar}} />
-            </TouchableOpacity>
-            <View style={styles.itemBody}>
-              <View style={{flexDirection:'row'}}>
-                <Text>{notification.member_name}</Text>
-                <Text>{notification.operation}</Text>
-                <Text>{notification.topic_title}</Text>
-                <Text>{notification.post_date}</Text>
-              </View>
-              {
-                notification.content ? 
-                (<HtmlRender
-                  key={`${sectionID}-${rowID}`}
-                  value={'<div>' + notification.content + '</div>'}
-                  onLinkPress={this._onLinkPress.bind(this)}
-                  renderNode={this._renderNode}
-                />):null
-              }
 
-              <View style={{flexDirection:'row', justifyContent: 'space-around'}}>
+    if(!notification.content){
+      notification.content = '收藏了主题';
+    }
+
+    return (
+      <TouchableOpacity onPress={this._onNotificationClick} navigator={navigator} notification={notification}>
+
+        <View style={styles.notificationItemContainer}>
+
+            <TouchableOpacity onPress={this._onUserClick} navigator={navigator} path={notification.member_url}>
+              <Image
+                style={styles.avatar_size_42}
+                source={{uri:notification.member_avatar}}
+              />
+            </TouchableOpacity>
+
+            <View style={styles.avatarRightContent}>
+              <View style={[styles.directionRow,{justifyContent:'space-between'}]}>
+                  <View>
+                    <View>
+                      <Text style={{fontSize:16}}>{notification.member_name}</Text>
+                    </View>
+
+                    <View style={{paddingTop:8}}>
+                      <Text style={styles.metaTextStyle}>{notification.post_date}</Text>
+                    </View>
+                  </View>
+
                   <TouchableOpacity 
                     onPress={this._onDeleteNotification}
                     notification={notification}
                     that={this}>
-                    <Text>删除</Text>
+                      <View style={styles.deleteBtnStyle}>
+                        <Text style={styles.whiteBoldFontStyle}>删除</Text>
+                      </View>
                   </TouchableOpacity>
               </View>
-            </View>
-        </View> 
-      </TouchableOpacity>
 
-    );
+              <View style={{paddingTop:6}}>
+                <Text style={{fontSize:14}}>{notification.topic_title}</Text>
+              </View>
+
+              <View>
+                <Image
+                  style={{left:32}}
+                  source={require('../static/imgs/triangle.png')}
+                  />
+                <View style={{backgroundColor:'#F2F2F2', borderRadius:2, paddingTop:2, paddingBottom:2, paddingRight:4, paddingLeft:4}}>
+                  <HtmlRender
+                    key={`${sectionID}-${rowID}`}
+                    value={'<div>' + notification.content + '</div>'}
+                    onLinkPress={this._onLinkPress.bind(this)}
+                    renderNode={this._renderNode}
+                  />
+                </View>
+              </View>
+            </View>
+
+        </View>
+
+      </TouchableOpacity>
+    )
   }
 
   renderFooter(){
@@ -235,29 +246,21 @@ class MyNotificationPage extends React.Component {
   }
 
   render() {
-    const { navigator, auth, } = this.props;
-
-    var titleConfig = {
-      title: '通知',
-    };
-
+    const { auth, } = this.props;
     let rows = []
     if(auth.myNotification && auth.myNotification.notificationList){
       rows = auth.myNotification.notificationList;
     }
 
     return (
-      <View style={{flex:1}}>
-          <NavigationBar
-              title={titleConfig}/>
-
+      <View>
           <ListView
             initialListSize = {5}
             dataSource={this.state.dataSource.cloneWithRows(rows)}
-            renderRow={this.renderItem}
-            renderFooter={this.renderFooter}
-            onEndReached={this.onEndReached}
-            onScroll={this.onScroll}
+            renderRow={this.renderItem.bind(this)}
+            renderFooter={this.renderFooter.bind(this)}
+            onEndReached={this.onEndReached.bind(this)}
+            onScroll={this.onScroll.bind(this)}
             onEndReachedThreshold={-20}
             enableEmptySections={true}
             removeClippedSubviews = {false}
@@ -282,37 +285,63 @@ class MyNotificationPage extends React.Component {
   }
 }
 
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#BBC5CD';
+let backgroundColor = 'white';
+
 const styles = StyleSheet.create({
-  containerItem:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomWidth:1,
-    padding:5,
-    justifyContent: 'space-between'
-  },
-  itemHeader:{
-    width:48,
-    height:48
-  },
-  itemBody:{
-    width:280
-  },
-  itemBodyDetail:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent: 'space-between'
-  },
-  itemFooter:{
-    color:'blue',
-    paddingTop: 18
+
+  //common
+  directionRow:{
+    flexDirection : 'row',
   },
 
-  footerContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 5
+  avatar_size_42:{
+    width:42,
+    height:42,
+    borderRadius:8,
+  },
+
+  front:{
+      position: 'absolute',
+      top:300,
+      left: (width-50)/2,
+      width: 50,
+      height:50,
+      zIndex: 1,
+  },
+
+  navigatorBarStyle:{
+    backgroundColor : 'white', 
+    borderBottomWidth : 1,
+    borderBottomColor : borderColor,
+  },
+
+  container : {
+    flex : 1,
+    backgroundColor : backgroundColor,
+  },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+  avatarRightContent:{
+    left:10,
+    width : width-12-10-16-42-10,
+  },
+
+  notificationItemContainer:{
+    flexDirection : 'row',
+    flex : 1, 
+    paddingTop:12, 
+    left:16, 
+    paddingBottom:10, 
+    borderBottomWidth : 1, 
+    borderBottomColor : borderColor,
   },
   footerText: {
     textAlign: 'center',
@@ -320,15 +349,21 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
 
-  front:{
-    position: 'absolute',
-    top:300,
-    left: (375-50)/2,
-    width: 50,
-    height:50,
-    zIndex: 1,
+  deleteBtnStyle:{
+    backgroundColor:'#4D2424', 
+    height: 28,
+    borderRadius:5, 
+    paddingTop:7, 
+    paddingBottom:5, 
+    paddingLeft:19, 
+    paddingRight:19,
   },
 
+  whiteBoldFontStyle:{
+    fontSize:12, 
+    color:'white', 
+    fontWeight:'bold',
+  },
 });
 
 

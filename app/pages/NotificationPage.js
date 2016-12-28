@@ -10,6 +10,8 @@ import NavigationBar from 'react-native-navbar';
 
 
 import MyNotificationContainer from '../containers/MyNotificationContainer';
+import MyFocusPersonContainer from '../containers/MyFocusPersonContainer';
+import MyFavoriteTopicListContainer from '../containers/MyFavoriteTopicListContainer';
 
 class NotificationPage extends React.Component {
 
@@ -34,6 +36,14 @@ class NotificationPage extends React.Component {
     )
   }
 
+  _onChangeTab(switchInfo){
+    console.log('switchInfo', switchInfo);
+    if(switchInfo.i == 1){
+      //console.log(switchInfo.ref);
+      //switchInfo.ref.onRefresh();
+    }
+  }
+
   render() {
     const { navigator } = this.props;
 
@@ -43,7 +53,7 @@ class NotificationPage extends React.Component {
 
 
     return (
-      <View>
+      <View style={styles.container}>
 
         <NavigationBar
           style={styles.navigatorBarStyle}
@@ -57,12 +67,13 @@ class NotificationPage extends React.Component {
           initialPage={0}
           tabBarTextStyle={{fontSize:16}}
           tabBarActiveTextColor={'black'}
-          tabBarUnderlineStyle={{ backgroundColor:'#007AFF',}}
-          renderTabBar={this._renderScrollTableBar.bind(this)} 
+          tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
+          renderTabBar={this._renderScrollTableBar.bind(this)}
+          onChangeTab={this._onChangeTab.bind(this)}
           >
 
-          <MyNotificationContainer key={0} tabLabel={'提醒'} />
-          <MyNotificationContainer key={1} tabLabel={'关注'} />
+          <MyNotificationContainer {...this.props} key={0} tabLabel={'提醒'}/>
+          <MyFocusPersonContainer {...this.props} key={1} tabLabel={'关注'} route={{node:{path:'/my/following'}}}/>
 
         </ScrollableTabView>
 
@@ -77,12 +88,13 @@ let borderColor = '#B2B2B2';
 let cellBorderColor = '#EAEAEC';
 let noteTextColor = '#BBC5CD';
 let backgroundColor = '#EFEFF4';
+let tabBarUnderlineColor = '#007AFF';
 
 const styles = StyleSheet.create({
 
   container : {
     flex : 1,
-    backgroundColor : backgroundColor,
+    backgroundColor : 'white',
   },
 
   navigatorBarStyle:{
@@ -90,6 +102,12 @@ const styles = StyleSheet.create({
     borderBottomWidth : 1,
     borderBottomColor : borderColor,
   },
+
+  tabBarUnderlineStyle:{
+    backgroundColor : tabBarUnderlineColor,
+    height:2,
+  },
+
 
 });
 

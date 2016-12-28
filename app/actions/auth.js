@@ -150,6 +150,38 @@ export function receiveMyFavoriteTopic(topicList, totalCount){
 }
 
 
+//the focus person topic the login user interested.
+export function requestMyFocusPerson(path){
+	return {
+		type: types.REQUEST_MY_FOCUS_PERSON,
+		path
+	}
+}
+
+export function refreshMyFocusPerson(path){
+	return {
+		type : types.REFRESH_MY_FOCUS_PERSON,
+		path,
+	}
+}
+
+export function requestMoreMyFocusPerson(path, page){
+	return {
+		type : types.REQUEST_MORE_MY_FOCUS_PERSON,
+		path,
+		page,
+	}
+}
+
+export function receiveMyFocusPerson(topicList, totalCount){
+	return {
+		type : types.RECEIVE_MY_FOCUS_PERSON,
+		topicList,
+		totalCount,
+	}
+}
+
+
 //the notification the login user.
 export function requestMyNotification(){
 	return {

@@ -16,6 +16,7 @@ import AccountContainer from '../containers/AccountContainer';
 import AuthContainer from '../containers/AuthContainer';
 import NodeListContainer from '../containers/NodeListContainer';
 import MyNotificationContainer from '../containers/MyNotificationContainer';
+import NotificationContainer from '../containers/NotificationContainer';
 import NotificationPage from './NotificationPage';
 
 

@@ -16,6 +16,7 @@ import MyTopicListContainer from '../containers/MyTopicListContainer';
 import MyReplyListContainer from '../containers/MyReplyListContainer';
 import MyNodeListContainer from '../containers/MyNodeListContainer';
 import MyFavoriteTopicListContainer from '../containers/MyFavoriteTopicListContainer';
+import MyFocusPersonTopicListContainer from '../containers/MyFocusPersonTopicListContainer';
 import SetContainer from '../containers/SetContainer';
 
 
@@ -79,8 +80,20 @@ class AuthPage extends React.Component {
 			component : MyFavoriteTopicListContainer,
 			name : 'MyFavoriteTopicPage',
 			node : {
-				name : '我收藏的主题',
+				name : '主题收藏',
 				path : '/my/topics',
+			}
+		});
+	}
+
+	_onMyFocusPersonClick(){
+		const { navigator } = this.props;
+		navigator.push({
+			component : MyFocusPersonTopicListContainer,
+			name : 'MyFocusPersonPage',
+			node : {
+				name : '关注的人',
+				path : '/my/following',
 			}
 		});
 	}
@@ -172,7 +185,7 @@ class AuthPage extends React.Component {
 		let cellContainerStyle = {backgroundColor:'white'};
 		if(rowID == 0){
 			cellContainerStyle = [cellContainerStyle, styles.firstCellContainer];
-		}else if( rowID == 3){
+		}else if( rowID == 4){
 			cellContainerStyle = [cellContainerStyle, styles.lastCellContainer];
 		}
 
@@ -233,6 +246,9 @@ class AuthPage extends React.Component {
 							  },{
 							  	name : '节点收藏',
 							  	onClick : this._onMyNodeClick.bind(this),
+							  },{
+							  	name : '关注的人',
+							  	onClick : this._onMyFocusPersonClick.bind(this),
 							  }],
 				'set' : [{
 							name:'设置',

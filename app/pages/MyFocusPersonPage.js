@@ -32,7 +32,7 @@ let page = 1;
 let loadMoreTime = 0;
 
 
-class MyFavoriteTopicListPage extends React.Component {
+class MyFocusPersonPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,14 +47,14 @@ class MyFavoriteTopicListPage extends React.Component {
 
   componentDidMount() {
     const { authActions, auth, route } = this.props;
-    authActions.requestMyFavoriteTopic(route.node.path);
+    authActions.requestMyFocusPerson(route.node.path);
   }
 
   onRefresh(){
     canLoadMore = false;
     page = 1;
     const { authActions, auth, route } = this.props;
-    authActions.refreshMyFavoriteTopic(route.node.path);
+    authActions.refreshMyFocusPerson(route.node.path);
   }
 
   _onTopicClick(){
@@ -73,11 +73,6 @@ class MyFavoriteTopicListPage extends React.Component {
       name : 'UserPage', 
       path : path,
     });
-  }
-
-  _onBackClick(){
-    const { navigator } = this.props;
-    navigator.pop();
   }
 
   renderItem(topic) {
@@ -168,7 +163,7 @@ class MyFavoriteTopicListPage extends React.Component {
       if(this._isCurrentPageFilled()){
         page += 1;
       }
-      authActions.requestMoreMyFavoriteTopic(route.node.path, page);
+      authActions.requestMoreMyFocusPerson(route.node.path, page);
     }
   }
 
@@ -179,29 +174,15 @@ class MyFavoriteTopicListPage extends React.Component {
   }
 
   render() {
-    const { navigator, auth, route} = this.props;
-
-    var titleConfig = {
-      title: route.node.name,
-    };
+    const { navigator, auth, } = this.props;
 
     let rows = []
-    if(auth.myFavoriteTopic && auth.myFavoriteTopic.topicList){
-      rows = auth.myFavoriteTopic.topicList;
+    if(auth.myFocusPerson && auth.myFocusPerson.topicList){
+      rows = auth.myFocusPerson.topicList;
     }
 
     return (
       <View style={styles.container}>
-
-          <NavigationBar
-            style={styles.navigatorBarStyle}
-            title={titleConfig}
-            leftButton={
-              <TouchableOpacity onPress={this._onBackClick.bind(this)}>
-                  <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
-              </TouchableOpacity> 
-            }
-          />
 
           <ListView
             initialListSize = {5}
@@ -313,4 +294,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default MyFavoriteTopicListPage;
+export default MyFocusPersonPage;

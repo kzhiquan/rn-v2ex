@@ -24,7 +24,6 @@ import LoadingView from '../components/LoadingView'
 import AccountContainer from '../containers/AccountContainer'
 import TopicContainer from '../containers/TopicContainer'
 import UserContainer from '../containers/UserContainer'
-import { toastShort } from '../utils/ToastUtil';
 
 
 let canLoadMore;
@@ -32,7 +31,7 @@ let page = 1;
 let loadMoreTime = 0;
 
 
-class MyFavoriteTopicListPage extends React.Component {
+class MyFocusPersonTopicListPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,14 +46,14 @@ class MyFavoriteTopicListPage extends React.Component {
 
   componentDidMount() {
     const { authActions, auth, route } = this.props;
-    authActions.requestMyFavoriteTopic(route.node.path);
+    authActions.requestMyFocusPerson(route.node.path);
   }
 
   onRefresh(){
     canLoadMore = false;
     page = 1;
     const { authActions, auth, route } = this.props;
-    authActions.refreshMyFavoriteTopic(route.node.path);
+    authActions.refreshMyFocusPerson(route.node.path);
   }
 
   _onTopicClick(){
@@ -168,7 +167,7 @@ class MyFavoriteTopicListPage extends React.Component {
       if(this._isCurrentPageFilled()){
         page += 1;
       }
-      authActions.requestMoreMyFavoriteTopic(route.node.path, page);
+      authActions.requestMoreFocusPerson(route.node.path, page);
     }
   }
 
@@ -186,8 +185,8 @@ class MyFavoriteTopicListPage extends React.Component {
     };
 
     let rows = []
-    if(auth.myFavoriteTopic && auth.myFavoriteTopic.topicList){
-      rows = auth.myFavoriteTopic.topicList;
+    if(auth.myFocusPerson && auth.myFocusPerson.topicList){
+      rows = auth.myFocusPerson.topicList;
     }
 
     return (
@@ -216,7 +215,7 @@ class MyFavoriteTopicListPage extends React.Component {
             renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
             refreshControl={
               <RefreshControl
-                refreshing={auth.myFavoriteTopic.isRefreshing}
+                refreshing={auth.myFocusPerson.isRefreshing}
                 onRefresh={() => this.onRefresh()}
                 title="Loading..."
               />
@@ -224,7 +223,7 @@ class MyFavoriteTopicListPage extends React.Component {
           />
 
           <ActivityIndicator
-            animating={ auth.myFavoriteTopic.isLoading }
+            animating={ auth.myFocusPerson.isLoading }
             style={styles.front}
             size="large"
           />
@@ -313,4 +312,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default MyFavoriteTopicListPage;
+export default MyFocusPersonTopicListPage;

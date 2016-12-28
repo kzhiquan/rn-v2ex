@@ -20,6 +20,14 @@ const initialState = {
 		isLoadingMore : false,
 		topicList : [],
 	},
+
+	myFocusPerson:{
+		isLoading:false,
+		isRefreshing : false,
+		isLoadingMore : false,
+		topicList : [],
+	},
+
 	myNotification:{
 		isLoading : false,
 		isRefreshing : false,
@@ -192,6 +200,44 @@ export default function auth(state = initialState, action){
 				}),
 			});
 
+		//my favorite topic
+		case types.REQUEST_MY_FOCUS_PERSON:
+
+			return Object.assign({}, state, {
+				myFocusPerson : Object.assign({}, state.myFocusPerson, {
+					isLoading : true,
+				}),
+			});
+
+		case types.REFRESH_MY_FOCUS_PERSON:
+
+			return Object.assign({}, state, {
+				myFocusPerson : Object.assign({}, state.myFocusPerson, {
+					isRefreshing : true,
+				}),
+			});
+
+		case types.REQUEST_MORE_MY_FOCUS_PERSON:
+			return Object.assign({}, state, {
+				myFocusPerson : Object.assign({}, state.myFocusPerson, {
+					isLoadingMore : true,
+				})
+			})
+		
+		case types.RECEIVE_MY_FOCUS_PERSON:
+
+			return Object.assign({}, state, {
+				myFocusPerson : Object.assign({}, state.myFocusPerson,{
+					isLoading : false,
+					isRefreshing : false,
+					isLoadingMore : false,
+					topicList : state.myFocusPerson.isLoadingMore ? loadMoreFocusPerson(state, action) : combineFocusPerson(state, action),
+					totalCount : action.totalCount,
+				}),
+			});
+
+
+
 		//my notification
 		case types.REQUEST_MY_NOTIFICATION:
 			return Object.assign({}, state, {
@@ -314,6 +360,21 @@ function loadMoreFavoriteTopic(state, action, countPerPage=20) {
 	
   	return state.myFavoriteTopic.topicList;
 }
+
+
+
+function combineFocusPerson(state, action) {
+	return action.topicList;
+}
+
+function loadMoreFocusPerson(state, action, countPerPage=20) {
+	if(state.myFocusPerson.topicList.length % countPerPage == 0){
+		state.myFocusPerson.topicList = state.myFocusPerson.topicList.concat(action.topicList);
+	}
+	
+  	return state.myFocusPerson.topicList;
+}
+
 
 
 function combineNotificationList(state, action) {

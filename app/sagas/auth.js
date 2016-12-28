@@ -10,6 +10,7 @@ import {
 	receiveMyNode,
 	receiveMyFavoriteTopic,
 	receiveMyNotification,
+	receiveMyFocusPerson,
 	endDeleteMyNotification,
 	endUserLogout,
 	endChangeUser,
@@ -189,6 +190,33 @@ export function* watchAuthFavoriteTopic(){
 									 		types.REQUEST_MORE_MY_FAVORITE_TOPIC]);
 
 		yield fork(fetchMyFavoriteTopicSagas, path, page);
+	}
+}
+
+
+function* fetchMyFocusPersonSagas(path, page){
+	try{
+
+		const result = yield call(fetchMyFavoriteTopic, path, page); 
+
+		//console.log('result', result);
+
+		yield put(receiveMyFocusPerson(result.topicList, result.totalCount));
+
+	} catch ( error ){
+		toastShort('网络发生错误,请重试');
+		console.log('error', error);
+		yield put(receiveMyFocusPerson());
+	}
+}
+
+export function* watchAuthFocusPerson(){
+	while (true) {
+		const { path, page } = yield take([ types.REQUEST_MY_FOCUS_PERSON, 
+									 		types.REFRESH_MY_FOCUS_PERSON, 
+									 		types.REQUEST_MORE_MY_FOCUS_PERSON]);
+
+		yield fork(fetchMyFocusPersonSagas, path, page);
 	}
 }
 
