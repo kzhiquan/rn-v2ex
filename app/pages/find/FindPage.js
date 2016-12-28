@@ -9,10 +9,9 @@ import ScrollableTabView, { ScrollableTabBar, } from 'react-native-scrollable-ta
 import NavigationBar from 'react-native-navbar';
 
 
-import MyNotificationContainer from '../../containers/notification/MyNotificationContainer';
-import MyFocusPersonContainer from '../../containers/notification/MyFocusPersonContainer';
+import TabTopicListContainer from '../../containers/find/TabTopicListContainer';
 
-class NotificationPage extends React.Component {
+class FindPage extends React.Component {
 
   constructor(props) {
     super(props);
@@ -35,12 +34,11 @@ class NotificationPage extends React.Component {
     )
   }
 
-
   render() {
     const { navigator } = this.props;
 
     let titleConfig = {
-      title: '通知'
+      title: '发现'
     };
 
 
@@ -63,9 +61,9 @@ class NotificationPage extends React.Component {
           renderTabBar={this._renderScrollTableBar.bind(this)}
           >
 
-          <MyNotificationContainer {...this.props} key={0} tabLabel={'提醒'}/>
-          <MyFocusPersonContainer {...this.props} key={1} tabLabel={'关注'} route={{node:{path:'/my/following'}}}/>
-
+          <TabTopicListContainer {...this.props} key={0} tabLabel={'技术'} node={{path:'/?tab=tech'}}/>
+          <TabTopicListContainer {...this.props} key={1} tabLabel={'最热'} node={{path:'/?tab=hot'}}/>
+        
         </ScrollableTabView>
 
       </View>
@@ -98,8 +96,6 @@ const styles = StyleSheet.create({
     backgroundColor : tabBarUnderlineColor,
     height:2,
   },
-
-
 });
 
-export default NotificationPage;
+export default FindPage;

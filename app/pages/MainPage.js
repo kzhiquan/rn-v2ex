@@ -17,6 +17,7 @@ import NodeListContainer from '../containers/NodeListContainer';
 
 import AuthContainer from '../containers/auth/AuthContainer';
 import NotificationPage from './notification/NotificationPage';
+import FindPage from './find/FindPage';
 
 
 class MainPage extends React.Component{
@@ -32,8 +33,8 @@ class MainPage extends React.Component{
 			      <TopicListContainer tabLabel="ios-home-outline" {...this.props}>
 			      </TopicListContainer>
 
-			      <NodeListContainer tabLabel="ios-compass-outline" {...this.props}>
-			      </NodeListContainer>
+			      <FindPage tabLabel="ios-compass-outline" {...this.props}>
+			      </FindPage>
 
 			      <NotificationPage tabLabel="ios-notifications-outline" {...this.props}>
 			      </NotificationPage>
