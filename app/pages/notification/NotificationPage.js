@@ -29,8 +29,8 @@ class NotificationPage extends React.Component {
   _renderScrollTableBar(){
     return (
       <ScrollableTabBar 
-        tabStyle={{paddingLeft:8, paddingRight:8,}}
-        tabsContainerStyle={{justifyContent:'space-around',}}
+        tabStyle={{ paddingRight:16, paddingLeft:16}}
+        tabsContainerStyle={{justifyContent:'center',}}
       />
     )
   }
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
   tabBarUnderlineStyle:{
     backgroundColor : tabBarUnderlineColor,
     height:2,
+    width:32,
   },
 
 
