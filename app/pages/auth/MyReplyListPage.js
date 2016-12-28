@@ -21,13 +21,7 @@ import NavigationBar from 'react-native-navbar';
 import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
 
-
-import LoadingView from '../components/LoadingView';
-import Button from '../components/Button';
-import AccountContainer from '../containers/AccountContainer'
-import TopicContainer from '../containers/TopicContainer'
-import UserContainer from '../containers/UserContainer'
-import { toastShort } from '../utils/ToastUtil';
+import TopicContainer from '../../containers/TopicContainer'
 
 
 let canLoadMore;
@@ -35,54 +29,34 @@ let page = 1;
 let loadMoreTime = 0;
 
 
-class MyNotificationPage extends React.Component {
+class MyReplyListPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } )
     };
-    this.deletedNotifications = [];
-
-    canLoadMore = false;
     page = 1;
+    canLoadMore = false;
   }
 
   componentWillMount() {
+    //console.log("componentWillMount");
   }
 
   componentDidMount() {
-    const { authActions, auth, } = this.props;
-    authActions.requestMyNotification();
-  }
-
-  componentWillReceiveProps(nextProps){
-    const { auth } = nextProps;
-    if(auth.myNotification.deletedNotification){
-      this.deletedNotifications.push(auth.myNotification.deletedNotification);
-    }
+    const { authActions,auth } = this.props;
+    authActions.requestMyReply(auth.user);
   }
 
   onRefresh(){
     canLoadMore = false;
     page = 1;
-    const { authActions, auth, } = this.props;
-    authActions.refreshMyNotification();
-    this.deletedNotifications = [];
-  }
-
-  _onUserClick(){
-    const { navigator, path } = this;
-    navigator.push({
-      component : UserContainer,
-      name : 'UserPage', 
-      path : path,
-    });
+    const { authActions,auth } = this.props;
+    authActions.refreshMyReply(auth.user);
   }
 
   _renderNode(node, index, parent, type) {
-
     if (node.name === 'img') {
-
         let uri = node.attribs.src;
         if(uri.indexOf('http') == -1){
           uri = 'http:' + uri;
@@ -102,21 +76,11 @@ class MyNotificationPage extends React.Component {
   }
 
   _onLinkPress(url){
-    console.log('url', url);
+    //console.log('url', url);
   }
 
-  _onDeleteNotification(){
-    const { notification, that } = this;
-    const { authActions } = that.props;
-    authActions.deleteMyNotification(notification);
-  }
-
-  _onNotificationClick(){
-    const { navigator, notification } = this;
-    let topic ={
-      topic_url : notification.topic_url,
-    }
-
+  _onTopicClick(){
+    const { topic, navigator } = this;
     navigator.push({
       component : TopicContainer,
       name : 'TopicPage',
@@ -124,85 +88,59 @@ class MyNotificationPage extends React.Component {
     });
   }
 
-  renderItem(notification, sectionID, rowID, highlightRow) {
-    //console.log('deletedNotifications', this.deletedNotifications);
-    let found = this.deletedNotifications.find( (item) => {
-      return item == notification;
-    });
-
-    if(found){
-      return null;
-    }
-
+  _onBackClick(){
     const { navigator } = this.props;
+    navigator.pop();
+  }
 
-    if(!notification.content){
-      notification.content = '收藏了主题';
-    }
-
+  renderItem(reply, sectionID, rowID, highlightRow){   
+    const { navigator, route } = this.props;
     return (
-      <TouchableOpacity onPress={this._onNotificationClick} navigator={navigator} notification={notification}>
+      <TouchableOpacity onPress={this._onTopicClick} topic={reply.topic} navigator={navigator}>
+        
+        <View style={[styles.userReplyItemContainer, ]}>
 
-        <View style={styles.notificationItemContainer}>
-
-            <TouchableOpacity onPress={this._onUserClick} navigator={navigator} path={notification.member_url}>
-              <Image
-                style={styles.avatar_size_42}
-                source={{uri:notification.member_avatar}}
-              />
-            </TouchableOpacity>
-
+            <Image
+              style={styles.avatar_size_42}
+              source={{uri:route.user.avatar_url}}
+            />
             <View style={styles.avatarRightContent}>
-              <View style={[styles.directionRow,{justifyContent:'space-between'}]}>
-                  <View>
-                    <View>
-                      <Text style={{fontSize:16}}>{notification.member_name}</Text>
-                    </View>
 
-                    <View style={{paddingTop:8}}>
-                      <Text style={styles.metaTextStyle}>{notification.post_date}</Text>
-                    </View>
-                  </View>
+              <View>
+                <Text style={{fontSize:16}}>{route.user.name}</Text>
+              </View>
 
-                  <TouchableOpacity 
-                    onPress={this._onDeleteNotification}
-                    notification={notification}
-                    that={this}>
-                      <View style={styles.deleteBtnStyle}>
-                        <Text style={styles.whiteBoldFontStyle}>删除</Text>
-                      </View>
-                  </TouchableOpacity>
+              <View style={{paddingTop:8}}>
+                <Text style={styles.metaTextStyle}>{reply.date}</Text>
               </View>
 
               <View style={{paddingTop:6}}>
-                <Text style={{fontSize:14}}>{notification.topic_title}</Text>
+                <Text style={{fontSize:14}}>{reply.topic.topic_title}</Text>
               </View>
-
               <View>
                 <Image
                   style={{left:32}}
-                  source={require('../static/imgs/triangle.png')}
+                  source={require('../../static/imgs/triangle.png')}
                   />
                 <View style={{backgroundColor:'#F2F2F2', borderRadius:2, paddingTop:2, paddingBottom:2, paddingRight:4, paddingLeft:4}}>
                   <HtmlRender
                     key={`${sectionID}-${rowID}`}
-                    value={'<div>' + notification.content + '</div>'}
+                    value={'<div>' + reply.content + '</div>'}
                     onLinkPress={this._onLinkPress.bind(this)}
                     renderNode={this._renderNode}
                   />
                 </View>
               </View>
+
             </View>
-
         </View>
-
       </TouchableOpacity>
     )
   }
 
   renderFooter(){
     const { auth } = this.props;
-    if(auth.myNotification.isLoadingMore){
+    if(auth.isLoadingMore){
       return (
         <View style={styles.footerContainer} >
           <ActivityIndicator size="small" color="#3e9ce9" />
@@ -214,15 +152,6 @@ class MyNotificationPage extends React.Component {
     }
   }
 
-  _isCurrentPageFilled(countPerPage=10){
-    const { auth } = this.props;
-
-    if(auth.myNotification.notificationList.length % countPerPage === 0){
-      return true;
-    }else{
-      return false;
-    }
-  }
 
   onEndReached() {
     const time = Date.parse(new Date()) / 1000;
@@ -230,12 +159,9 @@ class MyNotificationPage extends React.Component {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
 
-      const { authActions, auth, } = this.props;
-      if(this._isCurrentPageFilled()){
-        page += 1;
-      }
-      console.log('page', page);
-      authActions.requestMoreMyNotification(page);
+      const { authActions, auth } = this.props;
+      page += 1;
+      authActions.requestMoreMyReply(auth.user, page);
     }
   }
 
@@ -246,14 +172,30 @@ class MyNotificationPage extends React.Component {
   }
 
   render() {
-    const { auth, } = this.props;
+    const { navigator, auth } = this.props;
+
+    var titleConfig = {
+      title: '我的回复',
+    };
+
     let rows = []
-    if(auth.myNotification && auth.myNotification.notificationList){
-      rows = auth.myNotification.notificationList;
+    if(auth.myReply && auth.myReply.replyList){
+      rows = auth.myReply.replyList;
     }
 
     return (
-      <View>
+      <View style={styles.container}>
+
+          <NavigationBar
+            style={styles.navigatorBarStyle}
+            title={titleConfig}
+            leftButton={
+              <TouchableOpacity onPress={this._onBackClick.bind(this)}>
+                  <Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
+              </TouchableOpacity> 
+            }
+          />
+
           <ListView
             initialListSize = {5}
             dataSource={this.state.dataSource.cloneWithRows(rows)}
@@ -261,13 +203,13 @@ class MyNotificationPage extends React.Component {
             renderFooter={this.renderFooter.bind(this)}
             onEndReached={this.onEndReached.bind(this)}
             onScroll={this.onScroll.bind(this)}
-            onEndReachedThreshold={-20}
+            onEndReachedThreshold={-50}
             enableEmptySections={true}
             removeClippedSubviews = {false}
             renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
             refreshControl={
               <RefreshControl
-                refreshing={auth.myNotification.isRefreshing}
+                refreshing={auth.isRefreshing}
                 onRefresh={() => this.onRefresh()}
                 title="Loading..."
               />
@@ -275,15 +217,15 @@ class MyNotificationPage extends React.Component {
           />
 
           <ActivityIndicator
-            animating={ auth.myNotification.isLoading }
+            animating={ auth.isLoading }
             style={styles.front}
             size="large"
           />
-
       </View>
     );
   }
 }
+
 
 const {height, width} = Dimensions.get('window');
 let borderColor = '#B2B2B2';
@@ -292,7 +234,6 @@ let noteTextColor = '#BBC5CD';
 let backgroundColor = 'white';
 
 const styles = StyleSheet.create({
-
   //common
   directionRow:{
     flexDirection : 'row',
@@ -334,7 +275,7 @@ const styles = StyleSheet.create({
     width : width-12-10-16-42-10,
   },
 
-  notificationItemContainer:{
+  userReplyItemContainer:{
     flexDirection : 'row',
     flex : 1, 
     paddingTop:12, 
@@ -349,22 +290,9 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
 
-  deleteBtnStyle:{
-    backgroundColor:'#4D2424', 
-    height: 28,
-    borderRadius:5, 
-    paddingTop:7, 
-    paddingBottom:5, 
-    paddingLeft:19, 
-    paddingRight:19,
-  },
-
-  whiteBoldFontStyle:{
-    fontSize:12, 
-    color:'white', 
-    fontWeight:'bold',
-  },
 });
 
 
-export default MyNotificationPage;
+export default MyReplyListPage;
+
+

@@ -2,15 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as authCreators from '../actions/auth';
+import LoginPage from '../../pages/auth/LoginPage';
+import * as authCreators from '../../actions/auth';
 
-import NotificationPage from '../pages/MyFavoriteTopicListPage';
-
-
-class NotificationContainer extends React.Component {
+class LoginContainer extends React.Component {
   render() {
     return (
-      <NotificationPage {...this.props} />
+      <LoginPage {...this.props} />
     );
   }
 }
@@ -22,7 +20,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch) => {;
   const authActions = bindActionCreators(authCreators, dispatch);
   return {
     authActions,
@@ -30,4 +28,4 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(NotificationContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(LoginContainer);

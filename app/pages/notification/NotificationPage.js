@@ -9,9 +9,8 @@ import ScrollableTabView, { ScrollableTabBar, } from 'react-native-scrollable-ta
 import NavigationBar from 'react-native-navbar';
 
 
-import MyNotificationContainer from '../containers/MyNotificationContainer';
-import MyFocusPersonContainer from '../containers/MyFocusPersonContainer';
-import MyFavoriteTopicListContainer from '../containers/MyFavoriteTopicListContainer';
+import MyNotificationContainer from '../../containers/notification/MyNotificationContainer';
+import MyFocusPersonContainer from '../../containers/notification/MyFocusPersonContainer';
 
 class NotificationPage extends React.Component {
 

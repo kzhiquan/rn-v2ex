@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import AuthPage from '../pages/AuthPage';
+import AuthPage from '../../pages/auth/AuthPage';
 
 class AuthContainer extends React.Component {
   render() {

@@ -12,52 +12,39 @@ import {
 
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-import LoginContainer from '../containers/LoginContainer';
-import AccountContainerExt from '../containers/AccountContainerExt';
-
+import AddAccountContainer from '../../containers/auth/AddAccountContainer';
+import MainPage from '../MainPage';
 
 
-class SetPage extends React.Component {
+
+
+class AccountPageExt extends React.Component {
 
 	constructor(props){
 		super(props);
 		this.state = {
         	dataSource: new ListView.DataSource({
-        		rowHasChanged: (r1, r2) => r1 !== r2,
-        		sectionHeaderHasChanged: (h1, h2) => h1 !== h2, 
+        		rowHasChanged: (r1, r2) => r1 !== r2
         	} )
     	};
 	}
 
 	componentWillMount(){
-		//console.log('componentWillMount');
+		console.log('componentWillMount');
 	}
 
 	componentDidMount(){
-		//console.log('componentDidMount');
+		console.log('componentDidMount');
 	}
 
 	componentWillReceiveProps(nextProps){
 		const { navigator, auth } = nextProps;
-		//console.log('auth', auth);
-		if( auth.user == null ){
+		if( this.props.auth.user && this.props.auth.user.name != auth.user.name){
 			navigator.resetTo({
-				component: LoginContainer,
-				name : 'LoginPage',
+				component: MainPage,
+				name : 'main',
 			});
-			/*if(auth.accounts.length == 0){
-				navigator.resetTo({
-					component: LoginContainer,
-					name : 'LoginPage',
-				});
-			}else{
-				navigator.push({
-					component : AccountContainerExt,
-					name : 'AccountPage',
-				});
-			}*/
-		}
+		}	
 	}
 
 	_onBackClick(){
@@ -65,64 +52,68 @@ class SetPage extends React.Component {
 		navigator.pop();
 	}
 
-	_onAccountClick(){
-		console.log('_onAccountClick');
-		const { navigator } = this.props;
+	_onAddAccountClick(){
+		const { navigator } = this;
 		navigator.push({
-			component : AccountContainerExt,
-			name : 'AccountPage',
+			component : AddAccountContainer,
+			name : 'AddAcountPage',
 		});
 	}
 
-	_onFontAndPresentClick(){
-		console.log('_onFontAndPresentClick');
+	_onChangeUserClick(){
+		const { that, item } = this;
+		const { auth, authActions } = that.props;
+		if( !auth.user || (auth.user && auth.user.name != item.name)) {
+			authActions.changeUser(item);
+		}
 	}
 
-	_onAboutAppClick(){
-		console.log('_onAboutAppClick');
-	}
-
-	_onLogoutClick(){
-		//console.log('_onLogoutClick');
-		const { auth, authActions } = this.props;
-		authActions.userLogout(auth.user);
-	}
-
-	_renderLogoutCell(item, sectionID, rowID, highlightRow,cellContainerStyle){
-		const { navigator } = this.props;
+	_renderAccountItem(item, sectionID, rowID, highlightRow,cellContainerStyle){
+		const { auth } = this.props;
+		let flag = false;
+		if(auth.user && auth.user.name == item.name){
+			flag = true;
+		}
 		return (
-			<TouchableOpacity 
-				onPress={item.onClick} 
-				item={item} 
-				navigator={navigator}
-				style={[cellContainerStyle,{'top' : 292}]}>
-
-			 	<View style={[styles.cellStyle, {'justifyContent' : 'center'}]}>
-			  		<View style={{paddingTop:14}}>
-			          <Text>{item.name}</Text>
-			        </View>
+			<TouchableOpacity
+				style={cellContainerStyle}
+				item={item}
+				that={this}
+				onPress={this._onChangeUserClick}>
+			 	<View style={styles.cellStyle}>
+			 		<Image
+						style={[styles.avatar_size_42, {top:9, borderRadius:21,}]}
+        				source={{uri:item.avatar_url}}
+      				/>
+      				<View style={[styles.directionRow, {flex: 1, justifyContent:'space-between'}]}>
+      					<View style={{paddingTop:22, left:10}}>
+			          		<Text>{item.name}</Text>
+			        	</View>
+			        	{flag && <Image style={{top:22, right:12}} source={require('../../static/imgs/checkmark.png')}/>}
+      				</View>
 			    </View>
-
 			</TouchableOpacity>
 		);
 	}
 
-	_renderCell(item, sectionID, rowID, highlightRow, cellContainerStyle){
-		const { navigator } = this.props;
+	_renderAddItem(item, sectionID, rowID, highlightRow,cellContainerStyle){
+		const { navigator } = this.props; 
 		return (
-			<TouchableOpacity 
-				onPress={item.onClick} 
-				item={item} 
+			<TouchableOpacity
+				style={cellContainerStyle}
 				navigator={navigator}
-				style={cellContainerStyle}>
-
+				onPress={this._onAddAccountClick}
+				>
 			 	<View style={styles.cellStyle}>
-			        <View style={{paddingTop:14}}>
+					<Image 
+						style={{top:17,left:9}} 
+						source={require('../../static/imgs/plus.png')}/>
+
+			        <View style={{paddingTop:22, left:22}}>
 			          <Text>{item.name}</Text>
 			        </View>
-			        <Image style={{top:14, right:12}} source={require('../static/imgs/arrow.png')}/>
-			    </View>
 
+			    </View>
 			</TouchableOpacity>
 		);
 	}
@@ -130,31 +121,24 @@ class SetPage extends React.Component {
 	renderItem(item, sectionID, rowID, highlightRow){
 
 		let cellContainerStyle = {backgroundColor:'white'};
-
-		if(sectionID == 'one'){
-
-			cellContainerStyle = [cellContainerStyle, styles.firstCellContainer, styles.lastCellContainer];
-
-		}else if(sectionID == 'two' && rowID == 0 ){
-
+		if(rowID == 0){
 			cellContainerStyle = [cellContainerStyle, styles.firstCellContainer];
+		}
 
-		}else if(sectionID == 'two' && rowID == 1){
+		if(item.name== '添加账户'){
 
 			cellContainerStyle = [cellContainerStyle, styles.lastCellContainer];
 
-		}else if( sectionID == 'three'){
+			return this._renderAddItem(item, sectionID, rowID, highlightRow,cellContainerStyle);
 
-			cellContainerStyle = [cellContainerStyle, styles.firstCellContainer, styles.lastCellContainer];
+		}else{
 
-			return this._renderLogoutCell(item, sectionID, rowID, highlightRow, cellContainerStyle);
+			return this._renderAccountItem(item, sectionID, rowID, highlightRow,cellContainerStyle);
+
 		}
-
-
-		return this._renderCell(item, sectionID, rowID, highlightRow, cellContainerStyle);
 	}
 
-    renderSectionHeader(sectionData, sectionID){
+	renderSectionHeader(sectionData, sectionID){
 		return (
 	      <View
 	        key={`${sectionID}`}
@@ -163,43 +147,17 @@ class SetPage extends React.Component {
 	    );
     }
 
+
 	render() {
 		const { auth } = this.props;
 
 		let titleConfig = {
-			title: '设置'
+			title: '账户'
 		};
 
-		let rows = [];
-		if(auth.user){
-			rows = {
-				'one' : [
-					{
-						name:'账户',
-						onClick : this._onAccountClick.bind(this),
-					}
-				],
-
-				'two' : [
-					{
-						name : '字体与显示',
-						onClick : this._onFontAndPresentClick.bind(this),
-					},
-					{
-						name : '关于V2EX',
-						onClick : this._onAboutAppClick.bind(this),
-					}
-				],
-
-				'three' :[
-					{
-						name : '退出登录',
-						onClick : this._onLogoutClick.bind(this),
-					}
-				],
-			}
-		}
-
+		let rows = auth.accounts.concat([{
+			name: '添加账户',
+		}]);
 
 		return (
 			<View style={styles.container}>
@@ -209,17 +167,17 @@ class SetPage extends React.Component {
 					title={titleConfig}
 					leftButton={
 						<TouchableOpacity onPress={this._onBackClick.bind(this)}>
-                			<Image style={{left:12, top:11}}source={require('../static/imgs/back_arrow.png')}/>
+                			<Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
               			</TouchableOpacity> 
 					}
 				/>
 
 				<ListView
 					initialListSize = {5}
-					dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
+					dataSource={this.state.dataSource.cloneWithRows(rows)}
 					renderRow={this.renderItem.bind(this)}
-					renderSectionHeader = {this.renderSectionHeader.bind(this)}
 					removeClippedSubviews = {false}
+					renderSectionHeader = {this.renderSectionHeader.bind(this)}
 				/>
 
 				<ActivityIndicator
@@ -288,6 +246,8 @@ const styles = StyleSheet.create({
 		color:noteTextColor,
 	},
 
+
+	//table css
 	headerSection :{
 	    height: 16,
 	  	//borderBottomWidth:1, 
@@ -316,11 +276,10 @@ const styles = StyleSheet.create({
 		flexDirection:'row',
 		borderBottomWidth:1,
 		borderBottomColor:cellBorderColor,
-		height:44,
-		justifyContent: 'space-between',
+		height:60,
 		marginLeft:16,
 	},
 });
 
 
-export default SetPage;
+export default AccountPageExt;

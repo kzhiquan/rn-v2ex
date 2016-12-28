@@ -20,11 +20,9 @@ import {
 import NavigationBar from 'react-native-navbar';
 
 
-import LoadingView from '../components/LoadingView'
-import AccountContainer from '../containers/AccountContainer'
-import TopicContainer from '../containers/TopicContainer'
-import UserContainer from '../containers/UserContainer'
-import { toastShort } from '../utils/ToastUtil';
+import AccountContainer from '../../containers/auth/AccountContainer'
+import TopicContainer from '../../containers/TopicContainer'
+import UserContainer from '../../containers/UserContainer'
 
 
 let canLoadMore;
@@ -107,7 +105,7 @@ class MyFavoriteTopicListPage extends React.Component {
                   <Text style={styles.metaTextStyle}>{topic.reply_count}</Text>
                   <Image
                     style={{bottom:3}}
-                    source={require('../static/imgs/chatbubble.png')}
+                    source={require('../../static/imgs/chatbubble.png')}
                   />
                 </View>
               </View>
@@ -122,7 +120,7 @@ class MyFavoriteTopicListPage extends React.Component {
                 </View>
                 <Image
                   style={{top:4,left:4}}
-                  source={require('../static/imgs/dot.png')}
+                  source={require('../../static/imgs/dot.png')}
                 />
                 <View style={{left:14}}>
                   <Text style={styles.metaTextStyle}>{'最后回复' + topic.latest_reply_member_name}</Text>
@@ -198,7 +196,7 @@ class MyFavoriteTopicListPage extends React.Component {
             title={titleConfig}
             leftButton={
               <TouchableOpacity onPress={this._onBackClick.bind(this)}>
-                  <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+                  <Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
               </TouchableOpacity> 
             }
           />

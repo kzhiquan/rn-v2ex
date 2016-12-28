@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as authCreators from '../actions/auth';
+import * as authCreators from '../../actions/auth';
 
-import MyNotificationPage from '../pages/MyNotificationPage';
+import MyFavoriteTopicListPage from '../../pages/auth/MyFavoriteTopicListPage';
 
 
-class MyNotificationContainer extends React.Component {
+class MyFavoriteTopicListContainer extends React.Component {
   render() {
     return (
-      <MyNotificationPage {...this.props} />
+      <MyFavoriteTopicListPage {...this.props} />
     );
   }
 }
@@ -30,4 +30,4 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(MyNotificationContainer);
+export default connect(mapStateToProps,mapDispatchToProps)(MyFavoriteTopicListContainer);

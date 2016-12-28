@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 
 import LoadingView from '../components/LoadingView';
-import AccountContainer from '../containers/AccountContainer';
+import AccountContainer from '../containers/auth/AccountContainer';
 import NodeTopicListContainer from '../containers/NodeTopicListContainer';
 import TopicContainer from '../containers/TopicContainer';
 import UserContainer from '../containers/UserContainer';

@@ -11,13 +11,13 @@ import {
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import AccountContainer from '../containers/AccountContainer';
-import MyTopicListContainer from '../containers/MyTopicListContainer';
-import MyReplyListContainer from '../containers/MyReplyListContainer';
-import MyNodeListContainer from '../containers/MyNodeListContainer';
-import MyFavoriteTopicListContainer from '../containers/MyFavoriteTopicListContainer';
-import MyFocusPersonTopicListContainer from '../containers/MyFocusPersonTopicListContainer';
-import SetContainer from '../containers/SetContainer';
+import AccountContainer from '../../containers/auth/AccountContainer';
+import MyTopicListContainer from '../../containers/auth/MyTopicListContainer';
+import MyReplyListContainer from '../../containers/auth/MyReplyListContainer';
+import MyNodeListContainer from '../../containers/auth/MyNodeListContainer';
+import MyFavoriteTopicListContainer from '../../containers/auth/MyFavoriteTopicListContainer';
+import MyFocusPersonTopicListContainer from '../../containers/auth/MyFocusPersonTopicListContainer';
+import SetContainer from '../../containers/auth/SetContainer';
 
 
 class AuthPage extends React.Component {
@@ -118,14 +118,14 @@ class AuthPage extends React.Component {
 	      						<View>
 	      							<Text style={styles.metaTextStyle}>{user.silver_count}</Text>
 	      						</View> 
-	      						<Image source={require('../static/imgs/silver.png')}/>
+	      						<Image source={require('../../static/imgs/silver.png')}/>
 	      					</View>
 
 	      					<View style={styles.directionRow}>
 	      						<View>
 	      							<Text style={styles.metaTextStyle}>{user.gold_count}</Text>
 	      						</View> 
-	      						<Image source={require('../static/imgs/gold.png')}/>
+	      						<Image source={require('../../static/imgs/gold.png')}/>
 	      					</View>
 
       					</View>
@@ -141,19 +141,19 @@ class AuthPage extends React.Component {
 						<View>
 							<Text style={styles.metaTextStyle}>{user.favorite_topic_count} 个主题</Text>
 						</View>
-					 	<Image style={{left:2, bottom:4}} source={require('../static/imgs/topic.png')}/>
+					 	<Image style={{left:2, bottom:4}} source={require('../../static/imgs/topic.png')}/>
 					</View>
 					<View style={[styles.directionRow,{marginRight:32}]}>
 						<View>
 							<Text style={styles.metaTextStyle}>{user.favorite_node_count} 个节点</Text>
 						</View> 
-						<Image style={{left:2, bottom:3}} source={require('../static/imgs/bookmark.png')}/>
+						<Image style={{left:2, bottom:3}} source={require('../../static/imgs/bookmark.png')}/>
 					</View>
 					<View style={styles.directionRow}>
 						<View>
 							<Text style={styles.metaTextStyle}>{user.focus_user_count} 个人</Text>
 						</View>
-						<Image style={{left:2}} source={require('../static/imgs/person.png')}/>
+						<Image style={{left:2}} source={require('../../static/imgs/person.png')}/>
 					</View>
 				</View>
 			</View>
@@ -173,7 +173,7 @@ class AuthPage extends React.Component {
 			        <View style={{paddingTop:14}}>
 			          <Text>{item.name}</Text>
 			        </View>
-			        <Image style={{top:14, right:12}} source={require('../static/imgs/arrow.png')}/>
+			        <Image style={{top:14, right:12}} source={require('../../static/imgs/arrow.png')}/>
 			    </View>
 
 			</TouchableOpacity>

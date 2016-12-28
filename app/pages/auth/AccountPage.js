@@ -5,8 +5,8 @@ import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
-import AddAccountContainer from '../containers/AddAccountContainer'
-import EditAccountContainer from '../containers/EditAccountContainer'
+import AddAccountContainer from '../../containers/auth/AddAccountContainer'
+import EditAccountContainer from '../../containers/auth/EditAccountContainer'
 
 class AccountPage extends React.Component {
 	constructor(props) {

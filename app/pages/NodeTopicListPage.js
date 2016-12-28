@@ -20,7 +20,7 @@ import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import LoadingView from '../components/LoadingView';
-import AccountContainer from '../containers/AccountContainer';
+import AccountContainer from '../containers/auth/AccountContainer';
 import SearchContainer from '../containers/SearchContainer';
 import TopicContainer from '../containers/TopicContainer';
 import { toastShort } from '../utils/ToastUtil';

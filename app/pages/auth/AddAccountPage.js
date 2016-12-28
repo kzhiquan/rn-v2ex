@@ -12,7 +12,7 @@ import {
 import NavigationBar from 'react-native-navbar';
 
 
-import MainPage from './MainPage';
+import MainPage from '../MainPage';
 
 var t = require('tcomb-form-native');
 t.form.Form.stylesheet.textbox.normal.backgroundColor = '#ffffff';

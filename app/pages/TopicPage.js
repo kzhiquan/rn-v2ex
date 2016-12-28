@@ -24,7 +24,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import ResizableImage from '../components/ResizableImage'
 import LoadingView from '../components/LoadingView';
-import AccountContainer from '../containers/AccountContainer';
+import AccountContainer from '../containers/auth/AccountContainer';
 import UserContainer from '../containers/UserContainer';
 import ReplyTopicPage from './ReplyTopicPage';
 import TopicDialogPage from './TopicDialogPage';

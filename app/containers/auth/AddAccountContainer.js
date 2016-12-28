@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 
-import * as accountsCreators from '../actions/account';
-import AddAccountPage from '../pages/AddAccountPage';
+import * as accountsCreators from '../../actions/account';
+import AddAccountPage from '../../pages/auth/AddAccountPage';
 
 class AddAccountContainer extends React.Component {
   render() {

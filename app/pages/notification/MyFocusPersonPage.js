@@ -20,9 +20,9 @@ import {
 import NavigationBar from 'react-native-navbar';
 
 
-import LoadingView from '../components/LoadingView';
-import AccountContainer from '../containers/AccountContainer';
-import TopicContainer from '../containers/TopicContainer';
+import AccountContainer from '../../containers/auth/AccountContainer'
+import TopicContainer from '../../containers/TopicContainer'
+import UserContainer from '../../containers/UserContainer'
 
 
 let canLoadMore;
@@ -30,7 +30,7 @@ let page = 1;
 let loadMoreTime = 0;
 
 
-class MyTopicListPage extends React.Component {
+class MyFocusPersonPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -41,20 +41,18 @@ class MyTopicListPage extends React.Component {
   }
 
   componentWillMount() {
-    //console.log("componentWillMount");
   }
 
   componentDidMount() {
-    //console.log("componentDidMount");
-    const { authActions,auth } = this.props;
-    authActions.requestMyTopic(auth.user);
+    const { authActions, auth, route } = this.props;
+    authActions.requestMyFocusPerson(route.node.path);
   }
 
   onRefresh(){
     canLoadMore = false;
     page = 1;
-    const { authActions,auth } = this.props;
-    authActions.refreshMyTopic(auth.user);
+    const { authActions, auth, route } = this.props;
+    authActions.refreshMyFocusPerson(route.node.path);
   }
 
   _onTopicClick(){
@@ -66,22 +64,28 @@ class MyTopicListPage extends React.Component {
     });
   }
 
-  _onBackClick(){
-    const { navigator } = this.props;
-    navigator.pop();
+  _onUserClick(){
+    const { navigator, path } = this;
+    navigator.push({
+      component : UserContainer,
+      name : 'UserPage', 
+      path : path,
+    });
   }
 
   renderItem(topic) {
-    const { navigator, route } = this.props;
-    let commentFlag = topic.reply_count ? true : false;
-    let replyFlag = topic.latest_reply_date ? true : false;
+    const { navigator } = this.props;
     return (
       <TouchableOpacity onPress={this._onTopicClick} topic={topic} navigator={navigator}>
         <View style={styles.topicItemContainer}>
-            <Image
-              style={styles.avatar_size_42}
-              source={{uri:route.user.avatar_url}}
-            />
+
+            <TouchableOpacity onPress={this._onUserClick} navigator={navigator} path={topic.member_url}>
+              <Image
+                style={styles.avatar_size_42}
+                source={{uri:topic.member_avatar}}
+              />
+            </TouchableOpacity>
+
             <View style={styles.avatarRightContent}>
 
               <View>
@@ -92,33 +96,31 @@ class MyTopicListPage extends React.Component {
                 <View style={styles.nodeAreaContainer}>
                   <Text style={styles.metaTextStyle}>{topic.node_name}</Text>
                 </View>
-                { commentFlag && 
-                  <View style={[styles.directionRow, {left:10, paddingTop:2}]}>
-                    <Text style={styles.metaTextStyle}>{topic.reply_count}</Text>
-                    <Image
-                      style={{bottom:3}}
-                      source={require('../static/imgs/chatbubble.png')}
-                    />
-                  </View>}
+                <View style={[styles.directionRow, {left:10, paddingTop:2}]}>
+                  <Text style={styles.metaTextStyle}>{topic.reply_count}</Text>
+                  <Image
+                    style={{bottom:3}}
+                    source={require('../../static/imgs/chatbubble.png')}
+                  />
+                </View>
               </View>
 
               <View style={{paddingTop:4,}}>
                 <Text style={{fontSize:16}}>{topic.topic_title}</Text>
               </View>
 
-              { replyFlag && 
-                <View style={[styles.directionRow, {paddingTop:4,}]}>
-                  <View>
-                    <Text style={styles.metaTextStyle}>{topic.latest_reply_date}</Text>
-                  </View>
-                  <Image
-                    style={{top:4,left:4}}
-                    source={require('../static/imgs/dot.png')}
-                  />
-                  <View style={{left:14}}>
-                    <Text style={styles.metaTextStyle}>{'最后回复' + topic.latest_reply_member_name}</Text>
-                  </View>
-                </View> }
+              <View style={[styles.directionRow, {paddingTop:4,}]}>
+                <View>
+                  <Text style={styles.metaTextStyle}>{topic.latest_reply_date}</Text>
+                </View>
+                <Image
+                  style={{top:4,left:4}}
+                  source={require('../../static/imgs/dot.png')}
+                />
+                <View style={{left:14}}>
+                  <Text style={styles.metaTextStyle}>{'最后回复' + topic.latest_reply_member_name}</Text>
+                </View>
+              </View>
 
             </View>
         </View>
@@ -128,7 +130,7 @@ class MyTopicListPage extends React.Component {
 
   renderFooter(){
     const { auth } = this.props;
-    if(auth.isLoadingMore){
+    if(auth.myFavoriteTopic.isLoadingMore){
       return (
         <View style={styles.footerContainer} >
           <ActivityIndicator size="small" color="#3e9ce9" />
@@ -137,13 +139,12 @@ class MyTopicListPage extends React.Component {
           </Text>
         </View>
       );
-    } 
+    }
   }
 
   _isCurrentPageFilled(countPerPage=20){
     const { auth } = this.props;
-
-    if(auth.myTopic.topicList.length % countPerPage === 0){
+    if(auth.myFavoriteTopic.topicList.length % countPerPage === 0){
       return true;
     }else{
       return false;
@@ -156,11 +157,11 @@ class MyTopicListPage extends React.Component {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
 
-      const { authActions, auth } = this.props;
+      const { authActions, auth, route } = this.props;
       if(this._isCurrentPageFilled()){
         page += 1;
       }
-      authActions.requestMoreMyTopic(auth.user, page);
+      authActions.requestMoreMyFocusPerson(route.node.path, page);
     }
   }
 
@@ -171,29 +172,15 @@ class MyTopicListPage extends React.Component {
   }
 
   render() {
-    const { navigator, auth } = this.props;
-
-    var titleConfig = {
-      title: '我的主题',
-    };
+    const { navigator, auth, } = this.props;
 
     let rows = []
-    if(auth.myTopic && auth.myTopic.topicList){
-      rows = auth.myTopic.topicList;
+    if(auth.myFocusPerson && auth.myFocusPerson.topicList){
+      rows = auth.myFocusPerson.topicList;
     }
 
     return (
       <View style={styles.container}>
-
-          <NavigationBar
-            style={styles.navigatorBarStyle}
-            title={titleConfig}
-            leftButton={
-              <TouchableOpacity onPress={this._onBackClick.bind(this)}>
-                  <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
-              </TouchableOpacity> 
-            }
-          />
 
           <ListView
             initialListSize = {5}
@@ -208,24 +195,24 @@ class MyTopicListPage extends React.Component {
             renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
             refreshControl={
               <RefreshControl
-                refreshing={auth.isRefreshing}
+                refreshing={auth.myFavoriteTopic.isRefreshing}
                 onRefresh={() => this.onRefresh()}
                 title="Loading..."
               />
             }
           />
 
-        <ActivityIndicator
-          animating={ auth.isLoading }
-          style={styles.front}
-          size="large"
-        />
-
+          <ActivityIndicator
+            animating={ auth.myFavoriteTopic.isLoading }
+            style={styles.front}
+            size="large"
+          />
 
       </View>
     );
   }
 }
+
 
 
 const {height, width} = Dimensions.get('window');
@@ -234,8 +221,9 @@ let cellBorderColor = '#EAEAEC';
 let noteTextColor = '#BBC5CD';
 let backgroundColor = 'white';
 
+
 const styles = StyleSheet.create({
-  //common
+ //common
   directionRow:{
     flexDirection : 'row',
   },
@@ -296,14 +284,12 @@ const styles = StyleSheet.create({
     paddingLeft:7, 
     paddingRight:7,
   },
-
   footerText: {
     textAlign: 'center',
     fontSize: 16,
     marginLeft: 10
   },
-
 });
 
 
-export default MyTopicListPage;
+export default MyFocusPersonPage;

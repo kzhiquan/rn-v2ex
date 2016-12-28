@@ -10,8 +10,8 @@ import {
 	Dimensions,
 } from 'react-native';
 
-import AddAccountContainer from '../containers/AddAccountContainer';
-import MainPage from './MainPage';
+import AddAccountContainer from '../../containers/auth/AddAccountContainer';
+import MainPage from '../MainPage';
 
 class LoginPage extends React.Component{
 
@@ -50,7 +50,7 @@ class LoginPage extends React.Component{
 
 				<View style={styles.loginContainer}>
 					<Image
-        				source={require('../static/imgs/logo.png')}
+        				source={require('../../static/imgs/logo.png')}
       				/>
       				<Text style={styles.loginLogoText}>V2EX</Text>
 					

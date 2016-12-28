@@ -22,7 +22,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import HtmlRender from 'react-native-html-render';
 
 import LoadingView from '../components/LoadingView';
-import AccountContainer from '../containers/AccountContainer';
+import AccountContainer from '../containers/auth/AccountContainer';
 import TopicContainer from '../containers/TopicContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';

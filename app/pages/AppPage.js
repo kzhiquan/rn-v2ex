@@ -8,13 +8,13 @@ import {
 } from 'react-native';
 
 import MainPage from './MainPage';
-import AccountContainer from '../containers/AccountContainer';
-import MyTopicListContainer from '../containers/MyTopicListContainer';
+import AccountContainer from '../containers/auth/AccountContainer';
+import MyTopicListContainer from '../containers/auth/MyTopicListContainer';
 import NodeListContainer from '../containers/NodeListContainer';
 import UserContainer from '../containers/UserContainer';
 import NodeTopicListContainer from '../containers/NodeTopicListContainer';
 
-import LoginContainer from '../containers/LoginContainer';
+import LoginContainer from '../containers/auth/LoginContainer';
 
 
 class App extends React.Component{

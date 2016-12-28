@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import AccountPageExt from '../pages/AccountPageExt';
-import * as authCreators from '../actions/auth';
+import AccountPageExt from '../../pages/auth/AccountPageExt';
+import * as authCreators from '../../actions/auth';
 
 class AccountContainerExt extends React.Component {
   render() {

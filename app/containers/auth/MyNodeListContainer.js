@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as authCreators from '../actions/auth';
+import * as authCreators from '../../actions/auth';
 
-import MyFocusPersonPage from '../pages/MyFocusPersonPage';
+import MyNodeListPage from '../../pages/auth/MyNodeListPage';
 
 
-class MyFocusPersonContainer extends React.Component {
+class MyNodeListContainer extends React.Component {
   render() {
     return (
-      <MyFocusPersonPage {...this.props} />
+      <MyNodeListPage {...this.props} />
     );
   }
 }
@@ -30,4 +30,4 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(MyFocusPersonContainer);
+export default connect(mapStateToProps,mapDispatchToProps)(MyNodeListContainer);

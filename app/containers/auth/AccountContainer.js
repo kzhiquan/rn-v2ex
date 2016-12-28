@@ -4,9 +4,9 @@ import { bindActionCreators } from 'redux';
 
 
 
-import * as accountsCreators from '../actions/account';
-import * as authCreators from '../actions/auth';
-import AccountPage from '../pages/AccountPage';
+import * as accountsCreators from '../../actions/account';
+import * as authCreators from '../../actions/auth';
+import AccountPage from '../../pages/auth/AccountPage';
 
 class AccountContainer extends React.Component {
   render() {

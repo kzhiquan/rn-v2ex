@@ -1,14 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as authCreators from '../actions/auth';
 
-import SetPage from '../pages/SetPage';
+import * as authCreators from '../../actions/auth';
 
-class SetContainer extends React.Component {
+import MyTopicListPage from '../../pages/auth/MyTopicListPage';
+
+
+class MyTopicListContainer extends React.Component {
   render() {
     return (
-      <SetPage {...this.props} />
+      <MyTopicListPage {...this.props} />
     );
   }
 }
@@ -23,8 +25,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   const authActions = bindActionCreators(authCreators, dispatch);
   return {
-    authActions
+    authActions,
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SetContainer);
+
+export default connect(mapStateToProps,mapDispatchToProps)(MyTopicListContainer);

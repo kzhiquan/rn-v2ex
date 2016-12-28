@@ -15,7 +15,7 @@ import {
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import NodeTopicListContainer from '../containers/NodeTopicListContainer';
+import NodeTopicListContainer from '../../containers/NodeTopicListContainer';
 
 
 
@@ -70,7 +70,7 @@ class MyNodeListPage extends React.Component {
 							<Text style={styles.metaTextStyle}>{item.topic_count}</Text>
 							<Image 
 								style={{left:8}}
-								source={require('../static/imgs/arrow.png')}
+								source={require('../../static/imgs/arrow.png')}
 							/>
 						</View>
 					</View>
@@ -99,7 +99,7 @@ class MyNodeListPage extends React.Component {
 					title={titleConfig}
 					leftButton={
 					  <TouchableOpacity onPress={this._onBackClick.bind(this)}>
-					      <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+					      <Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
 					  </TouchableOpacity> 
 					}
 				/>

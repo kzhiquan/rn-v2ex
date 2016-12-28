@@ -12,12 +12,11 @@ import ScrollableTabView from 'react-native-scrollable-tab-view';
 
 import Tarbar from '../components/TabBar';
 import TopicListContainer from '../containers/TopicListContainer';
-import AccountContainer from '../containers/AccountContainer';
-import AuthContainer from '../containers/AuthContainer';
 import NodeListContainer from '../containers/NodeListContainer';
-import MyNotificationContainer from '../containers/MyNotificationContainer';
-import NotificationContainer from '../containers/NotificationContainer';
-import NotificationPage from './NotificationPage';
+
+
+import AuthContainer from '../containers/auth/AuthContainer';
+import NotificationPage from './notification/NotificationPage';
 
 
 class MainPage extends React.Component{

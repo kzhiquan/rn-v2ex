@@ -20,11 +20,8 @@ import {
 import NavigationBar from 'react-native-navbar';
 
 
-import LoadingView from '../components/LoadingView'
-import AccountContainer from '../containers/AccountContainer'
-import TopicContainer from '../containers/TopicContainer'
-import UserContainer from '../containers/UserContainer'
-import { toastShort } from '../utils/ToastUtil';
+import AccountContainer from '../../containers/auth/AccountContainer';
+import TopicContainer from '../../containers/TopicContainer';
 
 
 let canLoadMore;
@@ -32,7 +29,7 @@ let page = 1;
 let loadMoreTime = 0;
 
 
-class MyFocusPersonPage extends React.Component {
+class MyTopicListPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -43,18 +40,20 @@ class MyFocusPersonPage extends React.Component {
   }
 
   componentWillMount() {
+    //console.log("componentWillMount");
   }
 
   componentDidMount() {
-    const { authActions, auth, route } = this.props;
-    authActions.requestMyFocusPerson(route.node.path);
+    //console.log("componentDidMount");
+    const { authActions,auth } = this.props;
+    authActions.requestMyTopic(auth.user);
   }
 
   onRefresh(){
     canLoadMore = false;
     page = 1;
-    const { authActions, auth, route } = this.props;
-    authActions.refreshMyFocusPerson(route.node.path);
+    const { authActions,auth } = this.props;
+    authActions.refreshMyTopic(auth.user);
   }
 
   _onTopicClick(){
@@ -66,28 +65,22 @@ class MyFocusPersonPage extends React.Component {
     });
   }
 
-  _onUserClick(){
-    const { navigator, path } = this;
-    navigator.push({
-      component : UserContainer,
-      name : 'UserPage', 
-      path : path,
-    });
+  _onBackClick(){
+    const { navigator } = this.props;
+    navigator.pop();
   }
 
   renderItem(topic) {
-    const { navigator } = this.props;
+    const { navigator, route } = this.props;
+    let commentFlag = topic.reply_count ? true : false;
+    let replyFlag = topic.latest_reply_date ? true : false;
     return (
       <TouchableOpacity onPress={this._onTopicClick} topic={topic} navigator={navigator}>
         <View style={styles.topicItemContainer}>
-
-            <TouchableOpacity onPress={this._onUserClick} navigator={navigator} path={topic.member_url}>
-              <Image
-                style={styles.avatar_size_42}
-                source={{uri:topic.member_avatar}}
-              />
-            </TouchableOpacity>
-
+            <Image
+              style={styles.avatar_size_42}
+              source={{uri:route.user.avatar_url}}
+            />
             <View style={styles.avatarRightContent}>
 
               <View>
@@ -98,31 +91,33 @@ class MyFocusPersonPage extends React.Component {
                 <View style={styles.nodeAreaContainer}>
                   <Text style={styles.metaTextStyle}>{topic.node_name}</Text>
                 </View>
-                <View style={[styles.directionRow, {left:10, paddingTop:2}]}>
-                  <Text style={styles.metaTextStyle}>{topic.reply_count}</Text>
-                  <Image
-                    style={{bottom:3}}
-                    source={require('../static/imgs/chatbubble.png')}
-                  />
-                </View>
+                { commentFlag && 
+                  <View style={[styles.directionRow, {left:10, paddingTop:2}]}>
+                    <Text style={styles.metaTextStyle}>{topic.reply_count}</Text>
+                    <Image
+                      style={{bottom:3}}
+                      source={require('../../static/imgs/chatbubble.png')}
+                    />
+                  </View>}
               </View>
 
               <View style={{paddingTop:4,}}>
                 <Text style={{fontSize:16}}>{topic.topic_title}</Text>
               </View>
 
-              <View style={[styles.directionRow, {paddingTop:4,}]}>
-                <View>
-                  <Text style={styles.metaTextStyle}>{topic.latest_reply_date}</Text>
-                </View>
-                <Image
-                  style={{top:4,left:4}}
-                  source={require('../static/imgs/dot.png')}
-                />
-                <View style={{left:14}}>
-                  <Text style={styles.metaTextStyle}>{'最后回复' + topic.latest_reply_member_name}</Text>
-                </View>
-              </View>
+              { replyFlag && 
+                <View style={[styles.directionRow, {paddingTop:4,}]}>
+                  <View>
+                    <Text style={styles.metaTextStyle}>{topic.latest_reply_date}</Text>
+                  </View>
+                  <Image
+                    style={{top:4,left:4}}
+                    source={require('../../static/imgs/dot.png')}
+                  />
+                  <View style={{left:14}}>
+                    <Text style={styles.metaTextStyle}>{'最后回复' + topic.latest_reply_member_name}</Text>
+                  </View>
+                </View> }
 
             </View>
         </View>
@@ -132,7 +127,7 @@ class MyFocusPersonPage extends React.Component {
 
   renderFooter(){
     const { auth } = this.props;
-    if(auth.myFavoriteTopic.isLoadingMore){
+    if(auth.isLoadingMore){
       return (
         <View style={styles.footerContainer} >
           <ActivityIndicator size="small" color="#3e9ce9" />
@@ -141,12 +136,13 @@ class MyFocusPersonPage extends React.Component {
           </Text>
         </View>
       );
-    }
+    } 
   }
 
   _isCurrentPageFilled(countPerPage=20){
     const { auth } = this.props;
-    if(auth.myFavoriteTopic.topicList.length % countPerPage === 0){
+
+    if(auth.myTopic.topicList.length % countPerPage === 0){
       return true;
     }else{
       return false;
@@ -159,11 +155,11 @@ class MyFocusPersonPage extends React.Component {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
 
-      const { authActions, auth, route } = this.props;
+      const { authActions, auth } = this.props;
       if(this._isCurrentPageFilled()){
         page += 1;
       }
-      authActions.requestMoreMyFocusPerson(route.node.path, page);
+      authActions.requestMoreMyTopic(auth.user, page);
     }
   }
 
@@ -174,15 +170,29 @@ class MyFocusPersonPage extends React.Component {
   }
 
   render() {
-    const { navigator, auth, } = this.props;
+    const { navigator, auth } = this.props;
+
+    var titleConfig = {
+      title: '我的主题',
+    };
 
     let rows = []
-    if(auth.myFocusPerson && auth.myFocusPerson.topicList){
-      rows = auth.myFocusPerson.topicList;
+    if(auth.myTopic && auth.myTopic.topicList){
+      rows = auth.myTopic.topicList;
     }
 
     return (
       <View style={styles.container}>
+
+          <NavigationBar
+            style={styles.navigatorBarStyle}
+            title={titleConfig}
+            leftButton={
+              <TouchableOpacity onPress={this._onBackClick.bind(this)}>
+                  <Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
+              </TouchableOpacity> 
+            }
+          />
 
           <ListView
             initialListSize = {5}
@@ -197,24 +207,24 @@ class MyFocusPersonPage extends React.Component {
             renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
             refreshControl={
               <RefreshControl
-                refreshing={auth.myFavoriteTopic.isRefreshing}
+                refreshing={auth.isRefreshing}
                 onRefresh={() => this.onRefresh()}
                 title="Loading..."
               />
             }
           />
 
-          <ActivityIndicator
-            animating={ auth.myFavoriteTopic.isLoading }
-            style={styles.front}
-            size="large"
-          />
+        <ActivityIndicator
+          animating={ auth.isLoading }
+          style={styles.front}
+          size="large"
+        />
+
 
       </View>
     );
   }
 }
-
 
 
 const {height, width} = Dimensions.get('window');
@@ -223,9 +233,8 @@ let cellBorderColor = '#EAEAEC';
 let noteTextColor = '#BBC5CD';
 let backgroundColor = 'white';
 
-
 const styles = StyleSheet.create({
- //common
+  //common
   directionRow:{
     flexDirection : 'row',
   },
@@ -286,12 +295,14 @@ const styles = StyleSheet.create({
     paddingLeft:7, 
     paddingRight:7,
   },
+
   footerText: {
     textAlign: 'center',
     fontSize: 16,
     marginLeft: 10
   },
+
 });
 
 
-export default MyFocusPersonPage;
+export default MyTopicListPage;
