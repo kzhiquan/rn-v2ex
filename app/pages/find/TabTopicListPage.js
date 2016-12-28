@@ -20,6 +20,7 @@ import AccountContainer from '../../containers/auth/AccountContainer';
 import NodeTopicListContainer from '../../containers/NodeTopicListContainer';
 import TopicContainer from '../../containers/TopicContainer';
 import UserContainer from '../../containers/UserContainer';
+import TopicTableItem from '../../components/TopicTableItem';
 
 
 let page = 0;
@@ -44,54 +45,47 @@ class TabTopicListPage extends React.Component {
     topicListActions.requestTopicList(true, false, false, node.path);
   }
 
-  _topicClick(){
+  _onTopicClick(){
     const { topic, navigator } = this;
     navigator.push({
       component : TopicContainer,
-      name : 'Topic',
+      name : 'TopicPage',
       topic : topic,
     });
   }
 
-  _userClick(){
-    console.log('user click');
+  _onUserClick(){
     const { navigator, path } = this;
     navigator.push({
       component : UserContainer,
-      name : 'User', 
+      name : 'UserPage', 
       path : path,
     });
   }
 
   renderItem(topic) {
     const { navigator } = this.props;
-    return (
-      <TouchableOpacity onPress={this._topicClick} topic={topic} navigator={navigator}>
-        <View style={styles.containerItem}>
-          <TouchableOpacity onPress={this._userClick} navigator={navigator} path={topic.member_url}>
-              <Image style={styles.itemHeader} source={{uri:topic.member_avatar}} />
-          </TouchableOpacity>
-          <View style={styles.itemBody}>
-            <Text>{topic.topic_title}</Text>
-            <View style={styles.itemBodyDetail}>
-              <Text>{topic.node_name}</Text>
-              <Text>{topic.member_name}</Text>
-              <Text>{topic.date}</Text>
-              <Text>{topic.latest_reply_member_name}</Text>
-            </View>
-          </View>
-          <Text style={styles.itemFooter}>{topic.reply_count}</Text>
-        </View>
-      </TouchableOpacity>
-    )
+      return (
+        <TopicTableItem 
+          topic = {topic}
+          navigator = {navigator}
+          onTopicClick = {this._onTopicClick}
+          onUserClick = {this._onUserClick}
+        />
+      )
   }
 
   renderFooter(){
-    return(
-      <Text style={styles.footerText}>
-        end
-      </Text>
-    )
+    const { node, topicList } = this.props;
+    if(topicList.topicList && node.path in topicList.topicList && topicList.topicList[node.path].length > 0){
+      return(
+        <Text style={[styles.footerText, styles.metaTextStyle]}>
+          ~~end
+        </Text>
+      )
+    }else{
+      return null;
+    }
   }
 
   render() {
@@ -120,6 +114,7 @@ class TabTopicListPage extends React.Component {
             />
           }
         />
+
         <ActivityIndicator
           animating={ topicList.isLoading }
           style={styles.front}
@@ -141,18 +136,6 @@ let noteTextColor = '#BBC5CD';
 let backgroundColor = 'white';
 
 const styles = StyleSheet.create({
-
-  //common
-  directionRow:{
-    flexDirection : 'row',
-  },
-
-  avatar_size_42:{
-    width:42,
-    height:42,
-    borderRadius:8,
-  },
-
   front:{
       position: 'absolute',
       top:300,
@@ -168,80 +151,15 @@ const styles = StyleSheet.create({
     borderBottomColor : borderColor,
   },
 
-  //custom
-  container : {
-    flex : 1,
-    backgroundColor : backgroundColor,
-  },
-
   metaTextStyle:{
     fontSize:12, 
     color:noteTextColor,
   },
 
-  avatarRightContent:{
-    left:10,
-    width : width-12-10-16-42-10,
-  },
-
-  topicItemContainer:{
-    flexDirection : 'row',
-    flex : 1, 
-    paddingTop:12, 
-    left:16, 
-    paddingBottom:10, 
-    borderBottomWidth : 1, 
-    borderBottomColor : borderColor,
-    paddingRight:12,
-  },
-
-  nodeAreaContainer:{
-    backgroundColor:'#E8F0FE', 
-    borderRadius:3, 
-    paddingTop:2, 
-    paddingBottom:2, 
-    paddingLeft:7, 
-    paddingRight:7,
-  },
   footerText: {
     textAlign: 'center',
     fontSize: 16,
     marginLeft: 10
-  },
-
-
-
-
-  base: {
-    flex: 1
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#FFF',
-  },
-  containerItem:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomWidth:1,
-    padding:5,
-    justifyContent: 'space-between'
-  },
-  itemHeader:{
-    width:48,
-    height:48
-  },
-  itemBody:{
-    width:280
-  },
-  itemBodyDetail:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent: 'space-between'
-  },
-  itemFooter:{
-    color:'blue',
-    paddingTop: 18
   },
 });
 

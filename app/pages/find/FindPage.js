@@ -18,11 +18,11 @@ class FindPage extends React.Component {
   }
 
   componentWillMount() {
-    console.log("componentWillMount");
+    //console.log("componentWillMount");
   }
 
   componentDidMount() {
-    console.log("componentDidMount")
+    //console.log("componentDidMount")
   }
 
   _renderScrollTableBar(){
