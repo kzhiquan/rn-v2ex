@@ -17,7 +17,8 @@ import {
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
-
+//import NodePage from './NodePage';
+import NodeContainer from '../../containers/find/NodeContainer'
 
 class NodeTreePage extends React.Component {
 
@@ -37,6 +38,11 @@ class NodeTreePage extends React.Component {
   _onNodeClick(){
     const { navigator, node } = this;
     console.log('node', node);
+    navigator.push({
+      component: NodeContainer,
+      name : 'nodePage',
+      node : node,
+    })
   }
 
   renderItem(node) {

@@ -1141,6 +1141,10 @@ export async function fetchNode(){
 	}
 }
 
+export function fetchNodePage(){
+	
+}
+
 export function fetchGoogleSearch(searchText, nextPageUrl){
 	console.log('searchText', searchText, nextPageUrl);
 	let searchUrl;

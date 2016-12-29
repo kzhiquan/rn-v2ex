@@ -28,6 +28,16 @@ export default function nodeList(state = initialState, action){
 				categoryNodeList : action.categoryNodeList,
 			});
 
+		case types.REQUEST_NODE_PAGE:
+			return Object.assign({}, state, {
+				isLoading : true,
+			});
+
+		case types.END_REQUEST_NODE_PAGE:
+			return Object.assign({}, state, {
+				isLoading : false,
+			})
+
 		case REHYDRATE:
 			return Object.assign({}, state, action.payload.nodeList, {
 				//categoryNodeList:null,

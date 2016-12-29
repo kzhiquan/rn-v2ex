@@ -24,3 +24,16 @@ export function receiveCategoryNodeList(categoryNodeList){
 		categoryNodeList : categoryNodeList,
 	}
 }
+
+export function requestNodePage(path){
+	return {
+		type : types.REQUEST_NODE_PAGE,
+		path,
+	}
+}
+
+export function endRequestNodePage(){
+	return {
+		type : types.END_REQUEST_NODE_PAGE,
+	}
+}

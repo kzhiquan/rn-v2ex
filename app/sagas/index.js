@@ -12,7 +12,6 @@ import {
 	watchThankReply, 
 } from './topic';
 
-//import { watchAddAccount } from './account';
 import { 
 	watchAuthTopic, 
 	watchAuthReply,
@@ -26,7 +25,10 @@ import {
 	watchLogout, 
 } from './auth';
 
-import { watchNodeList } from './nodeList';
+import { 
+	watchNodeList,
+	watchNodePage, 
+} from './nodeList';
 
 import { 
 	watchUser, 
@@ -67,6 +69,7 @@ export default function* rootSaga(){
 		fork(watchDeleteNotification),
 		
 		fork(watchNodeList),
+		fork(watchNodePage),
 
 		fork(watchUser),
 		fork(watchUserTopicList),
