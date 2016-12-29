@@ -10,6 +10,11 @@ import {
 	userCheckEnd, 
 } from '../actions/account';
 
+import {
+	receiveCategoryNodeList, 
+} from '../actions/nodeList';
+
+
 import { 
 	userLogin,
 	endAddAccount,
@@ -23,16 +28,18 @@ export function* checkUser(name, password){
 	try{
 
 		//yield put(userCheckStart());
-		const user = yield call(login, name, password);
-		if(!user){
+		const result = yield call(login, name, password);
+		if(!result){
 			toastShort('添加失败，检查用户名密码！');
 			yield put(endAddAccount());
 		}else{
 			toastShort('添加成功！');
 			//yield put(userLogin(user));
+			let { user, categoryNodeList } = result;
 			user.name = name;
 			user.password = password;
 			yield put(endAddAccount(user));
+			yield put(receiveCategoryNodeList(categoryNodeList));
 		}
 		
 		//yield put(userReceive(user));

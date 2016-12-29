@@ -8,6 +8,7 @@ import {
 	Image,
 	Dimensions,
 	ActivityIndicator,
+	Alert,
 } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
@@ -25,7 +26,8 @@ class AccountPageExt extends React.Component {
 		this.state = {
         	dataSource: new ListView.DataSource({
         		rowHasChanged: (r1, r2) => r1 !== r2
-        	} )
+        	} ),
+        	edit:false,
     	};
 	}
 
@@ -68,12 +70,33 @@ class AccountPageExt extends React.Component {
 		}
 	}
 
+	_onAccountEditClick(){
+		this.setState({edit:true});
+	}
+
+	_onAccountDoneClick(){
+		this.setState({edit:false});
+	}
+
+	_onAccountDeleteClick(){
+		const { that, user } = this;
+		const { auth, authActions } = that.props;
+		if(auth.user.name == user.name){
+			Alert.alert('不能删除当前登录账户!');
+		}else{
+			authActions.deleteAccount(user);
+		}
+	}
+
 	_renderAccountItem(item, sectionID, rowID, highlightRow,cellContainerStyle){
 		const { auth } = this.props;
-		let flag = false;
-		if(auth.user && auth.user.name == item.name){
-			flag = true;
+		let checkflag = false;
+		if(!this.state.edit && auth.user && auth.user.name == item.name){
+			checkflag = true;
 		}
+
+		let deleteFlag = this.state.edit;
+
 		return (
 			<TouchableOpacity
 				style={cellContainerStyle}
@@ -81,16 +104,29 @@ class AccountPageExt extends React.Component {
 				that={this}
 				onPress={this._onChangeUserClick}>
 			 	<View style={styles.cellStyle}>
-			 		<Image
-						style={[styles.avatar_size_42, {top:9, borderRadius:21,}]}
-        				source={{uri:item.avatar_url}}
-      				/>
-      				<View style={[styles.directionRow, {flex: 1, justifyContent:'space-between'}]}>
-      					<View style={{paddingTop:22, left:10}}>
-			          		<Text>{item.name}</Text>
-			        	</View>
-			        	{flag && <Image style={{top:22, right:12}} source={require('../../static/imgs/checkmark.png')}/>}
-      				</View>
+			 		{
+			 			deleteFlag &&
+		 				<TouchableOpacity onPress={this._onAccountDeleteClick} that={this} user={item}>
+		 					<Image
+			 					style={{top:20, width:22, height:22, marginRight:20}}
+			 					source={require('../../static/imgs/deletereveal.png')} 
+			 				/>
+		 				</TouchableOpacity>
+			 		}
+
+			 		<View style={[styles.directionRow,{flex:1}]}>
+				 		<Image
+							style={[styles.avatar_size_42, {top:9,borderRadius:21,}]}
+	        				source={{uri:item.avatar_url}}
+	      				/>
+	      				<View style={[styles.directionRow, {flex: 1, justifyContent:'space-between'}]}>
+	      					<View style={{paddingTop:22, left:10}}>
+				          		<Text>{item.name}</Text>
+				        	</View>
+				        	{checkflag && <Image style={{top:22, right:12}} source={require('../../static/imgs/checkmark.png')}/>}
+	      				</View>
+			 		</View>
+
 			    </View>
 			</TouchableOpacity>
 		);
@@ -155,6 +191,18 @@ class AccountPageExt extends React.Component {
 			title: '账户'
 		};
 
+		let editButtonConfig = {
+			title: '编辑',
+			handler: this._onAccountEditClick.bind(this),
+		}
+
+		let doneButtonConfig = {
+			title: '完成',
+			handler: this._onAccountDoneClick.bind(this),
+		};
+
+		let rightButtonConfig = this.state.edit ? doneButtonConfig : editButtonConfig;
+
 		let rows = auth.accounts.concat([{
 			name: '添加账户',
 		}]);
@@ -170,6 +218,7 @@ class AccountPageExt extends React.Component {
                 			<Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
               			</TouchableOpacity> 
 					}
+					rightButton={rightButtonConfig}
 				/>
 
 				<ListView

@@ -28,8 +28,8 @@ class FindPage extends React.Component {
   _renderScrollTableBar(){
     return (
       <ScrollableTabBar 
-        tabStyle={{paddingLeft:8, paddingRight:8,}}
-        tabsContainerStyle={{justifyContent:'space-around',}}
+        tabStyle={{paddingLeft:16, paddingRight:16,}}
+        tabsContainerStyle={{justifyContent:'center',}}
       />
     )
   }
@@ -63,6 +63,7 @@ class FindPage extends React.Component {
 
           <TabTopicListContainer {...this.props} key={0} tabLabel={'技术'} node={{path:'/?tab=tech'}}/>
           <TabTopicListContainer {...this.props} key={1} tabLabel={'最热'} node={{path:'/?tab=hot'}}/>
+          <TabTopicListContainer {...this.props} key={2} tabLabel={'最热'} node={{path:'/?tab=hot'}}/>
         
         </ScrollableTabView>
 
@@ -95,6 +96,7 @@ const styles = StyleSheet.create({
   tabBarUnderlineStyle:{
     backgroundColor : tabBarUnderlineColor,
     height:2,
+    width:32
   },
 });
 

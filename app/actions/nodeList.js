@@ -16,3 +16,11 @@ export function receiveNodeList(categoryNodeList, allNode){
 		allNode : allNode,
 	}
 }
+
+
+export function receiveCategoryNodeList(categoryNodeList){
+	return {
+		type : types.RECEIVE_CATEGORY_NODE_LIST,
+		categoryNodeList : categoryNodeList,
+	}
+}

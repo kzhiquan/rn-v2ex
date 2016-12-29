@@ -1,5 +1,6 @@
 import cheerio from 'cheerio-without-node-native'
 import qs from 'qs'
+import * as API from '../api/API'
 
 import SITE from '../constants/Config'
 
@@ -453,12 +454,12 @@ export function loginWithToken(token, url){
 		.then( (body) => {
 			//console.log('body', body);
 			const $ = cheerio.load(body);
-			let user = {};
+			//let user = {};
 			if( !$('.content td a[href="#;"]').first().attr('onclick') ){
 				resolve(false);
 			}else{
 
-				user['logout_url'] = $('.content td a[href="#;"]').first().attr('onclick').match(/\/signout\?once=\d+/i)[0];
+				/*user['logout_url'] = $('.content td a[href="#;"]').first().attr('onclick').match(/\/signout\?once=\d+/i)[0];
 				user['name'] = $('.content td a').eq(2).text();
 				user['member_url'] = $('.content td a').eq(2).attr('href');
 				user['avatar_url'] = 'https:' + $('#Rightbar .box .cell table tr td img[class="avatar"]').attr('src');
@@ -472,9 +473,11 @@ export function loginWithToken(token, url){
 				user['notification_count'] = $('#Rightbar a[href="/notifications"]').first().text().replace(' 条未读提醒', '');
 				//console.log($('#Rightbar #money a').text().split(' '));
 				user['silver_count'] = $('#Rightbar #money a').text().split(' ')[0];
-				user['gold_count'] = $('#Rightbar #money a').text().split(' ')[2];
+				user['gold_count'] = $('#Rightbar #money a').text().split(' ')[2];*/
+				let user = API.parseUser($);
+				let categoryNodeList = API.parseCategoryNode($);
 				
-				resolve(user);   
+				resolve({user, categoryNodeList});   
 			}
 		})
 		.catch( (error) => {
@@ -498,10 +501,10 @@ export async function login(name, password){
 	let token = await getLoginToken(name, password, url);
 	console.log(token);
 
-	let user = await loginWithToken(token, url);
-	console.log('user', user);
+	let result = await loginWithToken(token, url);
+	console.log('result', result);
 
-	return user;
+	return result;
 
 }
 
@@ -1070,7 +1073,7 @@ export function fetchCategoryNode(){
 		.then((body) => {
 			//console.log('body', body);
 			const $ = cheerio.load(body);
-			let categoryNodeList = [];
+			/*let categoryNodeList = [];
 			$('#Main .box').eq(1).children('.cell').each(function(){
 				let nodeList = [];
 				let category = $(this).find('table tr td .fade').first().text();
@@ -1087,7 +1090,8 @@ export function fetchCategoryNode(){
 						nodeList : nodeList,
 					})
 				}
-			});
+			});*/
+			let categoryNodeList = API.parseCategoryNode($);
 			//console.log('categoryNodeList', categoryNodeList);
 			resolve(categoryNodeList);
 		})

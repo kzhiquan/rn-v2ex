@@ -32,10 +32,16 @@ export function addAccount(name, password){
 	};
 }
 
-
 export function endAddAccount(user){
 	return {
 		type : types.END_ADD_ACCOUNT,
+		user,
+	}
+}
+
+export function deleteAccount(user){
+	return {
+		type : types.DELETE_ACCOUNT,
 		user,
 	}
 }

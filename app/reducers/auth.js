@@ -89,6 +89,11 @@ export default function auth(state = initialState, action){
 				accounts : combineAccount(state, action),
 			});
 
+		case types.DELETE_ACCOUNT:
+			return Object.assign({}, state, {
+				accounts : deleteAccount(state, action)
+			});
+
 
 		case types.CHANGE_USER:
 			return Object.assign({}, state, {
@@ -291,9 +296,9 @@ export default function auth(state = initialState, action){
 
 		case REHYDRATE:
 			return Object.assign({}, state, action.payload.auth, {
-				/*isLoading : false,
+				isLoading : false,
 				user : null,
-				accounts : [],*/
+				accounts : [],
 			});
 
 		default:
@@ -313,6 +318,21 @@ function combineAccount(state, action){
 	if(!foundUser){
 		state.accounts.push(action.user);
 	}
+
+	return state.accounts;
+}
+
+function deleteAccount(state, action){
+
+	let foundIndex = state.accounts.findIndex( (user, index, arr) => {
+		return user.name == action.user.name;
+	});
+
+	if(foundIndex >= 0){
+		state.accounts.splice(foundIndex, 1);
+	}
+
+	console.log('foundIndex', foundIndex, state.accounts);
 
 	return state.accounts;
 }

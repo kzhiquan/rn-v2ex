@@ -1,5 +1,6 @@
 
 import * as types from '../constants/ActionTypes'
+import {REHYDRATE} from 'redux-persist/constants'
 
 
 const initialState = {
@@ -21,6 +22,16 @@ export default function nodeList(state = initialState, action){
 				categoryNodeList : action.categoryNodeList,
 				allNode : action.allNode,
 			} );
+
+		case types.RECEIVE_CATEGORY_NODE_LIST:
+			return Object.assign({}, state, {
+				categoryNodeList : action.categoryNodeList,
+			});
+
+		case REHYDRATE:
+			return Object.assign({}, state, action.payload.nodeList, {
+				categoryNodeList:null,
+			});
 
 		default:
 			return state;
