@@ -264,6 +264,9 @@ class AuthPage extends React.Component {
 				<NavigationBar
 					style={styles.navigatorBarStyle}
 					title={titleConfig}
+					statusBar={{
+			            tintColor : '#FAFAFA'
+			        }}
 				/>
 
 				<ListView
@@ -301,7 +304,7 @@ const styles = StyleSheet.create({
 		backgroundColor : backgroundColor,
 	},
 	navigatorBarStyle:{
-		backgroundColor : 'white', 
+		backgroundColor : '#FAFAFA', 
 		borderBottomWidth : 1,
 		borderBottomColor : borderColor,
 	},

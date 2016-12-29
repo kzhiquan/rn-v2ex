@@ -30,7 +30,7 @@ export default function nodeList(state = initialState, action){
 
 		case REHYDRATE:
 			return Object.assign({}, state, action.payload.nodeList, {
-				categoryNodeList:null,
+				//categoryNodeList:null,
 			});
 
 		default:

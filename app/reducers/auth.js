@@ -297,8 +297,8 @@ export default function auth(state = initialState, action){
 		case REHYDRATE:
 			return Object.assign({}, state, action.payload.auth, {
 				isLoading : false,
-				user : null,
-				accounts : [],
+				//user : null,
+				//accounts : [],
 			});
 
 		default:

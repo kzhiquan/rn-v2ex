@@ -36,6 +36,7 @@ export function* checkUser(name, password){
 			toastShort('添加成功！');
 			//yield put(userLogin(user));
 			let { user, categoryNodeList } = result;
+			console.log('user', user, categoryNodeList);
 			user.name = name;
 			user.password = password;
 			yield put(endAddAccount(user));

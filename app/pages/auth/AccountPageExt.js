@@ -219,6 +219,9 @@ class AccountPageExt extends React.Component {
               			</TouchableOpacity> 
 					}
 					rightButton={rightButtonConfig}
+					statusBar={{
+			            tintColor : '#FAFAFA'
+			        }}
 				/>
 
 				<ListView
@@ -268,7 +271,7 @@ const styles = StyleSheet.create({
   	},
 
 	navigatorBarStyle:{
-		backgroundColor : 'white', 
+		backgroundColor : '#FAFAFA', 
 		borderBottomWidth : 1,
 		borderBottomColor : borderColor,
 	},

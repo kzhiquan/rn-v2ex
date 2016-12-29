@@ -39,7 +39,7 @@ class AccountPage extends React.Component {
   	onAccountChange(){
   		const { account, accountActions } = this;
 
-  		console.log('account', account);
+  		//console.log('account', account);
 
   		accountActions.changeUserStart(account);
   	}

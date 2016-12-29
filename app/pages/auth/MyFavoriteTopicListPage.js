@@ -157,6 +157,9 @@ class MyFavoriteTopicListPage extends React.Component {
                   <Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
               </TouchableOpacity> 
             }
+            statusBar={{
+              tintColor : '#FAFAFA'
+            }}
           />
 
           <ListView
@@ -211,7 +214,7 @@ const styles = StyleSheet.create({
   },
 
   navigatorBarStyle:{
-    backgroundColor : 'white', 
+    backgroundColor : '#FAFAFA', 
     borderBottomWidth : 1,
     borderBottomColor : borderColor,
   },

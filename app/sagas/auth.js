@@ -14,8 +14,14 @@ import {
 	endDeleteMyNotification,
 	endUserLogout,
 	endChangeUser,
-} from '../actions/auth'
+	endAddAccount,
+} from '../actions/auth';
 
+import {
+	
+	receiveCategoryNodeList,
+
+} from '../actions/nodeList';
 //import { changeUserEnd } from '../actions/account'
 
 import { 
@@ -116,13 +122,15 @@ export function* watchAuthReply(){
 function* changeUserSagas(newUser){
 
 	try{
-		const user = yield call(login, newUser.name, newUser.password);
-		if(!user){
+		const result = yield call(login, newUser.name, newUser.password);
+		if(!result){
 			toastShort('切换失败，请检查用户名／密码！');
 		}else{
 			toastShort('切换成功！');
 			//yield put(userLogin(user));
 		}
+
+		const { user, categoryNodeList } = result;
 
 		yield put(endChangeUser(user));
 
@@ -141,6 +149,50 @@ export function * wathChangeUser(){
 		yield fork(changeUserSagas, user);
 	}
 }
+
+
+
+
+
+function* checkUser(name, password){
+	try{
+
+		//yield put(userCheckStart());
+		const result = yield call(login, name, password);
+		if(!result){
+			toastShort('添加失败，检查用户名密码！');
+			yield put(endAddAccount());
+		}else{
+			toastShort('添加成功！');
+			//yield put(userLogin(user));
+			let { user, categoryNodeList } = result;
+			//console.log('user', user, categoryNodeList);
+			user.name = name;
+			user.password = password;
+			yield put(endAddAccount(user));
+			yield put(receiveCategoryNodeList(categoryNodeList));
+		}
+		
+		//yield put(userReceive(user));
+		//yield put(userCheckEnd());
+		//yield put(endAddAccount(true));
+
+	} catch ( error ){
+		console.log('error:', error);
+		//yield put(userCheckEnd());
+		yield put(endAddAccount());
+		toastShort('网络发生错误,请重试');
+	}
+}
+
+export function* watchAddAccount(){
+	while (true) {
+		const { name, password } = yield take(types.ADD_ACCOUNT);
+		yield fork(checkUser, name, password);
+	}
+}
+
+
 
 
 function* fetchMyNodeSagas(myReplyUrl, page){

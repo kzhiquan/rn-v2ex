@@ -10,6 +10,7 @@ import NavigationBar from 'react-native-navbar';
 
 
 import TabTopicListContainer from '../../containers/find/TabTopicListContainer';
+import AirContainer from '../../containers/find/AirContainer';
 
 class FindPage extends React.Component {
 
@@ -63,7 +64,7 @@ class FindPage extends React.Component {
 
           <TabTopicListContainer {...this.props} key={0} tabLabel={'技术'} node={{path:'/?tab=tech'}}/>
           <TabTopicListContainer {...this.props} key={1} tabLabel={'最热'} node={{path:'/?tab=hot'}}/>
-          <TabTopicListContainer {...this.props} key={2} tabLabel={'最热'} node={{path:'/?tab=hot'}}/>
+          <AirContainer {...this.props} key={2} tabLabel={'漫游'} />
         
         </ScrollableTabView>
 

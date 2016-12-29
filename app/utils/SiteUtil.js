@@ -502,7 +502,7 @@ export async function login(name, password){
 	console.log(token);
 
 	let result = await loginWithToken(token, url);
-	console.log('result', result);
+	//console.log('result', result);
 
 	return result;
 

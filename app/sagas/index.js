@@ -12,12 +12,13 @@ import {
 	watchThankReply, 
 } from './topic';
 
-import { watchAddAccount } from './account';
+//import { watchAddAccount } from './account';
 import { 
 	watchAuthTopic, 
 	watchAuthReply,
 	watchAuthNode, 
 	wathChangeUser,
+	watchAddAccount,
 	watchAuthFavoriteTopic,
 	watchAuthFocusPerson,
 	watchAuthNotification,

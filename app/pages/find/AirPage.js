@@ -16,11 +16,9 @@ import {
   Dimensions,
 } from 'react-native';
 
-import NavigationBar from 'react-native-navbar';
+import NodeTreePage from './NodeTreePage';
 
-
-class NodeTreePage extends React.Component {
-
+class AirPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,27 +26,26 @@ class NodeTreePage extends React.Component {
     };
   }
 
-  _onBackClick(){
-    const { navigator } = this.props;
-    navigator.pop();
+  _onCategoryNodeClick(){
+    const { navigator, categoryNode } = this;
+    console.log('categoryNode', categoryNode);
+    navigator.push({
+      component: NodeTreePage,
+      name : 'NodeTreePage',
+      categoryNode : categoryNode,
+    });
   }
 
-
-  _onNodeClick(){
-    const { navigator, node } = this;
-    console.log('node', node);
-  }
-
-  renderItem(node) {
+  renderItem(categoryNode) {
     const { navigator } = this.props;
     return (
       <TouchableOpacity
-        onPress={this._onNodeClick}
+        onPress={this._onCategoryNodeClick}
         navigator={navigator}
-        node={node}>
+        categoryNode={categoryNode}>
         <View style={styles.cellStyle}>
             <View style={{paddingTop:14}}>
-              <Text>{node.name}</Text>
+              <Text>{categoryNode.category}</Text>
             </View>
             <Image style={{top:14, right:12}} source={require('../../static/imgs/arrow.png')}/>
         </View>
@@ -59,30 +56,15 @@ class NodeTreePage extends React.Component {
 
   render() {
 
-    const { categoryNode } = this.props.route;
-
-    let titleConfig = {
-      title: categoryNode.category,
-    };
+    const { nodeList } = this.props;
 
     let rows = [];
-    if(categoryNode.nodeList){
-      rows = categoryNode.nodeList;
+    if(nodeList.categoryNodeList){
+      rows = nodeList.categoryNodeList;
     }
     
     return (
-      <View style={styles.container}>
-
-        <NavigationBar
-          style={styles.navigatorBarStyle}
-          title={titleConfig}
-          leftButton={
-            <TouchableOpacity onPress={this._onBackClick.bind(this)}>
-                <Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
-            </TouchableOpacity> 
-          }
-          statusBar={{tintColor : '#FAFAFA'}}
-        />
+      <View>
 
         <ListView
           initialListSize = {5}
@@ -101,23 +83,9 @@ class NodeTreePage extends React.Component {
 }
 
 
-let borderColor = '#B2B2B2';
 let cellBorderColor = '#EAEAEC';
-let noteTextColor = '#BBC5CD';
-let backgroundColor = 'white';
 
 const styles = StyleSheet.create({
-  container : {
-    flex : 1,
-    backgroundColor : backgroundColor,
-  },
-
-  navigatorBarStyle:{
-    backgroundColor : '#FAFAFA', 
-    borderBottomWidth : 1,
-    borderBottomColor : borderColor,
-  },
-
   cellStyle:{
     flex:1,
     flexDirection:'row',
@@ -130,5 +98,5 @@ const styles = StyleSheet.create({
 });
 
 
-export default NodeTreePage;
+export default AirPage;
 
