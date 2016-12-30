@@ -97,7 +97,6 @@ const styles = StyleSheet.create({
   tabBarUnderlineStyle:{
     backgroundColor : tabBarUnderlineColor,
     height:2,
-    width:32
   },
 });
 

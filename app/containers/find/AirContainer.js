@@ -13,9 +13,9 @@ class AirContainer extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { nodeList } = state;
+  const { node } = state;
   return {
-    nodeList,
+    node,
   };
 };
 

@@ -28,7 +28,7 @@ import {
 import { 
 	watchNodeList,
 	watchNodePage, 
-} from './nodeList';
+} from './node';
 
 import { 
 	watchUser, 

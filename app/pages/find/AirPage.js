@@ -56,11 +56,11 @@ class AirPage extends React.Component {
 
   render() {
 
-    const { nodeList } = this.props;
+    const { node } = this.props;
 
     let rows = [];
-    if(nodeList.categoryNodeList){
-      rows = nodeList.categoryNodeList;
+    if(node.categoryNodeList){
+      rows = node.categoryNodeList;
     }
     
     return (

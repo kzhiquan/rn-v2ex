@@ -1141,8 +1141,94 @@ export async function fetchNode(){
 	}
 }
 
-export function fetchNodePage(){
-	
+export function fetchNodePage(currentNode, page=1){
+	//console.log('currentNode', currentNode);
+	let url = SITE.HOST + currentNode.path + '?p=' + page;
+	return new Promise( (resolve, reject) => {
+		fetch(url)
+		.then( (response) => {
+			return response.text();
+		})
+		.then( (body) => {
+
+			const $ = cheerio.load(body);
+
+			if(page == 1){
+				currentNode.words = $('#Main .header span[class="f12 gray"]').text();
+				currentNode.topic_count = $('.gray', '#Main .header .f12').text();
+				currentNode.favorite_url = $('a', '#Main .header .f12').attr('href');
+				currentNode.new_topic_url = $('#Main .header input').attr('onclick').match(/location.href = '(.+)'/i)[1];
+				currentNode.avatar_url = 'https:' + $('#Main .header img').attr('src')
+				
+
+				let parentNode = {};
+				parentNode.avatar_url = 'https:' + $('#Rightbar').find('.box').eq(2).find('.cell').eq(0).find('img').first().attr('src');
+				parentNode.name = $('#Rightbar').find('.box').eq(2).find('.cell').eq(0).find('a').first().text();
+				parentNode.path = $('#Rightbar').find('.box').eq(2).find('.cell').eq(0).find('a').first().attr('href');
+				currentNode.parentNode = parentNode;
+
+				let related_nodeList = [];
+				let child_nodeList = [];
+
+				//console.log('second cell', $('#Rightbar').find('.box').eq(2).find('.cell').eq(1).html());
+				if( $('#Rightbar').find('.box').eq(2).find('.cell').eq(1).html() ){
+					
+					$('#Rightbar').find('.box').eq(2).find('.cell').eq(1).find('img').each(function(){
+						let related_node = {};
+						related_node.avatar_url = 'https:' + $(this).attr('src');
+						related_node.name = $(this).next().text();
+						related_node.path = $(this).next().attr('href');
+						related_nodeList.push(related_node);
+					});
+
+					$('#Rightbar').find('.box').eq(2).find('.inner img').each(function(){
+						let child_node = {};
+						child_node.avatar_url = 'https:' + $(this).attr('src');
+						child_node.name = $(this).next().text();
+						child_node.path = $(this).next().attr('href');
+						child_nodeList.push(child_node);
+					});
+
+				}else{
+
+					$('#Rightbar').find('.box').eq(2).find('.inner img').each(function(){
+						let related_node = {};
+						related_node.avatar_url = 'https:' + $(this).attr('src');
+						related_node.name = $(this).next().text();
+						related_node.path = $(this).next().attr('href');
+						related_nodeList.push(related_node);
+					});
+				}
+				currentNode.related_nodeList = related_nodeList;
+				currentNode.child_nodeList = child_nodeList;
+			}
+
+			let newTopicList = API.parseNodeTopicList($, currentNode);
+			if( page == 1 ){
+				currentNode.topicList = [];
+				currentNode.topicList = currentNode.topicList.concat(newTopicList);
+			}else{
+
+				let firstNewTopic = newTopicList[0];
+				let foundIndex = currentNode.topicList.findIndex( (topic, index, arr)=> {
+					return topic.topic_url.split('#')[0] == firstNewTopic.topic_url.split('#')[0];
+				});
+
+				if(foundIndex >= 0){
+					newTopicList.splice(0, currentNode.topicList.length-foundIndex);
+				}
+
+				currentNode.topicList = currentNode.topicList.concat(newTopicList);
+			}
+
+
+			resolve(currentNode);
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});
 }
 
 export function fetchGoogleSearch(searchText, nextPageUrl){

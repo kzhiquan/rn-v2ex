@@ -5,7 +5,7 @@ import * as types from '../constants/ActionTypes';
 import { 
 	receiveNodeList,
 	endRequestNodePage, 
-} from '../actions/nodeList';
+} from '../actions/node';
 
 import { 
 	fetchCategoryNode, 
@@ -45,18 +45,18 @@ export function* watchNodeList(){
 
 
 
-function* fetchNodePageSagas(path){
+function* fetchNodePageSagas(currentNode, page){
 	try{
+		console.log('currentNode', currentNode, page);
+		let result= yield call(fetchNodePage, currentNode, page);
+		//console.log('result', result);
 
-		let result= yield call(fetchNodePage, path);
-		console.log('result', result);
-
-		yield put(endRequestNodePage());
+		yield put(endRequestNodePage(result));
 
 	} catch ( error ){
 		console.log('error:', error);
 		toastShort('网络发生错误，请重试');
-		yield put(endRequestNodePage());
+		yield put(endRequestNodePage(currentNode));
 	}
 }
 
@@ -64,7 +64,7 @@ function* fetchNodePageSagas(path){
 
 export function* watchNodePage(){
 	while (true) {
-		const { path } = yield take(types.REQUEST_NODE_PAGE);
-		yield fork(fetchNodePageSagas, path);
+		const { currentNode, page } = yield take([types.REQUEST_NODE_PAGE, types.REFRESH_NODE_PAGE, types.REQUEST_MORE_NODE_PAGE]);
+		yield fork(fetchNodePageSagas, currentNode, page);
 	}
 }

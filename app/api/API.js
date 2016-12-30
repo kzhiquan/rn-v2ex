@@ -28,7 +28,7 @@ export function parseCategoryNode($){
 	return categoryNodeList;
 }
 
-
+//login user information
 export function parseUser($){
 	let user = {};
 	user['logout_url'] = $('.content td a[href="#;"]').first().attr('onclick').match(/\/signout\?once=\d+/i)[0];
@@ -48,6 +48,30 @@ export function parseUser($){
 	user['gold_count'] = $('#Rightbar #money a').text().split(' ')[2];
 
 	return user;
+}
+
+//common node page topicList
+export function parseNodeTopicList($, currentNode){
+	let topicList = [];
+	$('#TopicsNode').children('.cell').each(function(i, el){
+		topic = {};
+		topic.member_url = $(this).find('.small strong a').first().attr('href');
+		topic.member_name = $(this).find('.small strong a').first().text();
+		topic.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
+		topic.topic_url = $(this).find('.item_title a').first().attr('href');
+		topic.topic_title = $(this).find('.item_title a').first().text();
+		topic.node_url = currentNode.path;
+		topic.node_name = currentNode.name;
+		topic.node_favorite_url = currentNode.favorite_url;
+		topic.latest_reply_date = $(this).find('.small').text().split('•')[1];
+		topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
+		topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
+		topic.reply_count = $(this).find('td[width="50"] a').first().text();
+		topic.reply_url = $(this).find('td[width="50"] a').first().attr('href');
+		topicList.push(topic);
+	});
+
+	return topicList;
 }
 
 

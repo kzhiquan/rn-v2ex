@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as nodeListCreators from '../../actions/nodeList';
+import * as nodeCreators from '../../actions/node';
 
 import NodePage from '../../pages/find/NodePage';
 
@@ -14,16 +14,16 @@ class NodeContainer extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { nodeList } = state;
+  const { node } = state;
   return {
-    nodeList,
+    node,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  const nodeListActions = bindActionCreators(nodeListCreators, dispatch);
+  const nodeActions = bindActionCreators(nodeCreators, dispatch);
   return {
-    nodeListActions
+    nodeActions
   };
 };
 

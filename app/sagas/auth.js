@@ -21,8 +21,7 @@ import {
 	
 	receiveCategoryNodeList,
 
-} from '../actions/nodeList';
-//import { changeUserEnd } from '../actions/account'
+} from '../actions/node';
 
 import { 
 	fetchMyTopic, 

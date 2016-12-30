@@ -6,7 +6,7 @@ import topicList from './topicList';
 import auth from './auth'
 import account from './account'
 import topic from './topic'
-import nodeList from './nodeList'
+import node from './node'
 import user from './user'
 import search from './search'
 import newTopic from './newTopic'
@@ -17,7 +17,7 @@ const rootReducer = combineReducers({
 	topic,
 	auth,
 	//account,
-	nodeList,
+	node,
 	user,
 	search,
 	newTopic,

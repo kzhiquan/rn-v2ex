@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as nodeListCreators from '../actions/nodeList';
+import * as nodeListCreators from '../actions/node';
 
 import NodeListPage from '../pages/NodeListPage';
 

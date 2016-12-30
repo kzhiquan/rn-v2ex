@@ -41,7 +41,7 @@ class NodeTreePage extends React.Component {
     navigator.push({
       component: NodeContainer,
       name : 'nodePage',
-      node : node,
+      currentNode : node,
     })
   }
 

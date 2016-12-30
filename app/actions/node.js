@@ -25,15 +25,31 @@ export function receiveCategoryNodeList(categoryNodeList){
 	}
 }
 
-export function requestNodePage(path){
+export function requestNodePage(currentNode){
 	return {
 		type : types.REQUEST_NODE_PAGE,
-		path,
+		currentNode,
 	}
 }
 
-export function endRequestNodePage(){
+export function refreshNodePage(currentNode){
+	return {
+		type : types.REFRESH_NODE_PAGE,
+		currentNode,
+	}
+}
+
+export function requestMoreNodePage(currentNode, page){
+	return {
+		type : types.REQUEST_MORE_NODE_PAGE,
+		currentNode,
+		page,
+	}
+}
+
+export function endRequestNodePage(currentNode){
 	return {
 		type : types.END_REQUEST_NODE_PAGE,
+		currentNode,
 	}
 }

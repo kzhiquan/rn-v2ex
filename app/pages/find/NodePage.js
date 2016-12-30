@@ -6,11 +6,15 @@ import {
   Image,
   ActivityIndicator,
   Dimensions,
+  Text,
 } from 'react-native';
 
 
 import ScrollableTabView, { ScrollableTabBar, } from 'react-native-scrollable-tab-view';
 import NavigationBar from 'react-native-navbar';
+
+import NodeTopicListPage from './NodeTopicListPage';
+import NodeListTableView from '../../components/NodeListTableView'
 
 
 class NodePage extends React.Component {
@@ -21,17 +25,27 @@ class NodePage extends React.Component {
 
   componentWillMount() {
     //console.log("componentWillMount");
+    let { node, route } = this.props;
+    node.currentNode = null;
   }
 
   componentDidMount() {
     //console.log("componentDidMount")
-    const { nodeListActions, route } = this.props;
-    nodeListActions.requestNodePage(route.node.path);
+    const { nodeActions, route } = this.props;
+    nodeActions.requestNodePage(route.currentNode);
   }
 
   _onBackClick(){
     const { navigator } = this.props;
     navigator.pop();
+  }
+
+  _onParentNodeClick(){
+    console.log('_onParentNodeClick');
+  }
+
+  _onFavoriteNodeClick(){
+    console.log('_onFavoriteNodeClick');
   }
 
   _renderScrollTableBar(){
@@ -43,14 +57,87 @@ class NodePage extends React.Component {
     )
   }
 
+  _renderNodeMeta(currentNode){
+    return (
+        <View style={styles.nodeMetaContainer}>
+
+          <View style={styles.directionRow}>
+
+              <Image
+                style={styles.avatar_size_42}
+                source={{uri:currentNode.avatar_url}}
+              />
+
+              <View style={styles.avatarRightContent}>
+
+                <View style={[styles.directionRow,{justifyContent:'space-between'}]}>
+                    
+                    <View>
+
+                      <View>
+                        <Text style={{fontSize:16}}>{currentNode.name}</Text>
+                      </View>
+
+                      <View style={[styles.directionRow, {paddingTop:4,}]}>
+
+                        <TouchableOpacity
+                          onPress={this._onParentNodeClick}
+                          node={currentNode.parentNode}
+                          that={this}>
+                            <View style={styles.nodeAreaContainer}>
+                              <Text style={styles.metaTextStyle}>{currentNode.parentNode.name}</Text>
+                            </View>
+                        </TouchableOpacity>
+
+
+                        <View style={[styles.directionRow, {left:10, paddingTop:2}]}>
+                          <Text style={styles.metaTextStyle}>{currentNode.topic_count}</Text>
+                          <Image
+                            style={{bottom:3}}
+                            source={require('../../static/imgs/chatbubble.png')}
+                          />
+                        </View>
+
+                      </View>
+
+                    </View>
+
+                    <TouchableOpacity 
+                      onPress={this._onFavoriteNodeClick}
+                      node={currentNode}
+                      that={this}>
+                        <View style={styles.favoriteBtnStyle}>
+                          <Text style={styles.whiteBoldFontStyle}>删除</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+
+              </View>
+
+          </View>
+
+          <View style={{top:12}}>
+            <Text style={{fontSize:16}}>{currentNode.words}</Text>
+          </View>
+
+        </View>
+    )
+  }
+
   render() {
-    const { navigator, nodeList, route } = this.props;
+    const { node, route } = this.props;
 
     let titleConfig = {
-      title: route.node.name
+      title: route.currentNode.name
     };
 
-    console.log('route', route);
+    let { currentNode } = node;
+    if(!currentNode){
+      currentNode = {};
+      currentNode.parentNode = {};
+      currentNode.related_nodeList = [];
+      currentNode.child_nodeList = [];
+    }
 
     return (
       <View style={styles.container}>
@@ -66,6 +153,8 @@ class NodePage extends React.Component {
           statusBar={{tintColor : '#FAFAFA'}}
         />
 
+        {this._renderNodeMeta(currentNode)}
+
         <ScrollableTabView
           initialPage={0}
           tabBarTextStyle={{fontSize:16}}
@@ -74,14 +163,14 @@ class NodePage extends React.Component {
           renderTabBar={this._renderScrollTableBar.bind(this)}
           >
 
-          <View key={0} tabLabel={'技术'} node={{path:'/?tab=tech'}}/>
-          <View {...this.props} key={1} tabLabel={'最热'} node={{path:'/?tab=hot'}}/>
-          <View {...this.props} key={2} tabLabel={'漫游'} />
+          <NodeTopicListPage {...this.props} key={0} tabLabel={'主题'} />
+          <NodeListTableView navigator={this.props.navigator} nodeList={currentNode.related_nodeList} tabLabel={'相关节点'} />
+          <NodeListTableView navigator={this.props.navigator} nodeList={currentNode.child_nodeList} tabLabel={'子节点'} />
         
         </ScrollableTabView>
 
         <ActivityIndicator
-          animating={ nodeList.isLoading }
+          animating={ node.isLoading }
           style={styles.front}
           size="large"
         />
@@ -101,6 +190,10 @@ let tabBarUnderlineColor = '#007AFF';
 
 const styles = StyleSheet.create({
 
+  directionRow:{
+    flexDirection : 'row',
+  },
+
   container : {
     flex : 1,
     backgroundColor : 'white',
@@ -115,7 +208,6 @@ const styles = StyleSheet.create({
   tabBarUnderlineStyle:{
     backgroundColor : tabBarUnderlineColor,
     height:2,
-    width:32
   },
 
   front:{
@@ -126,6 +218,53 @@ const styles = StyleSheet.create({
       height:50,
       zIndex: 1,
   },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+  avatarRightContent:{
+    left:10,
+    width : width-12-10-16-42-10,
+  },
+
+  avatar_size_42:{
+    width:42,
+    height:42,
+  },
+
+  favoriteBtnStyle:{
+    backgroundColor:'#45CB7F', 
+    height: 32,
+    borderRadius:5, 
+    paddingTop:8, 
+    paddingBottom:4, 
+    paddingLeft:24, 
+    paddingRight:24,
+  },
+
+  nodeMetaContainer:{
+    paddingTop:12, 
+    left:16, 
+    paddingBottom:12, 
+  },
+
+  whiteBoldFontStyle:{
+    fontSize:14, 
+    color:'white', 
+    fontWeight:'bold',
+  },
+
+  nodeAreaContainer:{
+    backgroundColor:'#E8F0FE', 
+    borderRadius:3, 
+    paddingTop:2, 
+    paddingBottom:2, 
+    paddingLeft:7, 
+    paddingRight:7,
+  },
+
 
 });
 
