@@ -6,6 +6,8 @@ import {
 	StyleSheet,
 	TouchableOpacity, 
 	Image,
+	Dimensions,
+	ActivityIndicator,
 } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
@@ -38,6 +40,8 @@ class AuthPage extends React.Component {
 
 	componentDidMount(){
 		//console.log('componentDidMount');
+		//const { authActions, auth } = this.props;
+		//authActions.requestUserMeta(auth.user);
 	}
 
 	_onSetClick(){
@@ -277,12 +281,20 @@ class AuthPage extends React.Component {
 					removeClippedSubviews = {false}
 				/>
 
+				<ActivityIndicator
+		          animating={ auth.isLoading }
+		          style={styles.front}
+		          size="large"
+		        />
+
 			</View>
 		);
   	}
 
 }
 
+
+const {height, width} = Dimensions.get('window');
 let borderColor = '#B2B2B2';
 let cellBorderColor = '#EAEAEC';
 let noteTextColor = '#BBC5CD';
@@ -298,6 +310,15 @@ const styles = StyleSheet.create({
 		width:42,
 		height:42,
 	},
+
+	front:{
+	    position: 'absolute',
+	    top:300,
+	    left: (width-50)/2,
+	    width: 50,
+	    height:50,
+	    zIndex: 1,
+  	},
 
 	container : {
 		flex : 1,

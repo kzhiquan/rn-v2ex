@@ -15,6 +15,7 @@ import {
 	endUserLogout,
 	endChangeUser,
 	endAddAccount,
+	endRequestUserMeta,
 } from '../actions/auth';
 
 import {
@@ -32,6 +33,7 @@ import {
 	fetchMyNotification,
 	deleteNotification,
 	logout,
+	fetchMyMeta,
 } from '../utils/SiteUtil'
 
 
@@ -58,6 +60,27 @@ export function* watchLogout(){
 	while (true) {
 		const { user } = yield take(types.USER_LOGOUT);
 		yield fork(requestLogoutSagas, user);
+	}
+}
+
+
+function* requestUserMetaSagas(user){
+	try{
+		const result = yield call(fetchMyMeta, user); 
+		
+		yield put(endRequestUserMeta(result));
+
+	} catch ( error ){
+		console.log('error', error);
+		toastShort('网络发生错误，请重试');
+		yield put(endRequestUserMeta());
+	}
+}
+
+export function* watchUserMeta(){
+	while (true) {
+		const { user } = yield take(types.REQUEST_USER_META);
+		yield fork(requestUserMetaSagas, user);
 	}
 }
 

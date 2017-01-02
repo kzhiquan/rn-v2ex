@@ -600,6 +600,29 @@ export async function logout(path){
 	return result;
 }
 
+export function fetchMyMeta(user){
+	//
+	let myMetaUrl = SITE.HOST + '/settings';
+
+	return new Promise( (resolve, reject) => {
+		fetch(myMetaUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			return response.text();
+		})
+		.then((body) => {
+			const $ = cheerio.load(body);
+			let newUser = API.parseUser($);
+			resolve(Object.assign({}, user, newUser));
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	})
+}
+
 export function fetchMyTopic(path, page=1){
 	let myTopicUrl = SITE.HOST + path + '/topics?p=' + page;
 	//console.log('myTopicUrl:', myTopicUrl);
@@ -1154,6 +1177,7 @@ export function fetchNodePage(currentNode, page=1){
 			const $ = cheerio.load(body);
 
 			if(page == 1){
+
 				currentNode.words = $('#Main .header span[class="f12 gray"]').text();
 				currentNode.topic_count = $('.gray', '#Main .header .f12').text();
 				currentNode.favorite_url = $('a', '#Main .header .f12').attr('href');
@@ -1161,19 +1185,21 @@ export function fetchNodePage(currentNode, page=1){
 				currentNode.avatar_url = 'https:' + $('#Main .header img').attr('src')
 				
 
+				//console.log('prev',$('#Rightbar').find('.box').last().prev().html())
+				//console.log('eq',$('#Rightbar').find('.box').eq(-2).html())
 				let parentNode = {};
-				parentNode.avatar_url = 'https:' + $('#Rightbar').find('.box').eq(2).find('.cell').eq(0).find('img').first().attr('src');
-				parentNode.name = $('#Rightbar').find('.box').eq(2).find('.cell').eq(0).find('a').first().text();
-				parentNode.path = $('#Rightbar').find('.box').eq(2).find('.cell').eq(0).find('a').first().attr('href');
+				parentNode.avatar_url = 'https:' + $('#Rightbar').find('.box').eq(-2).find('.cell').eq(0).find('img').first().attr('src');
+				parentNode.name = $('#Rightbar').find('.box').eq(-2).find('.cell').eq(0).find('a').first().text();
+				parentNode.path = $('#Rightbar').find('.box').eq(-2).find('.cell').eq(0).find('a').first().attr('href');
 				currentNode.parentNode = parentNode;
 
 				let related_nodeList = [];
 				let child_nodeList = [];
 
 				//console.log('second cell', $('#Rightbar').find('.box').eq(2).find('.cell').eq(1).html());
-				if( $('#Rightbar').find('.box').eq(2).find('.cell').eq(1).html() ){
+				if( $('#Rightbar').find('.box').eq(-2).find('.cell').eq(1).html() ){
 					
-					$('#Rightbar').find('.box').eq(2).find('.cell').eq(1).find('img').each(function(){
+					$('#Rightbar').find('.box').eq(-2).find('.cell').eq(1).find('img').each(function(){
 						let related_node = {};
 						related_node.avatar_url = 'https:' + $(this).attr('src');
 						related_node.name = $(this).next().text();
@@ -1181,7 +1207,7 @@ export function fetchNodePage(currentNode, page=1){
 						related_nodeList.push(related_node);
 					});
 
-					$('#Rightbar').find('.box').eq(2).find('.inner img').each(function(){
+					$('#Rightbar').find('.box').eq(-2).find('.inner img').each(function(){
 						let child_node = {};
 						child_node.avatar_url = 'https:' + $(this).attr('src');
 						child_node.name = $(this).next().text();
@@ -1191,7 +1217,7 @@ export function fetchNodePage(currentNode, page=1){
 
 				}else{
 
-					$('#Rightbar').find('.box').eq(2).find('.inner img').each(function(){
+					$('#Rightbar').find('.box').eq(-2).find('.inner img').each(function(){
 						let related_node = {};
 						related_node.avatar_url = 'https:' + $(this).attr('src');
 						related_node.name = $(this).next().text();
@@ -1229,6 +1255,29 @@ export function fetchNodePage(currentNode, page=1){
 			reject(error);
 		})
 	});
+}
+
+export function requestFavoriteNode(node){
+	let favoriteNodeUrl = SITE.HOST + node.favorite_url;
+	//console.log('favoriteNodeUrl', favoriteNodeUrl)
+	return new Promise( (resolve, reject) => {
+		fetch(favoriteNodeUrl, {
+			credentials:'include'
+		})
+		.then((response) => {
+			//console.log(response);
+			//console.log(response.text());
+			if(response.status === 200 && response.ok){
+				resolve(true);
+			}else{
+				resolve(false);
+			}
+		})
+		.catch( (error) => {
+			console.log(error);
+			reject(error);
+		})
+	});		
 }
 
 export function fetchGoogleSearch(searchText, nextPageUrl){

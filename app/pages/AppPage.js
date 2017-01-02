@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import MainPage from './MainPage';
+import MainContainer from '../containers/MainContainer'
 import AccountContainer from '../containers/auth/AccountContainer';
 import MyTopicListContainer from '../containers/auth/MyTopicListContainer';
 import NodeListContainer from '../containers/NodeListContainer';
@@ -53,7 +54,8 @@ class App extends React.Component{
 		if( auth.user == null ){
 			currentComponent = LoginContainer;
 		}else{
-			currentComponent = MainPage;
+			//currentComponent = MainPage;
+			currentComponent = MainContainer;
 		}
 
 		return (

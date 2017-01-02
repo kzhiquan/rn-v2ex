@@ -25,8 +25,8 @@ class NodePage extends React.Component {
 
   componentWillMount() {
     //console.log("componentWillMount");
-    let { node, route } = this.props;
-    node.currentNode = null;
+    //let { node, route } = this.props;
+    //node.currentNode = null;
   }
 
   componentDidMount() {
@@ -36,7 +36,8 @@ class NodePage extends React.Component {
   }
 
   _onBackClick(){
-    const { navigator } = this.props;
+    const { navigator, nodeActions } = this.props;
+    nodeActions.popNodePageStack();
     navigator.pop();
   }
 
@@ -45,7 +46,13 @@ class NodePage extends React.Component {
   }
 
   _onFavoriteNodeClick(){
-    console.log('_onFavoriteNodeClick');
+
+    //console.log('_onFavoriteNodeClick');
+    const { that, node } =  this;
+    const { nodeActions } = that.props;
+
+    nodeActions.requestFavoriteNode(node);
+
   }
 
   _renderScrollTableBar(){
@@ -58,6 +65,16 @@ class NodePage extends React.Component {
   }
 
   _renderNodeMeta(currentNode){
+
+    let nodeOperation = '收藏';
+    let favoriteBtnStyle = styles.favoriteBtnStyle;
+    let favoriteTextStyle = styles.whiteBoldFontStyle;
+    if(currentNode.favorite_url && currentNode.favorite_url.indexOf('unfavorite') >= 0){
+      nodeOperation = '已收藏';
+      favoriteBtnStyle = [favoriteBtnStyle, {backgroundColor: '#F2F2F2'}];
+      favoriteTextStyle = [favoriteTextStyle, {color:'#AEAEAE'}]
+    }
+
     return (
         <View style={styles.nodeMetaContainer}>
 
@@ -106,8 +123,8 @@ class NodePage extends React.Component {
                       onPress={this._onFavoriteNodeClick}
                       node={currentNode}
                       that={this}>
-                        <View style={styles.favoriteBtnStyle}>
-                          <Text style={styles.whiteBoldFontStyle}>删除</Text>
+                        <View style={favoriteBtnStyle}>
+                          <Text style={favoriteTextStyle}>{nodeOperation}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -116,7 +133,7 @@ class NodePage extends React.Component {
 
           </View>
 
-          <View style={{top:12}}>
+          <View style={{top:12,paddingRight:12}}>
             <Text style={{fontSize:16}}>{currentNode.words}</Text>
           </View>
 
@@ -131,12 +148,15 @@ class NodePage extends React.Component {
       title: route.currentNode.name
     };
 
-    let { currentNode } = node;
-    if(!currentNode){
-      currentNode = {};
-      currentNode.parentNode = {};
-      currentNode.related_nodeList = [];
-      currentNode.child_nodeList = [];
+    let currentNode = {
+      topicList : [],
+      parentNode : {},
+      related_nodeList : [],
+      child_nodeList : [],
+    }
+
+    if(node.nodePageStack.length >= 1){
+      currentNode = node.nodePageStack[node.nodePageStack.length-1];
     }
 
     return (
@@ -163,7 +183,7 @@ class NodePage extends React.Component {
           renderTabBar={this._renderScrollTableBar.bind(this)}
           >
 
-          <NodeTopicListPage {...this.props} key={0} tabLabel={'主题'} />
+          <NodeTopicListPage {...this.props} currentNode={currentNode} topicList={currentNode.topicList} key={0} tabLabel={'主题'} />
           <NodeListTableView navigator={this.props.navigator} nodeList={currentNode.related_nodeList} tabLabel={'相关节点'} />
           <NodeListTableView navigator={this.props.navigator} nodeList={currentNode.child_nodeList} tabLabel={'子节点'} />
         
@@ -226,7 +246,7 @@ const styles = StyleSheet.create({
 
   avatarRightContent:{
     left:10,
-    width : width-12-10-16-42-10,
+    width : width-12-10-16-42,
   },
 
   avatar_size_42:{

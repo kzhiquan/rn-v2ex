@@ -23,11 +23,13 @@ import {
 	watchAuthNotification,
 	watchDeleteNotification,
 	watchLogout, 
+	watchUserMeta,
 } from './auth';
 
 import { 
 	watchNodeList,
 	watchNodePage, 
+	watchFavoriteNode,
 } from './node';
 
 import { 
@@ -67,9 +69,11 @@ export default function* rootSaga(){
 		fork(watchAuthFocusPerson),
 		fork(watchAuthNotification),
 		fork(watchDeleteNotification),
+		fork(watchUserMeta),
 		
 		fork(watchNodeList),
 		fork(watchNodePage),
+		fork(watchFavoriteNode),
 
 		fork(watchUser),
 		fork(watchUserTopicList),

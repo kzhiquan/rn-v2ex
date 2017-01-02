@@ -51,7 +51,7 @@ class UserPage extends React.Component {
 	}
 
 	componentDidMount(){
-		console.log('componentDidMount');
+		console.log('componentDidMount', this);
 		console.log('this.props', this.props);
 		const { userActions, route } = this.props;
 		userActions.requestUser(route.path);
@@ -281,6 +281,8 @@ class UserPage extends React.Component {
 			}
 	    };
 
+	    console.log('this', this);
+
 	    return (
 				<NavigationBar
 					title={titleConfig}
@@ -294,7 +296,7 @@ class UserPage extends React.Component {
 					            <TouchableOpacity onPress={this._onBlockUser.bind(this)}>
 					                <Icon name={blockIconName} size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
 					            </TouchableOpacity> 
-			            	</View>) : null
+			            	</View>) : (<View></View>)
 		            }
 				/>
 	    )
@@ -302,7 +304,9 @@ class UserPage extends React.Component {
     }
 
 	render() {
+		//console.log('this', this);
 		const { user, navigator } = this.props;
+
 
 		let rows = {
 			'account' : [],

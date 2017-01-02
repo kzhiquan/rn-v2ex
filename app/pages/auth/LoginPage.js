@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
 	loginLogoText : {
 		marginTop : 16,
 		fontSize : 24,
-		//fontWeight : 'bold',
 	},
 
 	loginButton:{

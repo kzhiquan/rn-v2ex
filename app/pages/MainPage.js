@@ -18,9 +18,20 @@ import NodeListContainer from '../containers/NodeListContainer';
 import AuthContainer from '../containers/auth/AuthContainer';
 import NotificationPage from './notification/NotificationPage';
 import FindPage from './find/FindPage';
+import HomePage from './home/HomePage';
+import HomeContainer from '../containers/home/HomeContainer';
 
 
 class MainPage extends React.Component{
+
+	_onChangeTab(transition){
+		console.log('transition', transition);
+		if(transition.i == 3){
+			const{ authActions, auth } = this.props;
+			authActions.requestUserMeta(auth.user);
+		}
+	}
+
 	render(){
 		return (
 			<ScrollableTabView
@@ -28,10 +39,12 @@ class MainPage extends React.Component{
 	      		initialPage={0}
 	      		tabBarPosition="bottom"
 	      		scrollWithoutAnimation={true}
+	      		onChangeTab={this._onChangeTab.bind(this)}
 	      		renderTabBar={() => <Tarbar />}
 	      		>
-			      <TopicListContainer tabLabel="ios-home-outline" {...this.props}>
-			      </TopicListContainer>
+
+			      <HomeContainer tabLabel="ios-home-outline" {...this.props}>
+			      </HomeContainer>
 
 			      <FindPage tabLabel="ios-compass-outline" {...this.props}>
 			      </FindPage>

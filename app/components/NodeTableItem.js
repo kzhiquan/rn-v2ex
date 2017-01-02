@@ -20,16 +20,18 @@ class NodeTableItem extends React.Component {
     return (
       <TouchableOpacity onPress={this.props.onClick} node={node} navigator={navigator}>
         <View style={styles.nodeItemContainer}>
+
           <Image 
             style={styles.avatar_size_42} 
             source={{uri:node.avatar_url}} />
-          <View style={[styles.avatarRightContent, {flexDirection:'row', justifyContent:'space-between', paddingTop:12}]}>
+
+          <View style={[styles.avatarRightContent, {flexDirection:'row', justifyContent:'space-between'}]}>
             <View>
               <Text style={{fontSize:16}}>{node.name}</Text>
             </View>
             <View style={styles.directionRow}>
               <Image 
-                style={{left:8}}
+                style={{left:8, paddingTop:2}}
                 source={require('../static/imgs/arrow.png')}
               />
             </View>
@@ -66,6 +68,7 @@ var styles = StyleSheet.create({
   avatarRightContent:{
     left:10,
     width : width-12-10-16-42-10,
+    paddingTop:15,
   },
 
   nodeItemContainer : {

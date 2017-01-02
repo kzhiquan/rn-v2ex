@@ -60,7 +60,20 @@ export function endChangeUser(user){
 	}
 }
 
+export function requestUserMeta(user){
+	return {
+		type : types.REQUEST_USER_META,
+		user, 
+	}
+}
 
+
+export function endRequestUserMeta(user){
+	return {
+		type : types.END_REQUEST_USER_META,
+		user,
+	}
+}
 //the topic which the user created.
 export function requestMyTopic(user){
 	return {

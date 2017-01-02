@@ -42,9 +42,9 @@ class NodeTopicListPage extends React.Component {
 
   onRefresh(){
     canLoadMore = false;
-    const { nodeActions, node } = this.props;
-    if(node.currentNode.path){
-      nodeActions.refreshNodePage(node.currentNode);
+    const { nodeActions, node, currentNode } = this.props;
+    if(currentNode.path){
+      nodeActions.refreshNodePage(currentNode);
     }
   }
 
@@ -94,13 +94,13 @@ class NodeTopicListPage extends React.Component {
   }
 
   onEndReached() {
-    const { nodeActions, node} = this.props;
+    const { nodeActions, currentNode} = this.props;
     const time = Date.parse(new Date()) / 1000;
-    if (canLoadMore && time - loadMoreTime > 1 && node.currentNode.path) {
+    if (canLoadMore && time - loadMoreTime > 1 && currentNode.path) {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
       page += 1;
-      nodeActions.requestMoreNodePage(node.currentNode, page);
+      nodeActions.requestMoreNodePage(currentNode, page);
     }
   }
 
@@ -113,10 +113,7 @@ class NodeTopicListPage extends React.Component {
   render() {
 
     const { node } = this.props;
-    let rows = [];
-    if(node.currentNode && node.currentNode.topicList){
-      rows = node.currentNode.topicList;
-    }
+    let rows = this.props.topicList;
 
     return (
         <ListView

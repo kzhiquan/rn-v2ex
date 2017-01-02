@@ -1,17 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as authCreators from '../../actions/auth'
 
-import AuthPage from '../../pages/auth/AuthPage';
+import * as authCreators from '../actions/auth';
 
-class AuthContainer extends React.Component {
+import MainPage from '../pages/MainPage';
+
+class MainContainer extends React.Component {
   render() {
     return (
-      <AuthPage {...this.props} />
+      <MainPage {...this.props} />
     );
   }
 }
+
 
 const mapStateToProps = (state) => {
   const { auth } = state;
@@ -20,12 +22,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-
-const mapDispatchToProps = (dispatch) => {;
+const mapDispatchToProps = (dispatch) => {
   const authActions = bindActionCreators(authCreators, dispatch);
   return {
-    authActions,
+    authActions
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AuthContainer);
+
+export default connect(mapStateToProps,mapDispatchToProps)(MainContainer);

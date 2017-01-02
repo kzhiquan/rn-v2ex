@@ -70,7 +70,19 @@ export default function auth(state = initialState, action){
 				user : action.logoutSuccess ? null : state.user,
 			})
 
-				//add account
+		case types.REQUEST_USER_META:
+			return Object.assign({}, state, {
+				isLoading : true,
+			});
+
+		case types.END_REQUEST_USER_META:
+			return Object.assign({}, state, {
+				isLoading : false,
+				user : action.user,
+				accounts : combineAccount(state, action),
+			})
+
+		//add account
 		case types.ADD_ACCOUNT:
 			return Object.assign({}, state, {
 				addAccount : Object.assign({}, state.addAccount, {
@@ -311,12 +323,14 @@ function combineAccount(state, action){
 
 	if(!action.user) return state.accounts;
 
-	let foundUser = state.accounts.find( (user) => {
+	let foundIndex = state.accounts.findIndex( (user) => {
 		return user.name == action.user.name;
 	});
 
-	if(!foundUser){
+	if(foundIndex<0){
 		state.accounts.push(action.user);
+	}else{
+		state.accounts.splice(foundIndex, 1, state.user);
 	}
 
 	return state.accounts;

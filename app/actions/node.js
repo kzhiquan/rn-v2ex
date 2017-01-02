@@ -53,3 +53,23 @@ export function endRequestNodePage(currentNode){
 		currentNode,
 	}
 }
+
+export function popNodePageStack(){
+	return {
+		type : types.POP_NODE_PAGE_STACK,
+	}
+}
+
+
+export function requestFavoriteNode(node){
+	return {
+		type : types.REQUEST_FAVORITE_NODE,
+		node,
+	}
+}
+
+export function endRequestFavoriteNode() {
+	return {
+		type : types.END_REQUEST_FAVORITE_NODE,
+	}
+}

@@ -40,14 +40,14 @@ class NodeListTableView extends React.Component {
 
   render() {
     return (
-        <ListView
-          initialListSize = {5}
-          dataSource={this.state.dataSource.cloneWithRows(this.props.nodeList)}
-          renderRow={this.renderItem.bind(this)}
-          enableEmptySections={true}
-          removeClippedSubviews = {false}
-          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-        />
+          <ListView
+            initialListSize = {5}
+            dataSource={this.state.dataSource.cloneWithRows(this.props.nodeList)}
+            renderRow={this.renderItem.bind(this)}
+            enableEmptySections={true}
+            removeClippedSubviews = {false}
+            renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+          />
     );
   }
 }

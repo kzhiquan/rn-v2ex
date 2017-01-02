@@ -5,13 +5,15 @@ import * as types from '../constants/ActionTypes';
 import { 
 	receiveNodeList,
 	endRequestNodePage, 
+	endRequestFavoriteNode,
 } from '../actions/node';
 
 import { 
 	fetchCategoryNode, 
 	fetchAllNode, 
 	fetchNode,
-	fetchNodePage, 
+	fetchNodePage,
+	requestFavoriteNode, 
 } from '../utils/SiteUtil'
 
 
@@ -61,10 +63,44 @@ function* fetchNodePageSagas(currentNode, page){
 }
 
 
-
 export function* watchNodePage(){
 	while (true) {
 		const { currentNode, page } = yield take([types.REQUEST_NODE_PAGE, types.REFRESH_NODE_PAGE, types.REQUEST_MORE_NODE_PAGE]);
 		yield fork(fetchNodePageSagas, currentNode, page);
+	}
+}
+
+
+
+function* requestFavoriteNodeSagas(node){
+	try{
+		const result = yield call(requestFavoriteNode, node); 
+		if(result){
+			if(node.favorite_url.indexOf('unfavorite') > 0){
+				toastShort('取消收藏成功');
+				node.favorite_url = node.favorite_url.replace('unfavorite', 'favorite')
+			}else{
+				toastShort('收藏成功');
+				node.favorite_url = node.favorite_url.replace('favorite', 'unfavorite');
+			}
+		}else{
+			toastShort("操作失败");
+		}
+
+		yield put(endRequestFavoriteNode());
+
+	} catch ( error ){
+		console.log('error:', error);
+		toastShort('网络发生错误，请重试');
+		yield put(endRequestFavoriteNode());
+	}
+}
+
+
+
+export function* watchFavoriteNode(){
+	while (true) {
+		const { node } = yield take(types.REQUEST_FAVORITE_NODE);
+		yield fork(requestFavoriteNodeSagas, node);
 	}
 }

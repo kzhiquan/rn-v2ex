@@ -55,6 +55,7 @@ class TabTopicListPage extends React.Component {
   }
 
   _onUserClick(){
+    console.log("_onUserClick", this);
     const { navigator, path } = this;
     navigator.push({
       component : UserContainer,
