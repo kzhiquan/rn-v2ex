@@ -74,5 +74,28 @@ export function parseNodeTopicList($, currentNode){
 	return topicList;
 }
 
+//recent page topicList
+export function parseRecentTopicList($){
+	let topicList = [];
+	$('.box').children('.item').each(function(i, el){
+		topic = {};
+		topic.member_url = $(this).find('.small strong a').first().attr('href');
+		topic.member_name = $(this).find('.small strong a').first().text();
+		topic.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
+		topic.topic_url = $(this).find('.item_title a').first().attr('href');
+		topic.topic_title = $(this).find('.item_title a').first().text();
+		topic.node_url = $(this).find('.node').first().attr('href');
+		topic.node_name = $(this).find('.node').first().text();
+		topic.latest_reply_date = $(this).find('.small').text().split('•')[2];
+		topic.latest_reply_member_name = $(this).find('.small strong a').eq(1).text();
+		topic.latest_reply_menber_url = $(this).find('.small strong a').eq(1).attr('href');
+		topic.reply_count = $(this).find('td[width="70"] a').first().text();
+		topic.reply_url = $(this).find('td[width="70"] a').first().attr('href');
+		topicList.push(topic);
+	});
+
+	return topicList;
+}
+
 
 

@@ -1,8 +1,52 @@
 import cheerio from 'cheerio-without-node-native'
 import qs from 'qs'
-import * as API from '../api/API'
 
+import * as API from '../api/API'
 import SITE from '../constants/Config'
+
+
+export function fetchTopicListExt(wrapList, page=1){
+  return new Promise((resolve, reject) => {
+
+  	let url = SITE.HOST + wrapList.path;
+  	console.log('url', url);
+  	if(wrapList.path.indexOf('?') == -1){
+  		url = SITE.HOST + wrapList.path + '?p=' + page;
+  	}
+
+  	console.log('url', url);
+  	
+    fetch(url)
+      .then((response) => {
+        return response.text();
+      })
+      .then((body) => {
+
+		const $ = cheerio.load(body);
+		let newTopicList = API.parseRecentTopicList($);
+		if( page == 1 ){
+			wrapList.list = [].concat(newTopicList);
+		}else{
+
+			let firstNewTopic = newTopicList[0];
+			let foundIndex = wrapList.list.findIndex( (topic, index, arr)=> {
+				return topic.topic_url.split('#')[0] == firstNewTopic.topic_url.split('#')[0];
+			});
+
+			if(foundIndex >= 0){
+				newTopicList.splice(0, wrapList.list.length-foundIndex);
+			}
+
+			wrapList.list = wrapList.list.concat(newTopicList);
+		}
+		resolve(wrapList);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 
 export function fetchTopicList(path, page=1){
 
@@ -71,6 +115,8 @@ export function fetchTopicList(path, page=1){
         reject(error);
       });
   });
+
+
 }
 
 export function fetchTopic(topic, page=1){

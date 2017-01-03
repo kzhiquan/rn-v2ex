@@ -48,6 +48,10 @@ import {
 	watchPostNewTopic,
 } from './newTopic';
 
+import {
+	watchRecentTopic,
+} from './recent'
+
 export default function* rootSaga(){
 	yield[
 		fork(watchTest),
@@ -85,5 +89,7 @@ export default function* rootSaga(){
 
 		fork(watchFetchNewTopic),
 		fork(watchPostNewTopic),
+
+		fork(watchRecentTopic),
 	]
 }

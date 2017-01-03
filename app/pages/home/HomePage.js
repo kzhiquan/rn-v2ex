@@ -12,6 +12,8 @@ import {
 
 import NavigationBar from 'react-native-navbar';
 
+import TopicListTableView from '../../components/TopicListTableView';
+
 
 
 class HomePage extends React.Component {
@@ -40,7 +42,8 @@ class HomePage extends React.Component {
   }
 
   render() {
-    const { auth } = this.props; 
+    const { recentActions, recent, auth, navigator } = this.props; 
+
     let titleConfig = {
       title: "V2EX"
     };
@@ -60,7 +63,7 @@ class HomePage extends React.Component {
           rightButton={
             <View style={[styles.directionRow, {right:12}]}>
               <TouchableOpacity onPress={this._onSearchClick.bind(this)}>
-                <Image  style={{top:14, right:24}}source={require('../../static/imgs/search.png')}/>
+                <Image  style={{top:16, right:24}}source={require('../../static/imgs/search.png')}/>
               </TouchableOpacity>
               <TouchableOpacity onPress={this._onWriteClick.bind(this)}>
                 <Image  style={{top:11}} source={require('../../static/imgs/write.png')}/>
@@ -70,8 +73,14 @@ class HomePage extends React.Component {
           }
         />
 
-        <TopicTableView
-          
+        <TopicListTableView
+          navigator = {navigator}
+          actions = {{
+            load : recentActions.requestRecentTopic,
+            refresh : recentActions.refreshRecentTopic,
+            loadMore : recentActions.requestMoreRecentTopic,
+          }}
+          payload = {recent}
         />
 
       </View>
