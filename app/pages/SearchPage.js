@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   TextInput,
   Keyboard,
+  Dimensions,
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
@@ -33,6 +34,7 @@ let page = 1;
 let loadMoreTime = 0;
 
 class SearchPage extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -40,6 +42,7 @@ class SearchPage extends React.Component {
         rowHasChanged: (r1, r2) => r1 !== r2,  
       }),
       searchText:'',
+      searchTarget:'内容',
     };
 
     canLoadMore = false;
@@ -113,21 +116,28 @@ class SearchPage extends React.Component {
     //<View><Text style={{fontSize:16, fontWeight: 'bold'}}>{item.topic_title.replace('- V2EX', '')}</Text></View>
     return (
       <TouchableOpacity onPress={this._onTopicClick} topic={item} that={this}>
-        <View style={{flex:1, flexDirection:'column', borderBottomWidth:1}}>
-          <HtmlRender
-              stylesheet={titleContentStyle}
-              key={`${sectionID}-${rowID}-title`}
-              value={'<div>' + item.topic_title + '</div>'}
-              onLinkPress={this._onLinkPress.bind(this)}
-              renderNode={this._renderNode}
-          />
-          <HtmlRender
+        <View style={styles.itemContainer}>
+
+          <View style={[styles.directionRow, styles.itemInnerWidth]}>
+            <HtmlRender
+                stylesheet={titleContentStyle}
+                key={`${sectionID}-${rowID}-title`}
+                value={'<div>' + item.topic_title + '<span>  ' + item.takein_search_date +'</span> </div>'}
+                onLinkPress={this._onLinkPress.bind(this)}
+                renderNode={this._renderNode}
+            />
+          </View>
+
+          <View style={[styles.itemInnerWidth, {top:4}]}>
+            <HtmlRender
               stylesheet={briefTopicContentStyle}
               key={`${sectionID}-${rowID}-content`}
               value={'<div>' + item.brief_content.replace('<br>', '').replace('\n', '') + '</div>'}
               onLinkPress={this._onLinkPress.bind(this)}
               renderNode={this._renderNode}
-          />
+            />
+          </View>
+
         </View>
       </TouchableOpacity>
 
@@ -179,14 +189,15 @@ class SearchPage extends React.Component {
     searchActions.refreshSearch(this.state.searchText)
   }
 
-  _removeHistoryItem(){
+  _onRemoveHistoryItemClick(){
     const { item, that } = this;
     const { searchActions } = that.props;
     console.log('removeHistoryItem', item);
     searchActions.removeSearchHistory(item);
   }
 
-  _historyItemPress(){
+
+  _onHistoryItemClick(){
     const { item, that } = this;
     const { searchActions } = that.props;
     console.log('historyItemPress', item);
@@ -196,20 +207,142 @@ class SearchPage extends React.Component {
 
   _renderHistroyItem(item, sectionID, rowID, highlightRow){
     return (
-      <TouchableOpacity onPress={this._historyItemPress} item={item} that={this}>
-        <View style={{flex:1, flexDirection:'row', borderBottomWidth:1, justifyContent:'space-between'}}>
-          <View style={{flex:1, flexDirection:'row'}}>
-            <Icon name="ios-time" size={30} style={{marginRight:30}} />
-            <View style={{marginTop:5}}>
-              <Text>{item}</Text>
+      <TouchableOpacity onPress={this._onHistoryItemClick} item={item} that={this}>
+        <View style={styles.historyItemContainer}>
+          <View style={[styles.directionRow, {left:16, top:12}]}>
+            <Image source={require('../static/imgs/time.png')} />
+            <View style={{left:16, bottom:2}}>
+              <Text style={{fontSize:16, color:'#7A797B'}}>{item}</Text>
             </View>
           </View>
-          <TouchableOpacity onPress={this._removeHistoryItem} item={item} that={this}>
-            <Icon name="ios-close" size={30} style={{marginRight:10}} />
+          <TouchableOpacity 
+            onPress={this._onRemoveHistoryItemClick} 
+            item={item} 
+            that={this}
+            style={{top:12,right:12,}}>
+            <Image source={require('../static/imgs/close.png')} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
     );
+  }
+
+  _renderSearchBar(){
+    return (
+      <View style={styles.searchBarContainer}>
+        <Image 
+          style={{
+            top:7,
+            left:8,
+          }}
+          source={require('../static/imgs/search_gray.png')}/>
+        <TextInput
+          ref="searchBar"
+          returnKeyType="search" 
+          placeholder="请输入搜索内容"
+          style={styles.searchBarStyle}
+          onChangeText = { this._searchTextChange.bind(this) }
+          value = { this.state.searchText } 
+          onSubmitEditing = { this._searchSubmit.bind(this) } />
+      </View>
+
+    )
+  }
+
+  _onSearchTargetClick(){
+    if(this.state.searchTarget == '内容'){
+      this.setState({searchTarget:'节点'})
+    }else{
+      this.setState({searchTarget:'内容'})
+    }
+  }
+
+  _renderSearchTarget(){
+
+    if(this.state.searchText != ''){
+      return null;
+    }
+
+    let nodeActiveStyle;
+    let contentActiveStyle;
+    if(this.state.searchTarget == '内容'){
+      contentActiveStyle = {color:'#3B7EFF'};
+    }else{
+      nodeActiveStyle = {color:'#3B7EFF'};
+    }
+
+    return (
+        <View style={styles.searchTargetContainer}>
+
+          <TouchableOpacity
+            style={styles.searchTargetStyle}
+            onPress={this._onSearchTargetClick.bind(this)}>
+            <View>
+              <Text style={[{fontSize:16}, contentActiveStyle]}>内容</Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.searchTargetSeparator}></View>
+
+          <TouchableOpacity
+            style={styles.searchTargetStyle}
+            onPress={this._onSearchTargetClick.bind(this)}>
+            <View>
+              <Text style={[{fontSize:16}, nodeActiveStyle]}>节点</Text>
+            </View>
+          </TouchableOpacity>
+
+        </View>
+    )
+  }
+
+  _renderSearchResult(){
+    const { search } = this.props;
+
+    let rows = [];
+    if(search.searchResult){
+      rows = search.searchResult.topicList;
+    }
+
+    let historyRows = [];
+    historyRows = search.history;
+
+    if(this.state.searchText !== ''){
+      return (
+          <ListView
+            initialListSize = {5}
+            dataSource={this.state.dataSource.cloneWithRows(rows)}          
+            renderRow={this._renderItem.bind(this)}
+            renderFooter={this._renderFooter.bind(this)}
+            onEndReached={this._onEndReached.bind(this)}
+            onScroll={this._onScroll.bind(this)}
+            onEndReachedThreshold={-20}
+            enableEmptySections={true}
+            removeClippedSubviews = {false}
+            renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+            refreshControl={
+              <RefreshControl
+                refreshing={search.isRefreshing}
+                onRefresh={this._onRefresh.bind(this)}
+                title="Loading..."
+              />
+            }
+          />
+      )
+    }else{
+      return (
+        <ListView
+          initialListSize = {5}
+          dataSource={this.state.dataSource.cloneWithRows(historyRows)}          
+          renderRow={this._renderHistroyItem.bind(this)}
+          enableEmptySections={true}
+          removeClippedSubviews = {false}
+          keyboardShouldPersistTaps = {true}
+          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+        />
+      )
+    }
+
   }
 
   render() {
@@ -224,64 +357,21 @@ class SearchPage extends React.Component {
       }
     };
 
-    let rows = [];
-    if(search.searchResult){
-      rows = search.searchResult.topicList;
-    }
-
-    let historyRows = [];
-    historyRows = search.history;
-
     //console.log('search', search.searchResult);
 
     return (
       <View>
 
         <NavigationBar
-          title={<TextInput
-                    ref="searchBar"
-                    returnKeyType="search" 
-                    style={{height:40, borderColor:'gray', borderWidth:1, marginRight:50}}
-                    onChangeText = { this._searchTextChange.bind(this) }
-                    /*onEndEditing = { this._searchEndEditing.bind(this) }*/
-                    value = { this.state.searchText } 
-                    onSubmitEditing = { this._searchSubmit.bind(this) } />}
-
+          style={styles.navigatorBarStyle}
+          title={this._renderSearchBar()}
           rightButton={rightButtonConfig}
+          statusBar={{tintColor : '#FAFAFA'}}
         />
 
-        {this.state.searchText !== '' ?
-          (<ListView
-              initialListSize = {5}
-              dataSource={this.state.dataSource.cloneWithRows(rows)}          
-              renderRow={this._renderItem.bind(this)}
-              renderFooter={this._renderFooter.bind(this)}
-              onEndReached={this._onEndReached.bind(this)}
-              onScroll={this._onScroll.bind(this)}
-              onEndReachedThreshold={-20}
-              enableEmptySections={true}
-              removeClippedSubviews = {false}
-              renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-              refreshControl={
-                <RefreshControl
-                  refreshing={search.isRefreshing}
-                  onRefresh={this._onRefresh.bind(this)}
-                  title="Loading..."
-                />
-              }
-          />)
-          :
-          (<ListView
-              initialListSize = {5}
-              dataSource={this.state.dataSource.cloneWithRows(historyRows)}          
-              renderRow={this._renderHistroyItem.bind(this)}
-              enableEmptySections={true}
-              removeClippedSubviews = {false}
-              keyboardShouldPersistTaps = {true}
-              renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-          />)
-        }
+        {this._renderSearchTarget()}
 
+        {this._renderSearchResult()}
 
         <ActivityIndicator
           animating={ search.isSearching }
@@ -289,13 +379,94 @@ class SearchPage extends React.Component {
           size="large"
         />
 
-
       </View>
     );
   }
 }
 
+
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#BBC5CD';
+let backgroundColor = '#EFEFF4';
+let tabBarUnderlineColor = '#007AFF';
+
 const styles = StyleSheet.create({
+  directionRow:{
+    flexDirection : 'row',
+  },
+  searchBarContainer :{
+    flex:1,
+    flexDirection : 'row',
+    height:28,
+    left:-18,
+    borderRadius:6, 
+    backgroundColor:'rgba(3, 3, 3,0.09)'
+  },
+  searchBarStyle:{
+    width:width-12-63-12,
+    left:12,
+    fontSize:14,
+  },
+  navigatorBarStyle:{
+    backgroundColor : '#FAFAFA', 
+    borderBottomWidth : 1,
+    borderBottomColor : borderColor,
+  },
+
+  searchTargetContainer:{
+    flexDirection:'row', 
+    height:46, 
+    borderBottomWidth:1, 
+    borderColor:'#B2B2B2'
+  },
+
+  searchTargetSeparator:{
+    width:1, 
+    left:1, 
+    height:46, 
+    backgroundColor:'#B2B2B2'
+  },
+
+  searchTargetStyle:{
+    width:(width-3)/2,
+    justifyContent:'center',
+    alignItems: 'center',
+  },
+
+  historyItemContainer:{
+    flex:1, 
+    flexDirection:'row', 
+    borderBottomWidth:1, 
+    borderColor:borderColor,
+    justifyContent:'space-between',
+    height:46,
+  },
+
+  itemContainer:{
+    flex:1, 
+    flexDirection:'column', 
+    borderBottomWidth:1,
+    borderColor: borderColor,
+    
+    left:16, 
+    paddingTop:12, 
+    paddingBottom:8, 
+  },
+
+  itemInnerWidth:{
+    width:width-16-12,
+  },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+
+
+
   base: {
     flex: 1
   },
@@ -357,6 +528,10 @@ const briefTopicContentStyle = StyleSheet.create({
     color: '#FF3366', // pink links
   },
 
+  div : {
+    fontSize:14,
+  }
+
 });
 
 const titleContentStyle = StyleSheet.create({
@@ -365,8 +540,14 @@ const titleContentStyle = StyleSheet.create({
     color: '#FF3366', // pink links
   },
 
+  span:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
   div : {
     fontWeight : 'bold',
+    fontSize: 16,
   }
 
 });

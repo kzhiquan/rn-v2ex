@@ -12,8 +12,8 @@ import {
 
 import NavigationBar from 'react-native-navbar';
 
+import SearchContainer from '../../containers/SearchContainer';
 import TopicListTableView from '../../components/TopicListTableView';
-
 
 
 class HomePage extends React.Component {
@@ -35,6 +35,11 @@ class HomePage extends React.Component {
 
   _onSearchClick(){
     console.log('_onSearchClick');
+    const { navigator } = this.props;
+    navigator.push({
+      component : SearchContainer,
+      name : 'searchPage'
+    });
   }
 
   _onWriteClick(){
