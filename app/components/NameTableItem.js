@@ -15,7 +15,7 @@ class NameTableItem extends React.Component {
     super(props);
   }
   render() {
-    const { name, payload, navigator } = this.props;
+    const { name } = this.props;
     return (
       <TouchableOpacity
         onPress={this.props.onClick}>
@@ -23,7 +23,7 @@ class NameTableItem extends React.Component {
             <View style={{paddingTop:14}}>
               <Text>{name}</Text>
             </View>
-            <Image style={{top:14, right:12}} source={require('../static/imgs/arrow.png')}/>
+            {this.props.children}
         </View>
       </TouchableOpacity>
     );
@@ -33,6 +33,7 @@ class NameTableItem extends React.Component {
 NameTableItem.propTypes = {
   onClick: React.PropTypes.func.isRequired,
   name: React.PropTypes.string.isRequired,
+  children:React.PropTypes.node,
 };
 
 const {height, width} = Dimensions.get('window');

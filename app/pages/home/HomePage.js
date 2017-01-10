@@ -14,6 +14,7 @@ import NavigationBar from 'react-native-navbar';
 
 import SearchContainer from '../../containers/home/SearchContainer';
 import TopicListTableView from '../../components/TopicListTableView';
+import NewTopicTitlePage from './NewTopicTitlePage';
 
 class HomePage extends React.Component {
 
@@ -41,8 +42,13 @@ class HomePage extends React.Component {
     });
   }
 
-  _onWriteClick(){
-    console.log('_onWriteClick');
+  _onNewTopicClick(){
+    console.log('_onNewTopicClick');
+    const { navigator } = this.props;
+    navigator.push({
+      component : NewTopicTitlePage,
+      name : 'NewTopicTitlePage',
+    });
   }
 
   render() {
@@ -69,7 +75,7 @@ class HomePage extends React.Component {
               <TouchableOpacity onPress={this._onSearchClick.bind(this)}>
                 <Image  style={{top:16, right:24}}source={require('../../static/imgs/search.png')}/>
               </TouchableOpacity>
-              <TouchableOpacity onPress={this._onWriteClick.bind(this)}>
+              <TouchableOpacity onPress={this._onNewTopicClick.bind(this)}>
                 <Image  style={{top:11}} source={require('../../static/imgs/write.png')}/>
               </TouchableOpacity>
             </View>

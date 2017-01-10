@@ -323,7 +323,7 @@ export async function postNewTopic(title, content, node, once){
 	let relocation = await postTopic(title, content, node, once);
 	console.log('relocation', relocation);
 
-	if( !relocation && relocation.indexOf('/new')){
+	if( !relocation && relocation.indexOf('/new')>=0 ){
 
 		let newOnce = getPostNewTopicOnce();
 

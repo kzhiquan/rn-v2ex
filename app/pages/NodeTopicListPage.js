@@ -25,7 +25,7 @@ import SearchContainer from '../containers/home/SearchContainer';
 import TopicContainer from '../containers/TopicContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
-import NewTopicTitlePage from './NewTopicTitlePage';
+import NewTopicTitlePage from './home/NewTopicTitlePage';
 
 
 let canLoadMore;

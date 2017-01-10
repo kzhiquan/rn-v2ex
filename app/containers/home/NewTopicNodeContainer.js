@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as newTopicCreators from '../actions/newTopic';
+import * as newTopicCreators from '../../actions/newTopic';
 
-import NewTopicNodePage from '../pages/NewTopicNodePage';
+import NewTopicNodePage from '../../pages/home/NewTopicNodePage';
 
 class NewTopicNodeContainer extends React.Component {
   render() {

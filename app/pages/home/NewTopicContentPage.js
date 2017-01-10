@@ -8,12 +8,11 @@ import {
 	TouchableOpacity, 
 	ActivityIndicator,
 	TextInput,
+	Dimensions,
 } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
-import Icon from 'react-native-vector-icons/Ionicons';
-import NewTopicNodePage from './NewTopicNodePage';
-import NewTopicNodeContainer from '../containers/NewTopicNodeContainer';
+import NewTopicNodeContainer from '../../containers/home/NewTopicNodeContainer';
 
 
 class NewTopicContentPage extends React.Component {
@@ -31,7 +30,7 @@ class NewTopicContentPage extends React.Component {
 	}
 
 
-	_onNewPostNextStep(){
+	_onNextStep(){
 		console.log('newPostNextStep');
 		const { navigator, route } = this.props;
 		navigator.push({
@@ -43,7 +42,7 @@ class NewTopicContentPage extends React.Component {
 		});
 	}
 
-	_onCancel(){
+	_onBackClick(){
 		const { navigator } = this.props;
 		navigator.pop();
 	}
@@ -54,22 +53,37 @@ class NewTopicContentPage extends React.Component {
 
 		let rightButtonConfig = {
 			title: '下一步',
-			handler: this._onNewPostNextStep.bind(this),
+			handler: this._onNextStep.bind(this),
+		};
+
+		let titleConfig = {
+			title: '创建新主题',
 		};
 
 		return (
-			<View style={{flex:1}}>
-	        	<NavigationBar
-	              rightButton={rightButtonConfig}
-	              leftButton={
-	                <TouchableOpacity onPress={this._onCancel.bind(this)}>
-	                  <Icon name="ios-arrow-back" size={40} style={{marginLeft:10}} color="blue"/>
-	                </TouchableOpacity> 
-	              }
-	       		/>
-	       		<View>
+			<View style={styles.container}>
+
+	       		<NavigationBar
+					style={styles.navigatorBarStyle}
+					title={titleConfig}
+					leftButton={
+						<TouchableOpacity onPress={this._onBackClick.bind(this)}>
+                			<Image style={{left:12, top:11}} source={require('../../static/imgs/back_arrow.png')}/>
+              			</TouchableOpacity> 
+					}
+					rightButton={rightButtonConfig}
+					statusBar={{
+			            tintColor : '#FAFAFA'
+			        }}
+				/>
+
+	       		<View style={styles.textInputContainer}>
 	       			<TextInput
-	       				style={{height: Math.max(35, this.state.height)}}
+	       				style={{
+	       					height: Math.max(35, this.state.height), 
+	       					width:width-16-16,
+	       					fontSize:16,
+	       				}}
 	       				autoFocus={true}
 	       				multiline={true}
 	       				onChangeText={(text) => this.setState({text})}
@@ -83,6 +97,23 @@ class NewTopicContentPage extends React.Component {
 	}
 }
 
+const {height, width} = Dimensions.get('window');
+
+var styles = StyleSheet.create({
+	container : {
+		flex : 1,
+		backgroundColor : 'white',
+	},
+	navigatorBarStyle:{
+		backgroundColor : '#FAFAFA', 
+		borderBottomWidth : 1,
+		borderBottomColor : '#B2B2B2',
+	},
+	textInputContainer:{
+		paddingTop:12,
+		paddingLeft:16
+	}
+});
 
 export default NewTopicContentPage;
 

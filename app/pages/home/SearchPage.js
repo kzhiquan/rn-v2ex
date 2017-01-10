@@ -25,7 +25,7 @@ import HtmlRender from 'react-native-html-render';
 import AccountContainer from '../../containers/auth/AccountContainer';
 import TopicContainer from '../../containers/TopicContainer';
 import NodeContainer from '../../containers/find/NodeContainer';
-import NameTableItem from '../../components/NameTableItem';
+import NameGotoTableItem from '../../components/NameGotoTableItem';
 
 
 
@@ -257,8 +257,8 @@ class SearchPage extends React.Component {
   }
 
   _renderNodeItem(item, sectionID, rowID, highlightRow){
-    console.log('item', item);
-    return <NameTableItem
+    //console.log('item', item);
+    return <NameGotoTableItem
               name={item.name}
               onClick={()=>this._onNodeItemClick(item)}
             />
