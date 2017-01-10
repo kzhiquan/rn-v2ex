@@ -11,6 +11,7 @@ import {
 
 
 import NavigationBar from 'react-native-navbar';
+import Popover from 'react-native-popover';
 
 import SearchContainer from '../../containers/home/SearchContainer';
 import TopicListTableView from '../../components/TopicListTableView';
@@ -20,6 +21,10 @@ class HomePage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state={
+      isVisible:false,
+      buttonRect:{},
+    }
   }
 
   componentWillMount() {
@@ -29,8 +34,19 @@ class HomePage extends React.Component {
   componentDidMount() {
   }
 
+  _onClosePopover() {
+    this.setState({isVisible: false});
+  }
+
   _onAccountClick(){
     console.log('_onAccountClick');
+    this.refs.avatar.measure((ox, oy, width, height, px, py) => {
+      this.setState({
+        isVisible: true,
+        buttonRect: {x: px, y: py, width: width, height: height}
+      });
+    });
+
   }
 
   _onSearchClick(){
@@ -67,7 +83,7 @@ class HomePage extends React.Component {
           statusBar={{tintColor : '#FAFAFA'}}
           leftButton={
             <TouchableOpacity onPress={this._onAccountClick.bind(this)}>
-                <Image style={[styles.avatar_size_32, {left:12, top:6}]} source={{uri:auth.user.avatar_url}}/>
+                <Image ref="avatar" style={[styles.avatar_size_32, {left:12, top:6}]} source={{uri:auth.user.avatar_url}}/>
             </TouchableOpacity> 
           }
           rightButton={
@@ -92,6 +108,13 @@ class HomePage extends React.Component {
           }}
           payload = {recent}
         />
+
+        <Popover
+          isVisible={this.state.isVisible}
+          fromRect={this.state.buttonRect}
+          onClose={this._onClosePopover}>
+          <Text>I'm the content of this popover!</Text>
+        </Popover>
 
       </View>
 
@@ -123,65 +146,11 @@ const styles = StyleSheet.create({
     borderBottomColor : borderColor,
   },
 
-  tabBarUnderlineStyle:{
-    backgroundColor : tabBarUnderlineColor,
-    height:2,
-  },
-
-  front:{
-      position: 'absolute',
-      top:300,
-      left: (width-50)/2,
-      width: 50,
-      height:50,
-      zIndex: 1,
-  },
-
-  metaTextStyle:{
-    fontSize:12, 
-    color:noteTextColor,
-  },
-
-  avatarRightContent:{
-    left:10,
-    width : width-12-10-16-42,
-  },
 
   avatar_size_32:{
     width:32,
     height:32,
     borderRadius: 16,
-  },
-
-  favoriteBtnStyle:{
-    backgroundColor:'#45CB7F', 
-    height: 32,
-    borderRadius:5, 
-    paddingTop:8, 
-    paddingBottom:4, 
-    paddingLeft:24, 
-    paddingRight:24,
-  },
-
-  nodeMetaContainer:{
-    paddingTop:12, 
-    left:16, 
-    paddingBottom:12, 
-  },
-
-  whiteBoldFontStyle:{
-    fontSize:14, 
-    color:'white', 
-    fontWeight:'bold',
-  },
-
-  nodeAreaContainer:{
-    backgroundColor:'#E8F0FE', 
-    borderRadius:3, 
-    paddingTop:2, 
-    paddingBottom:2, 
-    paddingLeft:7, 
-    paddingRight:7,
   },
 
 
