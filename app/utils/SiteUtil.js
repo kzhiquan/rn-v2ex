@@ -1368,7 +1368,7 @@ export function fetchGoogleSearch(searchText, nextPageUrl){
 	});	
 }
 
-export function FetchBingSearch(searchText, nextPageUrl){
+export function fetchBingSearch(searchText, nextPageUrl){
 	console.log('searchText', searchText, nextPageUrl);
 	let searchUrl;
 	if(nextPageUrl){

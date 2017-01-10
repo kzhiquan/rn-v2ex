@@ -22,11 +22,11 @@ import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HtmlRender from 'react-native-html-render';
 
-import LoadingView from '../components/LoadingView';
-import AccountContainer from '../containers/auth/AccountContainer';
-import TopicContainer from '../containers/TopicContainer';
-import { toastShort } from '../utils/ToastUtil';
-import VXModal from '../components/VXModal';
+import AccountContainer from '../../containers/auth/AccountContainer';
+import TopicContainer from '../../containers/TopicContainer';
+import NodeContainer from '../../containers/find/NodeContainer';
+import NameTableItem from '../../components/NameTableItem';
+
 
 
 let canLoadMore;
@@ -42,7 +42,7 @@ class SearchPage extends React.Component {
         rowHasChanged: (r1, r2) => r1 !== r2,  
       }),
       searchText:'',
-      searchTarget:'内容',
+      searchTarget:'topic',
     };
 
     canLoadMore = false;
@@ -61,14 +61,26 @@ class SearchPage extends React.Component {
     //console.log('text', text);
     this.setState({searchText: text});
     //console.log('this.state.searchText', this.state.searchText);
-    const { searchActions } = this.props;
-    searchActions.startSearch(text);
+    const { searchActions, search } = this.props;
+    if(this.state.searchTarget == 'topic'){
+      searchActions.startSearch(text);
+    }else{
+      searchActions.startNodeSearch(text, search.nodeList)
+    }
   }
 
   _searchSubmit(event){
     //console.log('event text', event.nativeEvent.text);
-    const { searchActions } = this.props;
-    searchActions.startSearch(this.state.searchText);
+    const { searchActions, search } = this.props;
+    if(this.state.searchTarget == 'topic'){
+
+      searchActions.startSearch(this.state.searchText);
+
+    }else{
+
+      searchActions.startNodeSearch(this.state.searchText, search.nodeList);
+
+    }
   }
 
   _searchEndEditing(event){
@@ -103,10 +115,10 @@ class SearchPage extends React.Component {
     const { topic, that } = this;
     const { navigator, searchActions } = that.props;
     //console.log('topClick', that.state.searchText);
-    searchActions.addSearchHistory(that.state.searchText);
+    searchActions.addSearchHistory(that.state.searchTarget, that.state.searchText);
     navigator.push({
       component : TopicContainer,
-      name : 'Topic',
+      name : 'TopicPage',
       topic : topic,
     });
   }
@@ -193,16 +205,20 @@ class SearchPage extends React.Component {
     const { item, that } = this;
     const { searchActions } = that.props;
     console.log('removeHistoryItem', item);
-    searchActions.removeSearchHistory(item);
+    searchActions.removeSearchHistory(that.state.searchTarget, item);
   }
 
 
   _onHistoryItemClick(){
     const { item, that } = this;
-    const { searchActions } = that.props;
+    const { searchActions, search } = that.props;
     console.log('historyItemPress', item);
     that.setState({searchText:item});
-    searchActions.startSearch(item);
+    if(that.state.searchTarget == 'topic'){
+      searchActions.startSearch(item);
+    }else{
+      searchActions.startNodeSearch(item, search.nodeList);
+    }
   }
 
   _renderHistroyItem(item, sectionID, rowID, highlightRow){
@@ -210,7 +226,7 @@ class SearchPage extends React.Component {
       <TouchableOpacity onPress={this._onHistoryItemClick} item={item} that={this}>
         <View style={styles.historyItemContainer}>
           <View style={[styles.directionRow, {left:16, top:12}]}>
-            <Image source={require('../static/imgs/time.png')} />
+            <Image source={require('../../static/imgs/time.png')} />
             <View style={{left:16, bottom:2}}>
               <Text style={{fontSize:16, color:'#7A797B'}}>{item}</Text>
             </View>
@@ -220,14 +236,35 @@ class SearchPage extends React.Component {
             item={item} 
             that={this}
             style={{top:12,right:12,}}>
-            <Image source={require('../static/imgs/close.png')} />
+            <Image source={require('../../static/imgs/close.png')} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
     );
   }
 
-  _renderSearchBar(){
+  _onNodeItemClick(node){
+    console.log('this', this, node);
+
+    const { navigator, searchActions } = this.props;
+    searchActions.addSearchHistory(this.state.searchTarget, this.state.searchText);
+
+    navigator.push({
+      component: NodeContainer,
+      name : 'nodePage',
+      currentNode : node,
+    })
+  }
+
+  _renderNodeItem(item, sectionID, rowID, highlightRow){
+    console.log('item', item);
+    return <NameTableItem
+              name={item.name}
+              onClick={()=>this._onNodeItemClick(item)}
+            />
+  }
+
+  _renderSearchInputBar(){
     return (
       <View style={styles.searchBarContainer}>
         <Image 
@@ -235,7 +272,7 @@ class SearchPage extends React.Component {
             top:7,
             left:8,
           }}
-          source={require('../static/imgs/search_gray.png')}/>
+          source={require('../../static/imgs/search_gray.png')}/>
         <TextInput
           ref="searchBar"
           returnKeyType="search" 
@@ -250,23 +287,23 @@ class SearchPage extends React.Component {
   }
 
   _onSearchTargetClick(){
-    if(this.state.searchTarget == '内容'){
-      this.setState({searchTarget:'节点'})
+    if(this.state.searchTarget == 'topic'){
+      this.setState({searchTarget:'node'})
     }else{
-      this.setState({searchTarget:'内容'})
+      this.setState({searchTarget:'topic'})
     }
   }
 
-  _renderSearchTarget(){
+  _renderSearchTargetBar(){
 
     if(this.state.searchText != ''){
       return null;
     }
 
     let nodeActiveStyle;
-    let contentActiveStyle;
-    if(this.state.searchTarget == '内容'){
-      contentActiveStyle = {color:'#3B7EFF'};
+    let topicActiveStyle;
+    if(this.state.searchTarget == 'topic'){
+      topicActiveStyle = {color:'#3B7EFF'};
     }else{
       nodeActiveStyle = {color:'#3B7EFF'};
     }
@@ -278,7 +315,7 @@ class SearchPage extends React.Component {
             style={styles.searchTargetStyle}
             onPress={this._onSearchTargetClick.bind(this)}>
             <View>
-              <Text style={[{fontSize:16}, contentActiveStyle]}>内容</Text>
+              <Text style={[{fontSize:16}, topicActiveStyle]}>内容</Text>
             </View>
           </TouchableOpacity>
 
@@ -296,44 +333,37 @@ class SearchPage extends React.Component {
     )
   }
 
-  _renderSearchResult(){
+  _renderTopicListResult(rows){
+
     const { search } = this.props;
-
-    let rows = [];
-    if(search.searchResult){
-      rows = search.searchResult.topicList;
-    }
-
-    let historyRows = [];
-    historyRows = search.history;
-
-    if(this.state.searchText !== ''){
-      return (
-          <ListView
-            initialListSize = {5}
-            dataSource={this.state.dataSource.cloneWithRows(rows)}          
-            renderRow={this._renderItem.bind(this)}
-            renderFooter={this._renderFooter.bind(this)}
-            onEndReached={this._onEndReached.bind(this)}
-            onScroll={this._onScroll.bind(this)}
-            onEndReachedThreshold={-20}
-            enableEmptySections={true}
-            removeClippedSubviews = {false}
-            renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-            refreshControl={
-              <RefreshControl
-                refreshing={search.isRefreshing}
-                onRefresh={this._onRefresh.bind(this)}
-                title="Loading..."
-              />
-            }
-          />
-      )
-    }else{
-      return (
+    return (
         <ListView
           initialListSize = {5}
-          dataSource={this.state.dataSource.cloneWithRows(historyRows)}          
+          dataSource={this.state.dataSource.cloneWithRows(rows)}          
+          renderRow={this._renderItem.bind(this)}
+          renderFooter={this._renderFooter.bind(this)}
+          onEndReached={this._onEndReached.bind(this)}
+          onScroll={this._onScroll.bind(this)}
+          onEndReachedThreshold={-20}
+          enableEmptySections={true}
+          removeClippedSubviews = {false}
+          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={search.isRefreshing}
+              onRefresh={this._onRefresh.bind(this)}
+              title="Loading..."
+            />
+          }
+        />
+      )
+  }
+
+  _renderSearchHistory(rows){
+    return (
+        <ListView
+          initialListSize = {5}
+          dataSource={this.state.dataSource.cloneWithRows(rows)}          
           renderRow={this._renderHistroyItem.bind(this)}
           enableEmptySections={true}
           removeClippedSubviews = {false}
@@ -341,6 +371,55 @@ class SearchPage extends React.Component {
           renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
         />
       )
+  }
+
+  _renderNodeListResult(rows){
+    return (
+        <ListView
+          initialListSize = {5}
+          dataSource={this.state.dataSource.cloneWithRows(rows)}          
+          renderRow={this._renderNodeItem.bind(this)}
+          enableEmptySections={true}
+          removeClippedSubviews = {false}
+          keyboardShouldPersistTaps = {true}
+          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+        />
+      )
+  }
+
+  _renderSearchListResult(){
+    const { search } = this.props;
+
+    if(this.state.searchText !== ''){
+
+      let rows = [];
+
+      if(this.state.searchTarget == 'topic'){
+
+        if(search.searchResult){
+          rows = search.searchResult.topicList;
+        }
+        return this._renderTopicListResult(rows);
+
+      }else{
+
+        if(search.searchNodeResult){
+          rows = search.searchNodeResult;
+        }
+
+        console.log('rows', rows);
+
+        return this._renderNodeListResult(rows);
+
+      }
+    }else{
+
+      let historyRows = [];
+      if(search.history[this.state.searchTarget]){
+        historyRows = search.history[this.state.searchTarget];
+      }
+      return this._renderSearchHistory(historyRows);
+
     }
 
   }
@@ -364,14 +443,14 @@ class SearchPage extends React.Component {
 
         <NavigationBar
           style={styles.navigatorBarStyle}
-          title={this._renderSearchBar()}
+          title={this._renderSearchInputBar()}
           rightButton={rightButtonConfig}
           statusBar={{tintColor : '#FAFAFA'}}
         />
 
-        {this._renderSearchTarget()}
+        {this._renderSearchTargetBar()}
 
-        {this._renderSearchResult()}
+        {this._renderSearchListResult()}
 
         <ActivityIndicator
           animating={ search.isSearching }
@@ -452,7 +531,7 @@ const styles = StyleSheet.create({
     
     left:16, 
     paddingTop:12, 
-    paddingBottom:8, 
+    paddingBottom:12, 
   },
 
   itemInnerWidth:{
@@ -465,39 +544,6 @@ const styles = StyleSheet.create({
   },
 
 
-
-
-  base: {
-    flex: 1
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#FFF',
-  },
-  containerItem:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomWidth:1,
-    padding:5,
-    justifyContent: 'space-between'
-  },
-  itemHeader:{
-    width:48,
-    height:48
-  },
-  itemBody:{
-    width:280
-  },
-  itemBodyDetail:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent: 'space-between'
-  },
-  itemFooter:{
-    color:'blue',
-    paddingTop: 18
-  },
   footerContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -514,7 +560,7 @@ const styles = StyleSheet.create({
   front:{
     position: 'absolute',
     top:300,
-    left: (375-50)/2,
+    left: (width-50)/2,
     width: 50,
     height:50,
     zIndex: 1,

@@ -41,7 +41,10 @@ import {
 } from './user'
 
 
-import { watchSearch } from './search';
+import { 
+	watchSearch,
+	watchNodeSearch,
+} from './search';
 
 import { 
 	watchFetchNewTopic,
@@ -50,7 +53,7 @@ import {
 
 import {
 	watchRecentTopic,
-} from './recent'
+} from './recent';
 
 export default function* rootSaga(){
 	yield[
@@ -86,6 +89,7 @@ export default function* rootSaga(){
 		fork(watchBlockUser),
 
 		fork(watchSearch),
+		fork(watchNodeSearch),
 
 		fork(watchFetchNewTopic),
 		fork(watchPostNewTopic),

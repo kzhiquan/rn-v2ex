@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as searchCreators from '../actions/search';
+import * as searchCreators from '../../actions/search';
 
-import SearchPage from '../pages/SearchPage';
+import SearchPage from '../../pages/home/SearchPage';
 
 class SearchContainer extends React.Component {
   render() {

@@ -38,16 +38,35 @@ export function searchPageClose(){
 }
 
 
-export function addSearchHistory(searchText){
+export function addSearchHistory(searchTarget, searchText){
 	return {
 		type : types.ADD_SEARCH_HISTORY,
+		searchTarget,
 		searchText,
 	}
 }
 
-export function removeSearchHistory(searchText){
+export function removeSearchHistory(searchTarget, searchText){
 	return {
 		type : types.REMOVE_SEARCH_HISTORY,
+		searchTarget,
 		searchText,
+	}
+}
+
+
+export function startNodeSearch(searchText, nodeList){
+	return {
+		type : types.START_NODE_SEARCH,
+		searchText,
+		nodeList,
+	}
+}
+
+export function endNodeSearch(searchText, nodeList){
+	return {
+		type: types.END_NODE_SEARCH,
+		searchText,
+		nodeList,
 	}
 }

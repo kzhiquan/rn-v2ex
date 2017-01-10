@@ -6,7 +6,12 @@ const initialState = {
 	isRefreshing : false,
 	isLoadingMore : false,
 	searchResult : null,
-	history : [],
+	nodeList : [],
+	searchNodeResult:[],
+	history : {
+		topic: [],
+		node : [],
+	},
 }
 
 
@@ -43,6 +48,18 @@ export default function search(state = initialState, action){
 				searchResult : null,
 			})
 
+		case types.START_NODE_SEARCH:
+			return Object.assign({}, state, { 
+				isSearching : true,
+			});
+
+		case types.END_NODE_SEARCH:
+			return Object.assign({}, state, { 
+				isSearching : false,
+				nodeList : action.nodeList,
+				searchNodeResult : findNode(state, action),
+			});
+
 		case types.ADD_SEARCH_HISTORY:
 			return Object.assign({}, state, {
 				history : addHistory(state, action),
@@ -59,7 +76,11 @@ export default function search(state = initialState, action){
 				isRefreshing:false,
 				isLoadingMore:false,
 				searchResult : null,
-				history : action.payload.search ? action.payload.search.history : [],
+				//history : action.payload.search ? action.payload.search.history : {},
+				history : {
+					topic: [],
+					node : [],
+				}
 			});
 		default:
 			return state;
@@ -86,13 +107,42 @@ function loadMore(state, action) {
 }
 
 function addHistory(state, action){
-	let exist = state.history.find((text) => text === action.searchText);
+	let searchTargethistory = state.history[action.searchTarget]
+	let exist = searchTargethistory.find((text) => text === action.searchText);
 	if(!exist){
-		state.history.unshift(action.searchText);
+		searchTargethistory.unshift(action.searchText);
+		state.history[action.searchTarget] = searchTargethistory;
 	}
 	return state.history;
 }
 
 function removeHistory(state, action){
-	return state.history.filter( item => item !== action.searchText );
+	console.log('state', state, 'action', action, 'history', state.history);
+	let searchTargethistory = state.history[action.searchTarget]
+	state.history[action.searchTarget] =  searchTargethistory.filter( item => item !== action.searchText );
+	return state.history;
 }
+
+
+function findNode(state, action){
+
+	if(!action.nodeList){
+		return [];
+	}
+
+	return action.nodeList.filter( node => {
+		let reg = new RegExp(action.searchText, 'i');
+		return reg.test(node.name);
+	});
+}
+
+
+
+
+
+
+
+
+
+
+

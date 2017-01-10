@@ -12,9 +12,8 @@ import {
 
 import NavigationBar from 'react-native-navbar';
 
-import SearchContainer from '../../containers/SearchContainer';
+import SearchContainer from '../../containers/home/SearchContainer';
 import TopicListTableView from '../../components/TopicListTableView';
-
 
 class HomePage extends React.Component {
 
