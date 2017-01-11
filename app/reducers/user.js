@@ -20,7 +20,12 @@ const initialState = {
 	isReplyListLoading : false,
 	isReplyListLoadingMore : false,
 	replyList : null,
-
+	replyListExt:{
+		isLoading : false,
+		isRefreshing : false,
+		isLoadingMore : false,
+		list : [],
+	},
 }
 
 export default function user(state = initialState, action){
@@ -34,56 +39,75 @@ export default function user(state = initialState, action){
 			return Object.assign({}, state, { 
 				isLoading : false,
 				user : action.user,
+				topicListExt : Object.assign({}, state.topicListExt, {
+					list : receiveUserAvatarToTopicList(state, action),
+				}),
+				replyListExt : Object.assign({}, state.topicListExt, {
+					list : receiveUserAvatarToReplyList(state, action),
+				}),
 			} );
 
 		case types.REQUEST_USER_TOPIC_LIST:
-			/*if (action.page == 1 ){
-				return Object.assign({}, state, {
-					isTopicListLoading : true,
-				});
-			}else{
-				return Object.assign({}, state, {
-					isTopicListLoadingMore : true,
-				});
-			}*/
 			return Object.assign({}, state, {
-				topicListExt : {
-					isLoading : true,
-				}
+				topicListExt : Object.assign({}, state.topicListExt, {
+					isLoading:true,
+				})
+			})
+
+		case types.REFHRES_USER_TOPIC_LIST:
+			return Object.assign({}, state, {
+				topicListExt : Object.assign({}, state.topicListExt, {
+					isRefreshing:true,
+				})
+			})
+
+		case types.LOAD_MORE_USER_TOPIC_LIST:
+			return Object.assign({}, state, {
+				topicListExt : Object.assign({}, state.topicListExt, {
+					isLoadingMore:true,
+				})
 			})
 
 		case types.RECEIVE_USER_TOPIC_LIST:
-			/*return Object.assign({}, state, {
-				isTopicListLoading : false,
-				isTopicListLoadingMore : false,
-				//topicList: state.isTopicListLoadingMore ? loadMoreTopic(state, action) : combineTopic(state, action),
-			});*/
 			return Object.assign({}, state, {
-				topicListExt : {
+				topicListExt : Object.assign({}, state.topicListExt, {
 					isLoading : false,
 					isRefreshing : false,
 					isLoadingMore : false,
-					list : action.list,
-				}
+					list : receiveListAvatarToList(state, action),
+				})
 			})
 
 		case types.REQUEST_USER_REPLY_LIST:
-			if (action.page == 1){
-				return Object.assign({}, state, {
-					isReplyListLoading : true,
-				});	
-			}else{
-				return Object.assign({}, state, {
-					isReplyListLoadingMore : true,
+			return Object.assign({}, state, {
+				replyListExt : Object.assign({}, state.replyListExt, {
+					isLoading:true,
 				})
-			}
+			})
+
+		case types.REFHRES_USER_REPLY_LIST:
+			return Object.assign({}, state, {
+				replyListExt : Object.assign({}, state.replyListExt, {
+					isRefreshing:true,
+				})
+			})
+
+		case types.LOAD_MORE_USER_REPLY_LIST:
+			return Object.assign({}, state, {
+				replyListExt : Object.assign({}, state.replyListExt, {
+					isLoadingMore:true,
+				})
+			})
 
 		case types.RECEIVE_USER_REPLY_LIST:
 			return Object.assign({}, state, {
-				isReplyListLoading : false,
-				isReplyListLoadingMore : false,
-				replyList: state.isReplyListLoadingMore ? loadMoreReply(state, action) : combineReply(state, action),
-			});
+				replyListExt : Object.assign({}, state.replyListExt, {
+					isLoading : false,
+					isRefreshing : false,
+					isLoadingMore : false,
+					list : receiveListAvatarToList(state, action),
+				})
+			})
 
 		case types.REQUEST_FOCUS_USER:
 			return Object.assign({}, state, {
@@ -106,12 +130,46 @@ export default function user(state = initialState, action){
 			})
 
 		case REHYDRATE:
-			return Object.assign({}, state, action.payload.user, initialState);
+			return Object.assign({}, state, action.payload.user,{
+				topicListExt:{
+					isLoading : false,
+					isRefreshing : false,
+					isLoadingMore : false,
+					list : [],
+				},
+			});
 
 		default:
 			return state;
 	}
 }
+
+
+function receiveListAvatarToList(state, action){
+
+	if(!state.user) return action.list;
+
+	return  action.list.map( (topic, index, arr) => {
+				topic.member_avatar = state.user.member_avatar;
+				return topic;
+			});
+
+}
+
+function receiveUserAvatarToTopicList(state, action){
+	return state.topicListExt.list.map( (topic, index, arr)=> {
+				topic.member_avatar = action.user.member_avatar;
+				return topic;
+		   });
+}
+
+function receiveUserAvatarToReplyList(state, action){
+	return state.replyListExt.list.map( (topic, index, arr)=> {
+				topic.member_avatar = action.user.member_avatar;
+				return topic;
+		   });
+}
+
 
 
 function combineTopic(state, action) {

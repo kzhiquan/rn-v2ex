@@ -304,30 +304,33 @@ class UserPage extends React.Component {
 
     _renderUserMeta(){
     	let user = this.props.user.user;
-    	return (
-			<View style={styles.userMetaContainer}>
-				<Image 
-					style={styles.avatar_size_72}
-					source={{uri:user.member_avatar}} 
-				/>
-				<View style={{marginTop:12}}>
-					<Text style={{fontSize:16}}>{user.member_name}</Text>
-				</View>
-				<View style={styles.metaTextContainer}>
-					<View style={[styles.directionRow, {marginTop:4}]}>
-						<View>
-							<Text style={styles.metaTextStyle}>{user.member_date.substr(3, 10) + '注册'}</Text>
+    	//console.log('user', user);
+    	if(user){
+	    	return (
+				<View style={styles.userMetaContainer}>
+					<Image 
+						style={styles.avatar_size_72}
+						source={{uri:user.member_avatar}} 
+					/>
+					<View style={{marginTop:12}}>
+						<Text style={{fontSize:16}}>{user.member_name}</Text>
+					</View>
+					<View style={styles.metaTextContainer}>
+						<View style={[styles.directionRow, {marginTop:4}]}>
+							<View>
+								<Text style={styles.metaTextStyle}>{user.member_date.substr(3, 10) + '注册'}</Text>
+							</View>
+							<View>
+								<Text style={styles.metaTextStyle}>{user.member_num.substr(7)}</Text>
+							</View>
 						</View>
-						<View>
-							<Text style={styles.metaTextStyle}>{user.member_num.substr(7)}</Text>
+						<View style={{marginTop:4}}>
+							<Text style={styles.metaTextStyle}>{'今日活跃度' + user.active_num}</Text>
 						</View>
 					</View>
-					<View style={{marginTop:4}}>
-						<Text style={styles.metaTextStyle}>{'今日活跃度' + user.active_num}</Text>
-					</View>
 				</View>
-			</View>
-    	)
+	    	)
+    	}
     }
 
     _renderScrollTableBar(){
@@ -340,9 +343,9 @@ class UserPage extends React.Component {
   	}
 
   	_renderTopicReplyTableView(){
-		const { userActions, route, user} = this.props;
+		const { userActions, route, user, navigator} = this.props;
 		let userTopicListPath = route.path + '/topics';
-		console.log('userTopicListPath', userTopicListPath);
+		//console.log('userTopicListPath', userTopicListPath);
 		return (
 			<ScrollableTabView
 	          initialPage={0}
@@ -353,10 +356,11 @@ class UserPage extends React.Component {
 	          >
 
 				<TopicListTableView
+					navigator = {navigator}
 					actions = {{
 						load : userActions.requestUserTopicList,
-						refresh : userActions.requestUserTopicList,
-						loadMore : userActions.requestUserTopicList,
+						refresh : userActions.refreshUserTopicList,
+						loadMore : userActions.loadMoreUserTopicList,
 					}}
 					payload = {user.topicListExt}
 					path={userTopicListPath}
@@ -377,27 +381,6 @@ class UserPage extends React.Component {
 		//console.log('this', this);
 		const { user, navigator } = this.props;
 
-
-		let rows = {
-			'account' : [],
-			'activity' : [null]
-		}
-
-		if(user.user){
-			rows['account'] = [user.user];
-
-		}
-
-		if(user.topicList && this.state.topicShowing){
-			rows['activity'] = user.topicList.topicList; 
-		}
-
-		if(user.replyList && !this.state.topicShowing){
-			rows['activity'] = user.replyList.replyList;
-		}
-
-
-		//console.log('rows', rows);
 		return (
 			<View style={styles.container}>
 
@@ -407,7 +390,7 @@ class UserPage extends React.Component {
 				{ this._renderTopicReplyTableView()}
 
 				<ActivityIndicator
-		            animating={ user.isLoading || user.isTopicListLoading }
+		            animating={ user.isLoading }
 		            style={styles.front}
 		            size="large"
 		        />

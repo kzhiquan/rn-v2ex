@@ -35,6 +35,24 @@ export function requestUserTopicList(list, path, page=1){
 	}
 }
 
+export function refreshUserTopicList(list, path, page=1){
+	return {
+		type: types.REFRESH_USER_TOPIC_LIST,
+		list,
+		path, 
+		page
+	}
+}
+
+export function loadMoreUserTopicList(list, path, page=1){
+	return {
+		type: types.LOAD_MORE_USER_TOPIC_LIST,
+		list,
+		path, 
+		page
+	}
+}
+
 
 export function receiveUserTopicList(list){
 	return {
@@ -44,18 +62,37 @@ export function receiveUserTopicList(list){
 }
 
 
-export function requestUserReplyList(path, page=1){
+export function requestUserReplyList(list, path, page=1){
 	return {
 		type : types.REQUEST_USER_REPLY_LIST,
+		list,
 		path, 
 		page,
 	}
 }
 
-export function receiveUserReplyList(replyList){
+export function refreshUserReplyList(list, path, page=1){
+	return {
+		type : types.REFRESH_USER_REPLY_LIST,
+		list,
+		path, 
+		page,
+	}
+}
+
+export function loadMoreUserReplyList(list, path, page=1){
+	return {
+		type : types.LOAD_MORE_USER_REPLY_LIST,
+		list
+		path, 
+		page,
+	}
+}
+
+export function receiveUserReplyList(list){
 	return {
 		type : types.RECEIVE_USER_REPLY_LIST,
-		replyList : replyList,
+		list,
 	}
 }
 

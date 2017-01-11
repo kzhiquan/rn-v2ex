@@ -128,5 +128,21 @@ export function parseUserTopicList($){
 	return topicList;
 }
 
+export function parseUserReplyList($){
+	let replyList = [];
+	$('.box').children('.dock_area').each(function(i, el){
+		let reply = {};
+		reply.topic = {};
+		reply.date = $(this).find('.fr span').first().text();
+		reply.topic.topic_title = $(this).find('.gray').first().text();
+		reply.topic.topic_url = $(this).find('.gray a').first().attr('href');
+		reply.content = $(this).next('div').find('.reply_content').first().html();
+		if(reply.topic.topic_title){
+			replyList.push(reply);
+		}
+	});
+	return replyList;
+}
+
 
 

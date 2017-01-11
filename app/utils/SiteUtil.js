@@ -1053,7 +1053,7 @@ export function fetchUserTopicList(list, path, page=1){
 					newTopicList.splice(0, list.length-foundIndex);
 				}
 
-				list = wrapList.list.concat(newTopicList);
+				list = list.concat(newTopicList);
 			}
 			resolve(list);
 
@@ -1065,7 +1065,7 @@ export function fetchUserTopicList(list, path, page=1){
 	});	
 }
 
-export function fetchUserReplyList(path, page=1){
+export function fetchUserReplyList(list, path, page=1){
 	//path = '/member/jianghu521';
 	//page = 3;
 	let myTopicUrl = SITE.HOST + path + '/replies?p=' + page;
@@ -1081,7 +1081,7 @@ export function fetchUserReplyList(path, page=1){
 		})
 		.then((body) => {
 			//console.log('body', body);
-			let replyList = [];
+			/*let replyList = [];
 			const $ = cheerio.load(body);
 			$('.box').children('.dock_area').each(function(i, el){
 				let reply = {};
@@ -1100,7 +1100,26 @@ export function fetchUserReplyList(path, page=1){
 				replyList : replyList,
 				total_count : total_count,
 			}
-			resolve(result);
+			resolve(result);*/
+			const $ = cheerio.load(body);
+			let newReplyList = API.parseUserReplyList($);
+			if( page == 1 ){
+				list = [].concat(newReplyList);
+			}else{
+
+				let firstNewReply = newReplyList[0];
+				let foundIndex = list.findIndex( (reply, index, arr)=> {
+					return reply.topic.topic_url.split('#')[0] == firstNewReply.topic.topic_url.split('#')[0];
+				});
+
+				if(foundIndex >= 0){
+					newReplyList.splice(0, list.length-foundIndex);
+				}
+
+				list = list.concat(newReplyList);
+			}
+			resolve(list);
+
 		})
 		.catch( (error) => {
 			console.log(error);

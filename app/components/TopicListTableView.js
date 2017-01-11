@@ -110,21 +110,22 @@ class TopicListTableView extends React.Component {
   }
 
   onEndReached() {
+    console.log('onEndReached');
     const time = Date.parse(new Date()) / 1000;
     if (canLoadMore && time - loadMoreTime > 1) {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
 
       const { actions, payload, path } = this.props;
-      if(this._isCurrentPageFilled()){
+      //if(this._isCurrentPageFilled()){
         page += 1;
-      }
+      //}
       actions.loadMore(payload.list, path, page);
     }
   }
 
   render() {
-
+    //console.log('this.props:', this.props);
     return (
       <View style={styles.container}>
 
