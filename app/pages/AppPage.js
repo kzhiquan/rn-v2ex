@@ -32,6 +32,7 @@ class App extends React.Component{
 	}
 
 	configureScene(route, routeStack){
+		console.log('route', route, routeStack);
 		switch(route.name){
 			case 'ReplyTopicPage' :
 				return Navigator.SceneConfigs.FloatFromBottom;

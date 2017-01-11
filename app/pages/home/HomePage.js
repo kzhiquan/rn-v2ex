@@ -19,6 +19,8 @@ import NameGotoTableItem from '../../components/NameGotoTableItem';
 import SearchContainer from '../../containers/home/SearchContainer';
 import TopicListTableView from '../../components/TopicListTableView';
 import NewTopicTitlePage from './NewTopicTitlePage';
+import AddAccountContainer from '../../containers/auth/AddAccountContainer';
+
 
 import AccountTableItem from '../../components/AccountTableItem';
 import AddAccountTableItem from '../../components/AddAccountTableItem'
@@ -42,41 +44,57 @@ class HomePage extends React.Component {
   componentDidMount() {
   }
 
-  _onTopViewClick(){
-    console.log('onTopViewClick');
-    this.setState({isAccoutPopoverVisible: false});
-  }
-
   _onAccountPopoverClick(){
-    console.log('_onAccountPopoverClick');
+    //console.log('_onAccountPopoverClick');
     let isVisible = !this.state.isAccoutPopoverVisible;
     this.setState({isAccoutPopoverVisible: isVisible});
   }
 
   _onSearchClick(){
-    console.log('_onSearchClick');
+    //console.log('_onSearchClick');
     const { navigator } = this.props;
     navigator.push({
       component : SearchContainer,
       name : 'searchPage'
     });
+    this.setState({isAccoutPopoverVisible:false});
   }
 
   _onNewTopicClick(){
-    console.log('_onNewTopicClick');
+    //console.log('_onNewTopicClick');
     const { navigator } = this.props;
     navigator.push({
       component : NewTopicTitlePage,
       name : 'NewTopicTitlePage',
     });
+    this.setState({isAccoutPopoverVisible:false});
   }
 
   _onAddAccountClick(){
-    console.log("_onAddAccountClick");
+
+    //console.log("_onAddAccountClick");
+    const { navigator } = this.props;
+    navigator.push({
+      component : AddAccountContainer,
+      name : 'AddAcountPage',
+    });
+
+    this.setState({isAccoutPopoverVisible:false});
   }
 
-  _onAccountClick(){
-    console.log("_onAccountClick");
+  _onChangeAccountClick(item){
+
+    //console.log("_onChangeAccountClick");
+    const { auth, authActions } = this.props;
+    if( !auth.user || (auth.user && auth.user.name != item.name)) {
+      authActions.changeUser(item);
+      this.setState({isAccoutPopoverVisible:false});
+    }
+
+  }
+
+  _setPopoverAccountUnvisible(){
+    this.setState({isAccoutPopoverVisible:false});
   }
 
   _renderAccoutItem(item, sectionID, rowID, highlightRow){
@@ -85,13 +103,13 @@ class HomePage extends React.Component {
     if(!this.state.edit && auth.user && auth.user.name == item.name){
       checkFlag = true;
     }
-    console.log('item', item, 'checkFlag', checkFlag);
+    //console.log('item', item, 'checkFlag', checkFlag);
 
     if(item.name == '添加账户'){
       return (
           <AddAccountTableItem 
             item={item} 
-            onClick={this._onAddAccountClick}
+            onClick={()=>this._onAddAccountClick()}
           /> 
         )
     }else{
@@ -99,11 +117,10 @@ class HomePage extends React.Component {
           <AccountTableItem
             item={item}
             checkFlag={checkFlag}
-            onClick={this._onAccountClick}
+            onClick={()=>this._onChangeAccountClick(item)}
           />
         )
     }
-
   } 
 
   _renderAccoutPopover(){
@@ -120,14 +137,7 @@ class HomePage extends React.Component {
             style={{left:10}} 
             source={require('../../static/imgs/popover_triangle.png')}
           />
-          <View style={{
-              backgroundColor:'#EFEFF4',
-              width:width*0.77, 
-              borderRadius:8, 
-              paddingTop:22,
-              paddingBottom:22,
-            }}
-          >
+          <View style={styles.popoverAcountList}>
             <ListView
               style={{backgroundColor:'white'}}
               initialListSize = {5}
@@ -153,7 +163,10 @@ class HomePage extends React.Component {
     };
 
     return (
-      <View style={styles.container}>
+      <View 
+        style={styles.container}
+        onResponderRelease = {this._setPopoverAccountUnvisible.bind(this)}
+        onStartShouldSetResponder={()=>true}>
         <NavigationBar
           style={styles.navigatorBarStyle}
           title={titleConfig}
@@ -184,9 +197,16 @@ class HomePage extends React.Component {
             loadMore : recentActions.requestMoreRecentTopic,
           }}
           payload = {recent}
+          onClick = {()=>this._setPopoverAccountUnvisible()}
         />
 
         {this.state.isAccoutPopoverVisible && this._renderAccoutPopover()}
+
+        <ActivityIndicator
+          animating={ auth.isLoading }
+          style={styles.front}
+          size="large"
+        />
 
       </View>
     );
@@ -231,6 +251,23 @@ const styles = StyleSheet.create({
     left: 36,
     zIndex: 1,
     //backgroundColor:'#EFEFF4',
+  },
+
+  popoverAcountList:{
+    backgroundColor:'#EFEFF4',
+    width:width*0.77, 
+    borderRadius:8, 
+    paddingTop:22,
+    paddingBottom:22,
+  },
+
+  front:{
+    position: 'absolute',
+    top:300,
+    left: (width-50)/2,
+    width: 50,
+    height:50,
+    zIndex: 1,
   },
 
 

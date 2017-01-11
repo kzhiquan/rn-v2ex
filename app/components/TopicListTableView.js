@@ -40,22 +40,25 @@ class TopicListTableView extends React.Component {
   }
 
 
-  _onTopicClick(){
-    const { topic, navigator } = this;
+  _onTopicClick(topic){
+    const { navigator } = this.props;
     navigator.push({
       component : TopicContainer,
       name : 'TopicPage',
       topic : topic,
     });
+    this.props.onClick();
   }
 
-  _onUserClick(){
-    const { navigator, path } = this;
+  _onUserClick(topic){
+    const { navigator } = this.props;
     navigator.push({
       component : UserContainer,
       name : 'UserPage', 
-      path : path,
+      path : topic.member_url,
     });
+
+    this.props.onClick();
   }
 
   renderItem(item) {
@@ -64,8 +67,8 @@ class TopicListTableView extends React.Component {
         <TopicTableItem 
           topic = {item}
           navigator = {navigator}
-          onTopicClick = {this._onTopicClick}
-          onUserClick = {this._onUserClick}
+          onTopicClick = {()=>this._onTopicClick(item)}
+          onUserClick = {()=>this._onUserClick(item)}
         />
       )
   }
@@ -160,6 +163,7 @@ class TopicListTableView extends React.Component {
 TopicListTableView.propTypes = {
 
   navigator : React.PropTypes.object,
+  onClick : React.PropTypes.func,
 
   actions : React.PropTypes.shape({
     load : React.PropTypes.func,

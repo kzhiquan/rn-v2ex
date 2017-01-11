@@ -26,10 +26,10 @@ class MainPage extends React.Component{
 
 	_onChangeTab(transition){
 		console.log('transition', transition);
-		if(transition.i == 3){
+		/*if(transition.i == 3){
 			const{ authActions, auth } = this.props;
 			authActions.requestUserMeta(auth.user);
-		}
+		}*/
 	}
 
 	render(){

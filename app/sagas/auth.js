@@ -16,6 +16,9 @@ import {
 	endChangeUser,
 	endAddAccount,
 	endRequestUserMeta,
+	requestUserMeta,
+	requestMyNotification,
+	requestMyFocusPerson,
 } from '../actions/auth';
 
 import {
@@ -144,17 +147,22 @@ export function* watchAuthReply(){
 function* changeUserSagas(newUser){
 
 	try{
-		const result = yield call(login, newUser.name, newUser.password);
-		if(!result){
-			toastShort('切换失败，请检查用户名／密码！');
+		const {user, categoryNodeList} = yield call(login, newUser.name, newUser.password);
+		console.log('changeUser result user', user);
+		if(!user){
+			toastShort('切换失败');
 		}else{
-			toastShort('切换成功！');
+			toastShort('切换成功');
 			//yield put(userLogin(user));
+			yield put(endChangeUser(user));
+			yield put(requestUserMeta(user));
+			yield put(requestMyNotification());
+			yield put(requestMyFocusPerson());
 		}
 
-		const { user, categoryNodeList } = result;
+		
 
-		yield put(endChangeUser(user));
+
 
 	} catch (error){
 		console.log('error', error);
@@ -180,14 +188,13 @@ function* checkUser(name, password){
 	try{
 
 		//yield put(userCheckStart());
-		const result = yield call(login, name, password);
-		if(!result){
-			toastShort('添加失败，检查用户名密码！');
+		let {user, categoryNodeList} = yield call(login, name, password);
+		if(!user){
+			toastShort('添加失败！');
 			yield put(endAddAccount());
 		}else{
 			toastShort('添加成功！');
 			//yield put(userLogin(user));
-			let { user, categoryNodeList } = result;
 			//console.log('user', user, categoryNodeList);
 			user.name = name;
 			user.password = password;

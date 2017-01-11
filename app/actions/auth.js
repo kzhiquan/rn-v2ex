@@ -170,7 +170,7 @@ export function receiveMyFavoriteTopic(topicList, totalCount){
 
 
 //the focus person topic the login user interested.
-export function requestMyFocusPerson(path){
+export function requestMyFocusPerson(path='/my/following'){
 	return {
 		type: types.REQUEST_MY_FOCUS_PERSON,
 		path

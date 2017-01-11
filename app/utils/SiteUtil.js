@@ -523,7 +523,8 @@ export function loginWithToken(token, url){
 				let user = API.parseUser($);
 				let categoryNodeList = API.parseCategoryNode($);
 				
-				resolve({user, categoryNodeList});   
+				resolve({user, categoryNodeList}); 
+				//resolve(user);  
 			}
 		})
 		.catch( (error) => {
@@ -548,7 +549,7 @@ export async function login(name, password){
 	console.log(token);
 
 	let result = await loginWithToken(token, url);
-	//console.log('result', result);
+	console.log('result', result);
 
 	return result;
 

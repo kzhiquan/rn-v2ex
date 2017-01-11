@@ -26,8 +26,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   const recentActions = bindActionCreators(recentCreators, dispatch);
+  const authActions = bindActionCreators(authCreators, dispatch);
   return {
-    recentActions
+    recentActions,
+    authActions,
   };
 };
 
