@@ -6,10 +6,7 @@ const initialState = {
 	isLoading : false,
 	isRefreshing : false,
 	isLoadingMore : false,
-	wrapList : {
-		list : [],
-		path : '/recent',
-	}
+	list : [],
 }
 
 
@@ -37,7 +34,7 @@ export default function recent(state = initialState, action){
 				isRefreshing : false,
 				isLoading : false,
 				isLoadingMore : false,
-				wrapList : action.wrapList,
+				list : action.list,
 			} );
 
 		case REHYDRATE:

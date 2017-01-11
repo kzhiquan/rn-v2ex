@@ -5,16 +5,16 @@ import * as API from '../api/API'
 import SITE from '../constants/Config'
 
 
-export function fetchTopicListExt(wrapList, page=1){
+export function fetchTopicListExt(list, path, page=1){
   return new Promise((resolve, reject) => {
 
-  	let url = SITE.HOST + wrapList.path;
-  	console.log('url', url);
-  	if(wrapList.path.indexOf('?') == -1){
-  		url = SITE.HOST + wrapList.path + '?p=' + page;
+  	let url = SITE.HOST + path;
+  	console.log('url1', url);
+  	if(path.indexOf('?') == -1){
+  		url = SITE.HOST + path + '?p=' + page;
   	}
 
-  	console.log('url', url);
+  	console.log('url2', url);
   	
     fetch(url)
       .then((response) => {
@@ -25,21 +25,22 @@ export function fetchTopicListExt(wrapList, page=1){
 		const $ = cheerio.load(body);
 		let newTopicList = API.parseRecentTopicList($);
 		if( page == 1 ){
-			wrapList.list = [].concat(newTopicList);
+			list = [].concat(newTopicList);
 		}else{
 
 			let firstNewTopic = newTopicList[0];
-			let foundIndex = wrapList.list.findIndex( (topic, index, arr)=> {
+			let foundIndex = list.findIndex( (topic, index, arr)=> {
 				return topic.topic_url.split('#')[0] == firstNewTopic.topic_url.split('#')[0];
 			});
 
 			if(foundIndex >= 0){
-				newTopicList.splice(0, wrapList.list.length-foundIndex);
+				newTopicList.splice(0, list.length-foundIndex);
 			}
 
-			wrapList.list = wrapList.list.concat(newTopicList);
+			list = list.concat(newTopicList);
 		}
-		resolve(wrapList);
+		resolve(list);
+
       })
       .catch((error) => {
         reject(error);
@@ -988,9 +989,9 @@ export function fetchUser(path){
 	});
 }
 
-export function fetchUserTopicList(path, page=1){
-	let myTopicUrl = SITE.HOST + path + '/topics?p=' + page;
-	//console.log('myTopicUrl:', myTopicUrl);
+export function fetchUserTopicList(list, path, page=1){
+	let myTopicUrl = SITE.HOST + path + '?p=' + page;
+	console.log('myTopicUrl:', myTopicUrl);
 	return new Promise( (resolve, reject) => {
 
 		fetch(myTopicUrl, {
@@ -1002,9 +1003,7 @@ export function fetchUserTopicList(path, page=1){
 		})
 		.then((body) => {
 			//console.log('body', body);
-			let topicList = []
-			const $ = cheerio.load(body);
-			$('.box').children('.item').each(function(i, el){
+			/*$('.box').children('.item').each(function(i, el){
 				//console.log(i);
 				topic = {}
 				topic.member_url = $(this).find('.small strong a').first().attr('href');
@@ -1027,7 +1026,9 @@ export function fetchUserTopicList(path, page=1){
 				topic.reply_url = $(this).find('td[width="70"] a').first().attr('href');
 
 				topicList.push(topic);
+
 			});
+
 			//console.log('topics length:', topics.length);
 			let total_count = $('#Main .header .fr .gray').first().text();
 
@@ -1035,7 +1036,27 @@ export function fetchUserTopicList(path, page=1){
 				topicList : topicList,
 				total_count : total_count,
 			}
-			resolve(result);
+			resolve(result);*/
+
+			const $ = cheerio.load(body);
+			let newTopicList = API.parseUserTopicList($);
+			if( page == 1 ){
+				list = [].concat(newTopicList);
+			}else{
+
+				let firstNewTopic = newTopicList[0];
+				let foundIndex = list.findIndex( (topic, index, arr)=> {
+					return topic.topic_url.split('#')[0] == firstNewTopic.topic_url.split('#')[0];
+				});
+
+				if(foundIndex >= 0){
+					newTopicList.splice(0, list.length-foundIndex);
+				}
+
+				list = wrapList.list.concat(newTopicList);
+			}
+			resolve(list);
+
 		})
 		.catch( (error) => {
 			console.log(error);

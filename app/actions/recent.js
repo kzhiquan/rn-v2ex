@@ -1,31 +1,33 @@
 import * as types from '../constants/ActionTypes';
 
 //the topic which the user created.
-export function requestRecentTopic(wrapList){
+export function requestRecentTopic(list, path='/recent'){
 	return {
 		type: types.REQUEST_RECENT_TOPIC,
-		wrapList,
+		list,
+		path,
 	}
 }
 
-export function refreshRecentTopic(wrapList){
+export function refreshRecentTopic(list, path='/recent'){
 	return {
 		type : types.REFRESH_RECENT_TOPIC,
-		wrapList,
+		list,
+		path,
 	}
 }
 
-export function requestMoreRecentTopic(wrapList, page){
+export function requestMoreRecentTopic(list, path='/recent', page=1){
 	return {
 		type : types.REQUEST_MORE_RECENT_TOPIC,
-		wrapList, 
+		list, 
 		page,
 	}
 }
 
-export function receiveRecentTopic(wrapList){
+export function receiveRecentTopic(list){
 	return {
 		type : types.RECEIVE_RECENT_TOPIC,
-		wrapList,
+		list,
 	}
 }

@@ -151,6 +151,7 @@ function* changeUserSagas(newUser){
 		console.log('changeUser result user', user);
 		if(!user){
 			toastShort('切换失败');
+			yield put(endChangeUser());
 		}else{
 			toastShort('切换成功');
 			//yield put(userLogin(user));
@@ -159,11 +160,7 @@ function* changeUserSagas(newUser){
 			yield put(requestMyNotification());
 			yield put(requestMyFocusPerson());
 		}
-
 		
-
-
-
 	} catch (error){
 		console.log('error', error);
 		toastShort('网络发生错误，请重试');

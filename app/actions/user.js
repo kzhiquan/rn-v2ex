@@ -18,19 +18,28 @@ export function receiveUser(user){
 }
 
 
-export function requestUserTopicList(path, page=1){
+/*export function requestUserTopicList(path, page=1){
 	return {
 		type : types.REQUEST_USER_TOPIC_LIST,
 		path,
 		page,
 	}
+}*/
+
+export function requestUserTopicList(list, path, page=1){
+	return {
+		type: types.REQUEST_USER_TOPIC_LIST,
+		list,
+		path, 
+		page
+	}
 }
 
 
-export function receiveUserTopicList(topicList){
+export function receiveUserTopicList(list){
 	return {
 		type : types.RECEIVE_USER_TOPIC_LIST,
-		topicList:topicList,
+		list,
 	}
 }
 

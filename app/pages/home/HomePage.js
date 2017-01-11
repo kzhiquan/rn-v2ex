@@ -197,6 +197,7 @@ class HomePage extends React.Component {
             loadMore : recentActions.requestMoreRecentTopic,
           }}
           payload = {recent}
+          path = '/recent'
           onClick = {()=>this._setPopoverAccountUnvisible()}
         />
 

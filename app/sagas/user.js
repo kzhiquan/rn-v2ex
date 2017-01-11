@@ -52,22 +52,32 @@ export function* watchUser(){
 
 
 
-function* fetchUserTopicListSagas(path, page){
+function* fetchUserTopicListSagas(list, path, page){
 	try{
 		//console.log('path', path, 'page', page);
-		const userTopicListReceived = yield call(fetchUserTopicList, path, page); 
+		/*const userTopicListReceived = yield call(fetchUserTopicList, wrapList, page); 
 		//console.log('userTopicListReceived', userTopicListReceived)
 		if( typeof(userTopicListReceived) !== 'object' ){
 			toastShort(userTopicListReceived);
 			yield put(receiveUserTopicList());
 		}else{
 			yield put(receiveUserTopicList(userTopicListReceived));
-		}
+		}*/
+		console.log('list', list, path, page);
+		const result = yield call(fetchUserTopicList, list, path, page); 
+
+		console.log('result', result);
+
+		yield put(receiveUserTopicList(result));
+
 
 	} catch ( error ){
 		console.log('error:', error);
+		//toastShort('网络发生错误，请重试');
+		//yield put(receiveUserTopicList());
+
+		yield put(receiveUserTopicList(list));
 		toastShort('网络发生错误，请重试');
-		yield put(receiveUserTopicList());
 	}
 }
 
@@ -75,8 +85,8 @@ function* fetchUserTopicListSagas(path, page){
 
 export function* watchUserTopicList(){
 	while (true) {
-		const { path, page } = yield take(types.REQUEST_USER_TOPIC_LIST);
-		yield fork(fetchUserTopicListSagas, path, page);
+		const { list, path, page } = yield take(types.REQUEST_USER_TOPIC_LIST);
+		yield fork(fetchUserTopicListSagas, list, path, page);
 	}
 }
 

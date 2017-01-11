@@ -16,9 +16,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
 
-import { toastShort } from '../utils/ToastUtil';
-import LoadingView from '../components/LoadingView';
+import ScrollableTabView, { ScrollableTabBar, } from 'react-native-scrollable-tab-view';
+
 import TopicContainer from '../containers/TopicContainer';
+import TopicListTableView from '../components/TopicListTableView';
 
 
 const maxHeight = Dimensions.get('window').height;
@@ -45,7 +46,6 @@ class UserPage extends React.Component {
     	replyPage = 1;
 	}
 
-
 	componentWillMount(){
 		console.log('componentWillMount');
 	}
@@ -55,8 +55,8 @@ class UserPage extends React.Component {
 		console.log('this.props', this.props);
 		const { userActions, route } = this.props;
 		userActions.requestUser(route.path);
-		userActions.requestUserTopicList(route.path);
-		userActions.requestUserReplyList(route.path);
+		//userActions.requestUserTopicList(route.path);
+		//userActions.requestUserReplyList(route.path);
 		//userActions.requestUser('/member/justyy');
 		//userActions.requestUserTopicList('/member/justyy');
 		//userActions.requestUserReplyList('/member/justyy');
@@ -153,7 +153,7 @@ class UserPage extends React.Component {
 
 	renderItem(item, sectionID, rowID, highlightRow){
 		if(sectionID === 'account'){
-			return this._renderUserItem(item);
+			//return this._renderUserItem(item);
 		}else if( sectionID === 'activity' && item){
 			if(this.state.topicShowing){
 				return this._renderTopicItem(item);
@@ -254,6 +254,11 @@ class UserPage extends React.Component {
     	userActions.requestBlockUser(user.user);
     }
 
+    _onBackClick(){
+    	const { navigator } = this.props;
+    	navigator.pop();
+    }
+
     _renderNavigator(){
     	const { user, navigator } = this.props;
     	let hasRightButton = false;
@@ -271,37 +276,102 @@ class UserPage extends React.Component {
     		}
     	}
 
-    	let titleConfig = {
-			title: '个人'
-		};
-		var leftButtonConfig = {
-			title: 'Back',
-			handler: function onBack() {
-				navigator.pop();
-			}
-	    };
-
-	    console.log('this', this);
-
 	    return (
-				<NavigationBar
-					title={titleConfig}
-					leftButton={leftButtonConfig}
-		            rightButton={
-		            	hasRightButton ? 
-			            	(<View style={{flexDirection:'row'}}>
-			            		<TouchableOpacity onPress={this._onFocusUser.bind(this)}>
-					                <Icon name={focusIconName} size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
-					            </TouchableOpacity> 
-					            <TouchableOpacity onPress={this._onBlockUser.bind(this)}>
-					                <Icon name={blockIconName} size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
-					            </TouchableOpacity> 
-			            	</View>) : (<View></View>)
-		            }
-				/>
+			<NavigationBar
+				style={styles.navigatorBarStyle}
+				statusBar={{
+		            tintColor : '#FAFAFA'
+		        }}
+				leftButton={
+					<TouchableOpacity onPress={this._onBackClick.bind(this)}>
+            			<Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+          			</TouchableOpacity> 
+				}
+	            rightButton={
+	            	hasRightButton ? 
+		            	(<View style={{flexDirection:'row'}}>
+		            		<TouchableOpacity onPress={this._onFocusUser.bind(this)}>
+				                <Icon name={focusIconName} size={24} style={{marginRight:10, marginTop:12, right:4}} color="blue"/>
+				            </TouchableOpacity> 
+				            <TouchableOpacity onPress={this._onBlockUser.bind(this)}>
+				                <Icon name={blockIconName} size={30} style={{marginRight:10, marginTop:9}} color="blue"/>
+				            </TouchableOpacity> 
+		            	</View>) : (<View></View>)
+	            }
+			/>
 	    )
-
     }
+
+    _renderUserMeta(){
+    	let user = this.props.user.user;
+    	return (
+			<View style={styles.userMetaContainer}>
+				<Image 
+					style={styles.avatar_size_72}
+					source={{uri:user.member_avatar}} 
+				/>
+				<View style={{marginTop:12}}>
+					<Text style={{fontSize:16}}>{user.member_name}</Text>
+				</View>
+				<View style={styles.metaTextContainer}>
+					<View style={[styles.directionRow, {marginTop:4}]}>
+						<View>
+							<Text style={styles.metaTextStyle}>{user.member_date.substr(3, 10) + '注册'}</Text>
+						</View>
+						<View>
+							<Text style={styles.metaTextStyle}>{user.member_num.substr(7)}</Text>
+						</View>
+					</View>
+					<View style={{marginTop:4}}>
+						<Text style={styles.metaTextStyle}>{'今日活跃度' + user.active_num}</Text>
+					</View>
+				</View>
+			</View>
+    	)
+    }
+
+    _renderScrollTableBar(){
+	    return (
+	      <ScrollableTabBar 
+	        tabStyle={{ paddingRight:16, paddingLeft:16}}
+	        tabsContainerStyle={{justifyContent:'center',}}
+	      />
+	    )
+  	}
+
+  	_renderTopicReplyTableView(){
+		const { userActions, route, user} = this.props;
+		let userTopicListPath = route.path + '/topics';
+		console.log('userTopicListPath', userTopicListPath);
+		return (
+			<ScrollableTabView
+	          initialPage={0}
+	          tabBarTextStyle={{fontSize:16}}
+	          tabBarActiveTextColor={'black'}
+	          tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
+	          renderTabBar={this._renderScrollTableBar.bind(this)}
+	          >
+
+				<TopicListTableView
+					actions = {{
+						load : userActions.requestUserTopicList,
+						refresh : userActions.requestUserTopicList,
+						loadMore : userActions.requestUserTopicList,
+					}}
+					payload = {user.topicListExt}
+					path={userTopicListPath}
+					key={0} 
+					tabLabel={'主题'}
+				/>
+
+	          	<View {...this.props} key={1} tabLabel={'回复'} />
+
+	        </ScrollableTabView>
+
+
+		)
+
+  	}
 
 	render() {
 		//console.log('this', this);
@@ -329,10 +399,23 @@ class UserPage extends React.Component {
 
 		//console.log('rows', rows);
 		return (
-			<View style={{flex:1}}>
+			<View style={styles.container}>
 
 				{ this._renderNavigator() }
-    			<ListView
+				{ this._renderUserMeta() }
+
+				{ this._renderTopicReplyTableView()}
+
+				<ActivityIndicator
+		            animating={ user.isLoading || user.isTopicListLoading }
+		            style={styles.front}
+		            size="large"
+		        />
+
+			</View>
+		);
+
+		    			/*<ListView
 					initialListSize = {5}
 					dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
 					renderRow={this.renderItem.bind(this)}
@@ -346,21 +429,62 @@ class UserPage extends React.Component {
       				enableEmptySections = {true}
 					removeClippedSubviews = {false}
 					renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-				/>
-				<ActivityIndicator
-		            animating={ user.isLoading || user.isTopicListLoading }
-		            style={styles.front}
-		            size="large"
-		        />
-
-			</View>
-		);
+				/>*/
   	}
 
 }
 
 
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#BBC5CD';
+let backgroundColor = '#EFEFF4';
+let tabBarUnderlineColor = '#007AFF';
+
 const styles = StyleSheet.create({
+
+	directionRow:{
+		flexDirection : 'row',
+	},
+
+	container : {
+	    flex : 1,
+	    backgroundColor : 'white',
+	},
+
+	navigatorBarStyle:{
+		backgroundColor : '#FAFAFA', 
+		borderBottomWidth : 1,
+		borderBottomColor : borderColor,
+	},
+
+	userMetaContainer:{
+		alignItems:'center',
+		top:12,
+		paddingBottom:12,
+	},
+	avatar_size_72:{
+	    width:72,
+	    height:72,
+	    borderRadius: 8,
+  	},
+
+  	metaTextContainer:{
+		alignItems:'center',
+  	},
+  	metaTextStyle:{
+	    fontSize:12, 
+	    color:noteTextColor,
+  	},
+
+  	tabBarUnderlineStyle:{
+	    backgroundColor : tabBarUnderlineColor,
+	    height:2,
+  	},
+
+
+
   containerItem:{
     flex:1,
     flexDirection:'row',

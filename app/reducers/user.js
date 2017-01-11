@@ -10,6 +10,13 @@ const initialState = {
 	isTopicListLoadingMore : false,
 	topicList : null,
 
+	topicListExt:{
+		isLoading : false,
+		isRefreshing : false,
+		isLoadingMore : false,
+		list : [],
+	},
+
 	isReplyListLoading : false,
 	isReplyListLoadingMore : false,
 	replyList : null,
@@ -30,7 +37,7 @@ export default function user(state = initialState, action){
 			} );
 
 		case types.REQUEST_USER_TOPIC_LIST:
-			if (action.page == 1 ){
+			/*if (action.page == 1 ){
 				return Object.assign({}, state, {
 					isTopicListLoading : true,
 				});
@@ -38,14 +45,27 @@ export default function user(state = initialState, action){
 				return Object.assign({}, state, {
 					isTopicListLoadingMore : true,
 				});
-			}
+			}*/
+			return Object.assign({}, state, {
+				topicListExt : {
+					isLoading : true,
+				}
+			})
 
 		case types.RECEIVE_USER_TOPIC_LIST:
-			return Object.assign({}, state, {
+			/*return Object.assign({}, state, {
 				isTopicListLoading : false,
 				isTopicListLoadingMore : false,
-				topicList: state.isTopicListLoadingMore ? loadMoreTopic(state, action) : combineTopic(state, action),
-			});
+				//topicList: state.isTopicListLoadingMore ? loadMoreTopic(state, action) : combineTopic(state, action),
+			});*/
+			return Object.assign({}, state, {
+				topicListExt : {
+					isLoading : false,
+					isRefreshing : false,
+					isLoadingMore : false,
+					list : action.list,
+				}
+			})
 
 		case types.REQUEST_USER_REPLY_LIST:
 			if (action.page == 1){
@@ -84,6 +104,9 @@ export default function user(state = initialState, action){
 			return Object.assign({}, state, {
 				isLoading : false,
 			})
+
+		case REHYDRATE:
+			return Object.assign({}, state, action.payload.user, initialState);
 
 		default:
 			return state;

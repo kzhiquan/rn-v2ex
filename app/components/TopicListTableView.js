@@ -35,8 +35,8 @@ class TopicListTableView extends React.Component {
   }
 
   componentDidMount() {
-    const { actions, payload } = this.props;
-    actions.load(payload.wrapList);
+    const { actions, payload, path } = this.props;
+    actions.load(payload.list, path);
   }
 
 
@@ -76,8 +76,8 @@ class TopicListTableView extends React.Component {
   onRefresh(){
     canLoadMore = false;
     page = 1;
-    const { actions, payload } = this.props;
-    actions.refresh(payload.wrapList);
+    const { actions, payload, path } = this.props;
+    actions.refresh(payload.list, path, page);
   }
 
   renderFooter(){
@@ -102,7 +102,7 @@ class TopicListTableView extends React.Component {
 
   _isCurrentPageFilled(countPerPage=20){
     const { payload } = this.props;
-    if(payload.wrapList.list.length % countPerPage === 0){
+    if(payload.list.length % countPerPage === 0){
       return true;
     }else{
       return false;
@@ -115,11 +115,11 @@ class TopicListTableView extends React.Component {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
 
-      const { actions, payload } = this.props;
+      const { actions, payload, path } = this.props;
       if(this._isCurrentPageFilled()){
         page += 1;
       }
-      actions.loadMore(payload.wrapList, page);
+      actions.loadMore(payload.list, path, page);
     }
   }
 
@@ -130,7 +130,7 @@ class TopicListTableView extends React.Component {
 
         <ListView
           initialListSize = {5}
-          dataSource={this.state.dataSource.cloneWithRows(this.props.payload.wrapList.list)}
+          dataSource={this.state.dataSource.cloneWithRows(this.props.payload.list)}
           renderRow={this.renderItem.bind(this)}
           renderFooter={this.renderFooter.bind(this)}
           onEndReached={this.onEndReached.bind(this)}
@@ -175,14 +175,9 @@ TopicListTableView.propTypes = {
     isLoading : React.PropTypes.bool,
     isRefreshing : React.PropTypes.bool,
     isLoadingMore : React.PropTypes.bool,
-
-    wrapList : React.PropTypes.shape({
-        list : React.PropTypes.array,
-        path : React.PropTypes.string,
-    }),
-
+    list : React.PropTypes.array,
   }),
-
+  path : React.PropTypes.string,
 };
 
 
