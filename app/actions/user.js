@@ -17,6 +17,12 @@ export function receiveUser(user){
 	}
 }
 
+export function cleanUser(){
+	return {
+		type : types.CLEAN_USER,
+	}
+}
+
 
 /*export function requestUserTopicList(path, page=1){
 	return {
@@ -83,7 +89,7 @@ export function refreshUserReplyList(list, path, page=1){
 export function loadMoreUserReplyList(list, path, page=1){
 	return {
 		type : types.LOAD_MORE_USER_REPLY_LIST,
-		list
+		list,
 		path, 
 		page,
 	}

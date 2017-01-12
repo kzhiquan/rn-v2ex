@@ -17,7 +17,7 @@ import {
 
 import NavigationBar from 'react-native-navbar';
 import HtmlRender from 'react-native-html-render';
-import UserContainer from '../containers/UserContainer';
+import UserContainer from '../containers/public/UserContainer';
 
 class TopicDialogPage extends React.Component {
 

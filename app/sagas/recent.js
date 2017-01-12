@@ -16,10 +16,10 @@ import {
 function* fetchRecentTopicSagas(list, path, page){
 	try{
 
-		console.log('wrapList', list, path, page);
+		//console.log('list', list, path, page);
 		const result = yield call(fetchTopicListExt, list, path, page); 
 
-		console.log('result', result);
+		//console.log('result', result);
 
 		yield put(receiveRecentTopic(result));
 
@@ -34,8 +34,8 @@ function* fetchRecentTopicSagas(list, path, page){
 export function* watchRecentTopic(){
 	while (true) {
 		const { list, path, page } = yield take([ types.REQUEST_RECENT_TOPIC, 
-										   		types.REFRESH_RECENT_TOPIC, 
-										   		types.REQUEST_MORE_RECENT_TOPIC]);
+										   		  types.REFRESH_RECENT_TOPIC, 
+										   		  types.REQUEST_MORE_RECENT_TOPIC]);
 		//console.log('user', 'page');
 		yield fork(fetchRecentTopicSagas, list, path, page);
 	}

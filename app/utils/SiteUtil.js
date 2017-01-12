@@ -1068,11 +1068,11 @@ export function fetchUserTopicList(list, path, page=1){
 export function fetchUserReplyList(list, path, page=1){
 	//path = '/member/jianghu521';
 	//page = 3;
-	let myTopicUrl = SITE.HOST + path + '/replies?p=' + page;
-	//console.log('myTopicUrl:', myTopicUrl);
+	let myReplyUrl = SITE.HOST + path + '?p=' + page;
+	console.log('myReplyUrl:', myReplyUrl);
 	return new Promise( (resolve, reject) => {
 
-		fetch(myTopicUrl, {
+		fetch(myReplyUrl, {
 			credentials:'include'
 		})
 		.then((response) => {
@@ -1103,18 +1103,21 @@ export function fetchUserReplyList(list, path, page=1){
 			resolve(result);*/
 			const $ = cheerio.load(body);
 			let newReplyList = API.parseUserReplyList($);
+			//console.log('newReplyList', newReplyList);
 			if( page == 1 ){
 				list = [].concat(newReplyList);
 			}else{
 
 				let firstNewReply = newReplyList[0];
 				let foundIndex = list.findIndex( (reply, index, arr)=> {
-					return reply.topic.topic_url.split('#')[0] == firstNewReply.topic.topic_url.split('#')[0];
+					return (reply.topic.topic_url.split('#')[0] == firstNewReply.topic.topic_url.split('#')[0] &&
+							reply.content == firstNewReply.content);
 				});
 
 				if(foundIndex >= 0){
 					newReplyList.splice(0, list.length-foundIndex);
 				}
+				//console.log('foundIndex', foundIndex);
 
 				list = list.concat(newReplyList);
 			}

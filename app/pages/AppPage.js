@@ -12,7 +12,7 @@ import MainContainer from '../containers/MainContainer'
 import AccountContainer from '../containers/auth/AccountContainer';
 import MyTopicListContainer from '../containers/auth/MyTopicListContainer';
 import NodeListContainer from '../containers/NodeListContainer';
-import UserContainer from '../containers/UserContainer';
+import UserContainer from '../containers/public/UserContainer';
 import NodeTopicListContainer from '../containers/NodeTopicListContainer';
 
 import LoginContainer from '../containers/auth/LoginContainer';

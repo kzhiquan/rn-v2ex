@@ -22,7 +22,7 @@ import NavigationBar from 'react-native-navbar';
 
 import AccountContainer from '../../containers/auth/AccountContainer';
 import TopicContainer from '../../containers/TopicContainer';
-import UserContainer from '../../containers/UserContainer';
+import UserContainer from '../../containers/public/UserContainer';
 import TopicTableItem from '../../components/TopicTableItem';
 
 

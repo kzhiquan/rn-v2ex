@@ -6,10 +6,6 @@ const initialState = {
 	isLoading : false,
 	user : null,
 
-	isTopicListLoading : false,
-	isTopicListLoadingMore : false,
-	topicList : null,
-
 	topicListExt:{
 		isLoading : false,
 		isRefreshing : false,
@@ -17,9 +13,6 @@ const initialState = {
 		list : [],
 	},
 
-	isReplyListLoading : false,
-	isReplyListLoadingMore : false,
-	replyList : null,
 	replyListExt:{
 		isLoading : false,
 		isRefreshing : false,
@@ -43,9 +36,12 @@ export default function user(state = initialState, action){
 					list : receiveUserAvatarToTopicList(state, action),
 				}),
 				replyListExt : Object.assign({}, state.topicListExt, {
-					list : receiveUserAvatarToReplyList(state, action),
+					list : receiveUserAvatarAndNameToReplyList(state, action),
 				}),
 			} );
+
+		case types.CLEAN_USER:
+			return Object.assign({}, initialState);
 
 		case types.REQUEST_USER_TOPIC_LIST:
 			return Object.assign({}, state, {
@@ -74,7 +70,7 @@ export default function user(state = initialState, action){
 					isLoading : false,
 					isRefreshing : false,
 					isLoadingMore : false,
-					list : receiveListAvatarToList(state, action),
+					list : receiveTopicListAvatarToList(state, action),
 				})
 			})
 
@@ -105,7 +101,7 @@ export default function user(state = initialState, action){
 					isLoading : false,
 					isRefreshing : false,
 					isLoadingMore : false,
-					list : receiveListAvatarToList(state, action),
+					list : receiveReplyListAvatarAndNameToList(state, action),
 				})
 			})
 
@@ -130,14 +126,7 @@ export default function user(state = initialState, action){
 			})
 
 		case REHYDRATE:
-			return Object.assign({}, state, action.payload.user,{
-				topicListExt:{
-					isLoading : false,
-					isRefreshing : false,
-					isLoadingMore : false,
-					list : [],
-				},
-			});
+			return Object.assign({}, initialState);
 
 		default:
 			return state;
@@ -145,7 +134,7 @@ export default function user(state = initialState, action){
 }
 
 
-function receiveListAvatarToList(state, action){
+function receiveTopicListAvatarToList(state, action){
 
 	if(!state.user) return action.list;
 
@@ -163,40 +152,24 @@ function receiveUserAvatarToTopicList(state, action){
 		   });
 }
 
-function receiveUserAvatarToReplyList(state, action){
-	return state.replyListExt.list.map( (topic, index, arr)=> {
-				topic.member_avatar = action.user.member_avatar;
-				return topic;
+
+function receiveReplyListAvatarAndNameToList(state, action){
+
+	if(!state.user) return action.list;
+
+	return  action.list.map( (reply, index, arr) => {
+				reply.member_avatar = state.user.member_avatar;
+				reply.member_name = state.user.member_name;
+				return reply;
+			});
+
+}
+
+function receiveUserAvatarAndNameToReplyList(state, action){
+	return state.replyListExt.list.map( (reply, index, arr)=> {
+				reply.member_avatar = action.user.member_avatar;
+				reply.member_name = action.user.member_name;
+				return reply;
 		   });
-}
-
-
-
-function combineTopic(state, action) {
-	return action.topicList;
-}
-
-function loadMoreTopic(state, action, countPerPage=20) {
-	if(state.topicList.topicList.length % countPerPage == 0){
-		state.topicList.topicList = state.topicList.topicList.concat(action.topicList.topicList);
-	}
-	
-  	return state.topicList;
-}
-
-function combineReply(state, action) {
-	return action.replyList;
-}
-
-function loadMoreReply(state, action) {
-	let currentCount = state.replyList.replyList.length;
-	let incrementCount = action.replyList.replyList.length;
-	let currentLastReply = state.replyList.replyList[currentCount-1];
-	let increntLastReply = action.replyList.replyList[incrementCount-1];
-	if( currentLastReply.topic.topic_url != increntLastReply.topic.topic_url ||
-		currentLastReply.content != increntLastReply.content){
-		state.replyList.replyList = state.replyList.replyList.concat(action.replyList.replyList);
-	}
-  	return state.replyList;
 }
 

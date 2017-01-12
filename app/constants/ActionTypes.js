@@ -41,6 +41,7 @@ export const USER_LOGOUT = 'USER_LOGOUT'
 export const END_USER_LOGOUT = 'END_USER_LOGOUT'
 
 export const REQUEST_USER = 'REQUEST_USER'
+export const CLEAN_USER = 'CLEAN_USER'
 export const RECEIVE_USER = 'RECEIVE_USER'
 
 export const REQUEST_USER_META = 'REQUEST_USER_META'

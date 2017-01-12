@@ -15,12 +15,12 @@ class TopicTableItem extends React.Component {
     super(props);
   }
   render() {
-    const { navigator, topic } = this.props;
+    const { topic } = this.props;
 
     return (
-      <TouchableOpacity onPress={this.props.onTopicClick} topic={topic} navigator={navigator}>
+      <TouchableOpacity onPress={this.props.onTopicClick}>
         <View style={styles.topicItemContainer}>
-            <TouchableOpacity onPress={this.props.onUserClick} navigator={navigator} path={topic.member_url}>
+            <TouchableOpacity onPress={this.props.onUserClick}>
               <Image
                 style={styles.avatar_size_42}
                 source={{uri:topic.member_avatar}}
@@ -73,7 +73,6 @@ class TopicTableItem extends React.Component {
 TopicTableItem.propTypes = {
   onTopicClick: React.PropTypes.func,
   onUserClick : React.PropTypes.func,
-  navigator : React.PropTypes.object,
   topic: React.PropTypes.object,
 };
 

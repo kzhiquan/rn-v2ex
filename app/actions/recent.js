@@ -21,6 +21,7 @@ export function requestMoreRecentTopic(list, path='/recent', page=1){
 	return {
 		type : types.REQUEST_MORE_RECENT_TOPIC,
 		list, 
+		path,
 		page,
 	}
 }

@@ -55,10 +55,10 @@ export function* watchUser(){
 function* fetchUserTopicListSagas(list, path, page){
 	try{
 
-		console.log('list', list, path, page);
+		//console.log('list', list, path, page);
 		const result = yield call(fetchUserTopicList, list, path, page); 
 
-		console.log('result', result);
+		//console.log('result', result);
 
 		yield put(receiveUserTopicList(result));
 
@@ -96,10 +96,10 @@ function* fetchUserReplyListSagas(list, path, page){
 		}else{
 			yield put(receiveUserReplyList(userReplyListReceived));
 		}*/
-		console.log('list', list, path, page);
+		//console.log('list', list, path, page);
 		const result = yield call(fetchUserReplyList, list, path, page); 
 
-		console.log('result', result);
+		//console.log('result', result);
 
 		yield put(receiveUserReplyList(result));
 

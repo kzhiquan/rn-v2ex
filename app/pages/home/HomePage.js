@@ -17,7 +17,7 @@ import NavigationBar from 'react-native-navbar';
 import NameGotoTableItem from '../../components/NameGotoTableItem';
 
 import SearchContainer from '../../containers/home/SearchContainer';
-import TopicListTableView from '../../components/TopicListTableView';
+import TopicListTableViewExt from '../../components/TopicListTableViewExt';
 import NewTopicTitlePage from './NewTopicTitlePage';
 import AddAccountContainer from '../../containers/auth/AddAccountContainer';
 
@@ -167,6 +167,8 @@ class HomePage extends React.Component {
         style={styles.container}
         onResponderRelease = {this._setPopoverAccountUnvisible.bind(this)}
         onStartShouldSetResponder={()=>true}>
+
+        
         <NavigationBar
           style={styles.navigatorBarStyle}
           title={titleConfig}
@@ -189,7 +191,7 @@ class HomePage extends React.Component {
           }
         />
 
-        <TopicListTableView
+        <TopicListTableViewExt
           navigator = {navigator}
           actions = {{
             load : recentActions.requestRecentTopic,

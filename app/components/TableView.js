@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import {
   StyleSheet,
   ListView,
+  TouchableOpacity,
   RecyclerViewBackedScrollView,
   Dimensions,
   View,
@@ -11,16 +12,12 @@ import {
 } from 'react-native';
 
 
-import TopicContainer from '../containers/TopicContainer';
-import UserContainer from '../containers/public/UserContainer';
-import TopicTableItem from './TopicTableItem';
-
 
 let canLoadMore;
 let page = 1;
 let loadMoreTime = 0;
 
-class TopicListTableView extends React.Component {
+class TableView extends React.Component {
   
   constructor(props) {
     super(props);
@@ -29,6 +26,7 @@ class TopicListTableView extends React.Component {
     };
     canLoadMore = false;
     page = 1;
+    activityIndicatorTop = 300;
   }
 
   componentWillMount() {
@@ -40,36 +38,19 @@ class TopicListTableView extends React.Component {
   }
 
 
-  _onTopicClick(topic){
-    const { navigator } = this.props;
-    navigator.push({
-      component : TopicContainer,
-      name : 'TopicPage',
-      topic : topic,
-    });
+  _onItemClick(Item){
+    console.log('item', item, 'renderItem should be override');
     this.props.onClick();
   }
 
-  _onUserClick(topic){
-    const { navigator } = this.props;
-    navigator.push({
-      component : UserContainer,
-      name : 'UserPage', 
-      path : topic.member_url,
-    });
 
-    this.props.onClick();
-  }
-
-  renderItem(item) {
-    const { navigator } = this.props;
+  renderItem(item, sectionID, rowID, highlightRow) {
       return (
-        <TopicTableItem 
-          topic = {item}
-          navigator = {navigator}
-          onTopicClick = {()=>this._onTopicClick(item)}
-          onUserClick = {()=>this._onUserClick(item)}
-        />
+        <TouchableOpacity onPress={this._onItemClick}>
+          <View>
+            <Text>{`item-${sectionID}-${rowID}-renderItem should be override`}</Text>
+          </View>
+        </TouchableOpacity>
       )
   }
 
@@ -100,34 +81,36 @@ class TopicListTableView extends React.Component {
     }
   }
 
-  _isCurrentPageFilled(countPerPage=20){
-    const { payload } = this.props;
-    if(payload.list.length % countPerPage === 0){
-      return true;
-    }else{
-      return false;
-    }
-  }
 
   onEndReached() {
-    console.log('onEndReached');
     const time = Date.parse(new Date()) / 1000;
     if (canLoadMore && time - loadMoreTime > 1) {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
 
       const { actions, payload, path } = this.props;
-      //if(this._isCurrentPageFilled()){
-        page += 1;
-      //}
+      page += 1;
       actions.loadMore(payload.list, path, page);
     }
+  }
+
+  _onLayout(event){
+    //console.log('nativeEvent', event.nativeEvent.layout);
+    let top = event.nativeEvent.layout.height/2 - 25;
+    this.setState({activityIndicatorTop:top});
+  }
+
+  _activityIndicatorStyle(){
+    //console.log('top', this.state.activityIndicatorTop);
+    return [styles.front, {top:this.state.activityIndicatorTop}]
   }
 
   render() {
     //console.log('this.props:', this.props);
     return (
-      <View style={styles.container}>
+      <View 
+        style={styles.container}
+        onLayout={this._onLayout.bind(this)}>
 
         <ListView
           initialListSize = {5}
@@ -151,7 +134,7 @@ class TopicListTableView extends React.Component {
 
         <ActivityIndicator
           animating={ this.props.payload.isLoading }
-          style={styles.front}
+          style={this._activityIndicatorStyle()}
           size="large"
         />
 
@@ -161,7 +144,7 @@ class TopicListTableView extends React.Component {
   }
 }
 
-TopicListTableView.propTypes = {
+TableView.propTypes = {
 
   navigator : React.PropTypes.object,
   onClick : React.PropTypes.func,
@@ -214,8 +197,12 @@ const styles = StyleSheet.create({
 
 });
 
+function activityIndicatorStyle(){
 
-export default TopicListTableView;
+}
+
+
+export default TableView;
 
 
 
