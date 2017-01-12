@@ -137,13 +137,28 @@ export function fetchTopic(topic, page=1){
 			const $ = cheerio.load(body);
 			topic.topic_id = topicId;
 			topic.topic_title = $('#Main .box .header h1').first().text();
+			topic.member_url = $('#Main .box .header .fr a').first().attr('href');
+			topic.member_avatar = 'https:' + $('#Main .box .header .fr a img').first().attr('src');
 			topic.topic_content = $('#Main .topic_content .markdown_body').html();
 			if(!topic.topic_content){
 				topic.topic_content = $('#Main .topic_content').html();
 			}
 			topic.vote_count = $('#topic_' + topicId + '_votes').find('a').first().text();
 			topic.click_count = $('#Main .box .header .gray').first().text().split('·')[2];
+			if(topic.click_count){
+				topic.click_count = topic.click_count.replace(' ', '');
+			}
 			topic.post_date = $('#Main .box .header .gray').first().text().split('·')[1];
+			if(topic.post_date){
+				topic.post_date = topic.post_date.replace(' ', '');
+			}
+			topic.tags = [];
+			$('#Main .box .inner').children('.tag').each(function(i, el){
+				let tag = {};
+				tag.name = $(this).text();
+				tag.path = $(this).attr('href');
+				topic.tags.push(tag);
+			});
 
 			if($('#Main .transparent .inner span').first().text() == '目前尚无回复'){
 				topic.reply_count = 0;

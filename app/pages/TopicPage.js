@@ -90,7 +90,7 @@ class TopicPage extends React.Component {
   }
 
   _renderNode(node, index, parent, type) {
-    //console.log('node:',node);
+    console.log('node:',node);
     if (node.name === 'img') {
         let uri = node.attribs.src;
         if(uri.indexOf('http') == -1){
@@ -373,20 +373,136 @@ class TopicPage extends React.Component {
     });
   }
 
+  _onBackClick(){
+    const { navigator } = this.props;
+    navigator.pop();
+  }
+
+  _renderTopicTags(){
+    const topic = this.props.topic.topic;
+
+    if(topic.tags.length > 0){
+      return (
+        <View style={[styles.directionRow, {paddingTop:4}]}>
+          {
+            topic.tags.map( (tag, index, arr) => {
+              return  <View key={index} style={styles.tagAreaContainer}>
+                        <Text style={styles.metaTextStyle}>{tag.name}</Text>
+                      </View>
+            })
+          }
+        </View>
+      )
+    }
+
+  }
+
+  _renderTopicPart(){
+    const topic = this.props.topic.topic;
+    console.log('topic', topic);
+    if(topic){
+      return (
+          <View style={styles.topicContainer}>
+
+            <View style={styles.topicInnerContainer}>
+            
+              <View style={styles.directionRow}>
+
+                  <Image
+                    style={styles.avatar_size_42}
+                    source={{uri:topic.member_avatar}}
+                  />
+
+                  <View style={styles.topicMetaContainer}>
+
+                    <View>
+                      <View>
+                        <Text style={{fontSize:16}}>{topic.member_name}</Text>
+                      </View>
+
+                      <View style={[styles.directionRow, {paddingTop:4,}]}>
+                        <View>
+                          <Text style={styles.metaTextStyle}>{topic.post_date}</Text>
+                        </View>
+                        <Image
+                          style={{top:4,left:4}}
+                          source={require('../static/imgs/dot.png')}
+                        />
+                        <View style={{left:14}}>
+                          <Text style={styles.metaTextStyle}>{topic.click_count}</Text>
+                        </View>
+                      </View>
+
+                    </View>
+
+                    <View style={styles.nodeAreaContainer}>
+                      <Text style={styles.metaTextStyle}>{topic.node_name}</Text>
+                    </View>
+
+                  </View>
+              </View>
+
+              <View style={{paddingTop:8}}>
+                <Text style={{fontSize:16}}>{topic.topic_title}</Text>
+              </View>
+
+              {this._renderTopicTags()}
+
+              <View style={{paddingTop:4}}>
+                <HTMLView
+                  value={'<div>' + topic.topic_content + '</div>'}
+                  stylesheet={{fontSize:14}}
+                />
+              </View>
+
+
+              <View style={styles.topicFooterContainer}>
+
+                <View style={[styles.directionRow, {top:6}]}>
+                  
+                  <View style={styles.directionRow}>
+                    <Image
+                      source={require('../static/imgs/heart.png')}
+                    />
+                    <View style={{left:4}}>
+                      <Text style={styles.metaTextStyle}>5个人感谢</Text>
+                    </View>
+                  </View>
+
+                  <View style={[styles.directionRow,{left:32}]}>
+                    <Image
+                      source={require('../static/imgs/star.png')}
+                    />
+                    <View style={{left:4, top:2}}>
+                      <Text style={styles.metaTextStyle}>5个人感谢</Text>
+                    </View>
+                  </View>
+
+                </View>
+
+
+                <View style={styles.replyBtnContainer}>
+                  <Text style={styles.replyBtnText}>回复</Text>
+                </View>
+
+              </View>
+
+            </View>
+
+          </View>
+      )
+    }
+  }
+
+
   render() {
     const { topic, route } = this.props;
-    //console.log('render TopicPage');
+    console.log('render TopicPage');
     if (topic.isLoading){
       return <LoadingView />
     }
 
     const { navigator } = this.props;
-    let leftButtonConfig = {
-      title: 'Back',
-      handler: function onBack() {
-        navigator.pop();
-      }
-    };
 
     let currentTopic = route.topic;
     if(topic.topic){
@@ -409,17 +525,33 @@ class TopicPage extends React.Component {
 
     //console.log('rows',rows,topic);
     return (
-      <View style={{flex:1}}>
+      <View style={styles.container}>
 
         <NavigationBar
-            title={titleConfig}
-            leftButton={leftButtonConfig}
-            rightButton={
-              <TouchableOpacity onPress={this._onTopicMore.bind(this)}>
-                <Icon name="ios-more" size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
-              </TouchableOpacity> 
-            }
+          style={styles.navigatorBarStyle}
+          title={titleConfig}
+          leftButton={
+            <TouchableOpacity onPress={this._onBackClick.bind(this)}>
+                <Image 
+                  style={{left:12, top:11}} 
+                  source={require('../static/imgs/back_arrow.png')}
+                />
+            </TouchableOpacity> 
+          }
+          rightButton={
+            <TouchableOpacity onPress={this._onTopicMore.bind(this)}>
+                <Image 
+                  style={{right:12, top:11}} 
+                  source={require('../static/imgs/share.png')}
+                />
+            </TouchableOpacity> 
+          }
+          statusBar={{
+            tintColor : '#FAFAFA'
+          }}
         />
+
+        {/*this._renderTopicPart()*/}
         
         <VXTopicMoreModal 
           visible={this.state.topicMoreModalVisible}
@@ -465,6 +597,7 @@ class TopicPage extends React.Component {
           }
         />
 
+
         <ActivityIndicator
           animating={topic.isTopicMoreWorking || topic.isReplyMoreWorking }
           style={styles.front}
@@ -477,7 +610,114 @@ class TopicPage extends React.Component {
   }
 }
 
+
+
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#A0ADB8';
+let backgroundColor = 'white';
+
 const styles = StyleSheet.create({
+
+
+  container : {
+    flex : 1,
+    backgroundColor : 'white',
+  },
+
+  navigatorBarStyle:{
+    backgroundColor : '#FAFAFA', 
+    borderBottomWidth : 1,
+    borderBottomColor : '#B2B2B2',
+  },
+
+  directionRow:{
+    flexDirection : 'row',
+  },
+
+  topicContainer:{
+    flex:1,
+    paddingTop:12, 
+    left:16, 
+    paddingBottom:8, 
+    borderBottomWidth : 1, 
+    borderBottomColor : borderColor,
+  },
+
+  topicInnerContainer:{
+    width: width - 16 - 12 - 8,
+  },
+
+  topicMetaContainer :{
+    flex:1, 
+    left:10, 
+    flexDirection : 'row', 
+    justifyContent:'space-between',
+  },
+  avatar_size_42:{
+    width:42,
+    height:42,
+    borderRadius:8,
+  },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+  nodeAreaContainer:{
+    backgroundColor:'#E8F0FE', 
+    borderRadius:3, 
+    paddingTop:3, 
+    paddingBottom:1, 
+    paddingLeft:7, 
+    paddingRight:7,
+    top:10,
+    height:20,
+  },
+
+  tagAreaContainer:{
+    backgroundColor:'#F2F2F2', 
+    borderRadius:3, 
+    paddingTop:3, 
+    paddingBottom:1, 
+    paddingLeft:7, 
+    paddingRight:7,
+    marginRight:8,
+  },
+
+  topicFooterContainer:{
+    top:16, 
+    justifyContent:'space-between',
+    flexDirection : 'row',
+  },
+
+  replyBtnContainer:{
+    backgroundColor:'#45CB7F', 
+
+    paddingTop:8, 
+    paddingBottom:4, 
+    paddingLeft:24, 
+    paddingRight:24,
+
+    width:77,
+    height:32,
+    borderRadius:5, 
+  },
+
+  replyBtnText:{
+    color : 'white',
+    fontSize : 14,
+  },
+
+
+
+
+
+
+
+
   base: {
     flex: 1
   },
