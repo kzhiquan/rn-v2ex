@@ -90,7 +90,7 @@ class TopicPage extends React.Component {
   }
 
   _renderNode(node, index, parent, type) {
-    console.log('node:',node);
+    //console.log('node:',node);
     if (node.name === 'img') {
         let uri = node.attribs.src;
         if(uri.indexOf('http') == -1){
@@ -98,17 +98,24 @@ class TopicPage extends React.Component {
         }
 
         return (
-                <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
+                <View key={index} 
+                      style={{
+                        flex:1, 
+                        flexDirection:'row', 
+                        justifyContent: 'center', 
+                        alignItems:'center', 
+                        width:maxWidth-12-12, 
+                        height:maxWidth,
+                        backgroundColor:'rgba(3, 3, 3,0.5)',
+                      }}>
                   <Image 
                     source={{uri:uri}} 
                     style={{
-                      width:maxWidth-30,
-                      height:maxWidth-30,
-                      resizeMode: Image.resizeMode.contain}} />
+                      width:maxWidth-12-12,
+                      height:maxWidth,
+                      resizeMode: Image.resizeMode.contain
+                    }} />
                 </View>
-                /*<ResizableImage 
-                    source={{uri:uri}}
-                    style={{}} />*/
         )
 
     }
@@ -127,28 +134,134 @@ class TopicPage extends React.Component {
     });
   }
 
-  _renderTopic(item, sectionID, rowID, highlightRow){
+  _renderTopicTags(topic){
+
+    if(topic.tags && topic.tags.length > 0){
       return (
-        <View style={styles.containerTopic}>
-          <View style={styles.topicHeader}><Text style={{fontWeight:'bold'}}>{item.topic_title}</Text></View>
-          <HtmlRender
-            key={`${sectionID}-${rowID}`}
-            value={'<div>' + item.topic_content + '</div>'}
-            stylesheet={topicTitleStyle}
-            onLinkPress={this._onLinkPress.bind(this)}
-            renderNode={this._renderNode}
-          />
-          <View style={styles.topicFooter}>
-            <Text style={{fontWeight:'bold'}}>{item.click_count}</Text>
-            <Text style={{fontWeight:'bold'}}>{item.collect_count}</Text>
-            <Text style={{fontWeight:'bold'}}>{item.vote_count ? (item.vote_count + '人') : ''}</Text>
-          </View>
+        <View style={[styles.directionRow, {paddingTop:4}]}>
+          {
+            topic.tags.map( (tag, index, arr) => {
+              return  <View key={index} style={styles.tagAreaContainer}>
+                        <Text style={styles.metaTextStyle}>{tag.name}</Text>
+                      </View>
+            })
+          }
         </View>
-      );
+      )
+    }
+
   }
 
-  _renderReply(item, sectionID, rowID, highlightRow){
-    return (
+  _renderTopic(topic,sectionID, rowID, highlightRow){
+    if(topic){
+      return (
+          <View style={styles.topicContainer}>
+
+            <View style={styles.topicInnerContainer}>
+            
+              <View style={styles.directionRow}>
+
+                  <Image
+                    style={styles.avatar_size_42}
+                    source={{uri:topic.member_avatar}}
+                  />
+
+                  <View style={styles.topicMetaContainer}>
+
+                    <View>
+                      <View>
+                        <Text style={{fontSize:16}}>{topic.member_name}</Text>
+                      </View>
+
+                      <View style={[styles.directionRow, {paddingTop:4,}]}>
+                        <View>
+                          <Text style={styles.metaTextStyle}>{topic.post_date}</Text>
+                        </View>
+                        <Image
+                          style={{top:4,left:4}}
+                          source={require('../static/imgs/dot.png')}
+                        />
+                        <View style={{left:14}}>
+                          <Text style={styles.metaTextStyle}>{topic.click_count}</Text>
+                        </View>
+                      </View>
+
+                    </View>
+
+                    <View style={styles.nodeAreaContainer}>
+                      <Text style={styles.metaTextStyle}>{topic.node_name}</Text>
+                    </View>
+
+                  </View>
+              </View>
+
+              <View style={{paddingTop:8}}>
+                <Text style={{fontSize:16}}>{topic.topic_title}</Text>
+              </View>
+
+              {this._renderTopicTags(topic)}
+
+              <View style={{paddingTop:4}}>
+                <HTMLView
+                  value={'<div>' + topic.topic_content + '</div>'}
+                  stylesheet={{fontSize:14}}
+                  renderNode={this._renderNode}
+                  onLinkPress={this._onLinkPress}
+                />
+              </View>
+
+
+              <View style={styles.topicFooterContainer}>
+
+                <View style={[styles.directionRow, {top:6}]}>
+                  
+                  <View style={styles.directionRow}>
+                    <Image
+                      source={require('../static/imgs/heart.png')}
+                    />
+                    <View style={{left:4}}>
+                      <Text style={styles.metaTextStyle}>感谢</Text>
+                    </View>
+                  </View>
+
+                  <View style={[styles.directionRow, {left:32}]}>
+                    <Image
+                      source={require('../static/imgs/chat_reply.png')}
+                    />
+                    <View style={{left:4}}>
+                      <Text style={styles.metaTextStyle}>{topic.reply_count}个回复</Text>
+                    </View>
+                  </View>
+
+                  <View style={[styles.directionRow,{left:64}]}>
+                    <Image
+                      source={require('../static/imgs/star.png')}
+                    />
+                    <View style={{left:4, top:2}}>
+                      <Text style={styles.metaTextStyle}>{topic.collect_count || '收藏'}</Text>
+                    </View>
+                  </View>
+
+                </View>
+
+
+                <View style={styles.replyBtnContainer}>
+                  <Text style={styles.replyBtnText}>回复</Text>
+                </View>
+
+              </View>
+
+            </View>
+
+          </View>
+      )
+    }
+  }
+
+  _renderReply(reply, sectionID, rowID, highlightRow){
+    //return null;
+    /*return (
+
       <TouchableOpacity onPress={this._onReplyMore} reply={item} that={this}>
         <View style={styles.containerReply}>
           <TouchableOpacity onPress={this._userClick} navigator={navigator} path={item.member_url}>
@@ -169,7 +282,70 @@ class TopicPage extends React.Component {
           <Text style={styles.replyFooter}>{item.floor_number}</Text>
         </View>
       </TouchableOpacity>
-    );
+
+
+    );*/
+    return (
+      <TouchableOpacity>
+        <View style={styles.replyItemContainer}>
+            <TouchableOpacity>
+              <Image
+                style={styles.avatar_size_42}
+                source={{uri:reply.member_avatar}}
+              />
+            </TouchableOpacity>
+
+            <View style={styles.avatarRightContent}>
+
+              <View>
+                <Text style={{fontSize:16}}>{topic.member_name}</Text>
+              </View>
+
+              <View style={[styles.directionRow, {paddingTop:8,}]}>
+
+                <View>
+                  <Text style={styles.metaTextStyle}>{reply.post_date}</Text>
+                </View>
+
+                <Image
+                  style={{top:4,left:4}}
+                  source={require('../static/imgs/dot.png')}
+                />
+
+                <View style={{left:14}}>
+                  <Text style={styles.metaTextStyle}>{reply.floor_number+'楼'}</Text>
+                </View>
+
+              </View>
+
+              <View style={{paddingTop:8,}}>
+                <HTMLView
+                  value={'<div>' + reply.content + '</div>'}
+                  stylesheet={{fontSize:14}}
+                />
+              </View>
+
+              <View style={[styles.directionRow, {paddingTop:8}]}>
+                  <Image
+                    source={require('../static/imgs/heart.png')}
+                  />
+
+                  <Image
+                    style={{left:64}}
+                    source={require('../static/imgs/chat_reply.png')}
+                  />
+
+                  <Image
+                    style={{left:128}}
+                    source={require('../static/imgs/at.png')}
+                  />
+              </View>
+
+            </View>
+        </View>
+      </TouchableOpacity>
+
+    )
   }
 
   renderItem(item, sectionID, rowID, highlightRow){
@@ -378,136 +554,13 @@ class TopicPage extends React.Component {
     navigator.pop();
   }
 
-  _renderTopicTags(){
-    const topic = this.props.topic.topic;
-
-    if(topic.tags.length > 0){
-      return (
-        <View style={[styles.directionRow, {paddingTop:4}]}>
-          {
-            topic.tags.map( (tag, index, arr) => {
-              return  <View key={index} style={styles.tagAreaContainer}>
-                        <Text style={styles.metaTextStyle}>{tag.name}</Text>
-                      </View>
-            })
-          }
-        </View>
-      )
-    }
-
-  }
-
-  _renderTopicPart(){
-    const topic = this.props.topic.topic;
-    console.log('topic', topic);
-    if(topic){
-      return (
-          <View style={styles.topicContainer}>
-
-            <View style={styles.topicInnerContainer}>
-            
-              <View style={styles.directionRow}>
-
-                  <Image
-                    style={styles.avatar_size_42}
-                    source={{uri:topic.member_avatar}}
-                  />
-
-                  <View style={styles.topicMetaContainer}>
-
-                    <View>
-                      <View>
-                        <Text style={{fontSize:16}}>{topic.member_name}</Text>
-                      </View>
-
-                      <View style={[styles.directionRow, {paddingTop:4,}]}>
-                        <View>
-                          <Text style={styles.metaTextStyle}>{topic.post_date}</Text>
-                        </View>
-                        <Image
-                          style={{top:4,left:4}}
-                          source={require('../static/imgs/dot.png')}
-                        />
-                        <View style={{left:14}}>
-                          <Text style={styles.metaTextStyle}>{topic.click_count}</Text>
-                        </View>
-                      </View>
-
-                    </View>
-
-                    <View style={styles.nodeAreaContainer}>
-                      <Text style={styles.metaTextStyle}>{topic.node_name}</Text>
-                    </View>
-
-                  </View>
-              </View>
-
-              <View style={{paddingTop:8}}>
-                <Text style={{fontSize:16}}>{topic.topic_title}</Text>
-              </View>
-
-              {this._renderTopicTags()}
-
-              <View style={{paddingTop:4}}>
-                <HTMLView
-                  value={'<div>' + topic.topic_content + '</div>'}
-                  stylesheet={{fontSize:14}}
-                />
-              </View>
-
-
-              <View style={styles.topicFooterContainer}>
-
-                <View style={[styles.directionRow, {top:6}]}>
-                  
-                  <View style={styles.directionRow}>
-                    <Image
-                      source={require('../static/imgs/heart.png')}
-                    />
-                    <View style={{left:4}}>
-                      <Text style={styles.metaTextStyle}>5个人感谢</Text>
-                    </View>
-                  </View>
-
-                  <View style={[styles.directionRow,{left:32}]}>
-                    <Image
-                      source={require('../static/imgs/star.png')}
-                    />
-                    <View style={{left:4, top:2}}>
-                      <Text style={styles.metaTextStyle}>5个人感谢</Text>
-                    </View>
-                  </View>
-
-                </View>
-
-
-                <View style={styles.replyBtnContainer}>
-                  <Text style={styles.replyBtnText}>回复</Text>
-                </View>
-
-              </View>
-
-            </View>
-
-          </View>
-      )
-    }
-  }
-
-
   render() {
     const { topic, route } = this.props;
-    console.log('render TopicPage');
-    if (topic.isLoading){
-      return <LoadingView />
-    }
-
-    const { navigator } = this.props;
-
     let currentTopic = route.topic;
     if(topic.topic){
       currentTopic = topic.topic;
     }
+
     var titleConfig = {
       title: currentTopic.reply_count + '个回答',
     };
@@ -553,7 +606,7 @@ class TopicPage extends React.Component {
 
         {/*this._renderTopicPart()*/}
         
-        <VXTopicMoreModal 
+        {/*<VXTopicMoreModal 
           visible={this.state.topicMoreModalVisible}
           onFavoriteBtnClick={this._onFavoriteBtnClick.bind(this)}
           onThankBtnClick={this._onTopicThankBtnClick.bind(this)}
@@ -575,7 +628,7 @@ class TopicPage extends React.Component {
           title={'尚未登录，请先登录'}
           btnText={'确定'}
           btnClick={ this._onUnLoginModalClick.bind(this) }
-        />
+        />*/}
 
         <ListView
           initialListSize = {5}
@@ -619,8 +672,6 @@ let noteTextColor = '#A0ADB8';
 let backgroundColor = 'white';
 
 const styles = StyleSheet.create({
-
-
   container : {
     flex : 1,
     backgroundColor : 'white',
@@ -632,6 +683,7 @@ const styles = StyleSheet.create({
     borderBottomColor : '#B2B2B2',
   },
 
+  //topic part
   directionRow:{
     flexDirection : 'row',
   },
@@ -688,7 +740,8 @@ const styles = StyleSheet.create({
   },
 
   topicFooterContainer:{
-    top:16, 
+    flex:1,
+    paddingTop:16, 
     justifyContent:'space-between',
     flexDirection : 'row',
   },
@@ -703,6 +756,7 @@ const styles = StyleSheet.create({
 
     width:77,
     height:32,
+    left:12,
     borderRadius:5, 
   },
 
@@ -711,7 +765,22 @@ const styles = StyleSheet.create({
     fontSize : 14,
   },
 
+  //reply item part
+  replyItemContainer:{
+    flexDirection : 'row',
+    flex : 1, 
+    paddingTop:12, 
+    left:16, 
+    paddingBottom:10, 
+    borderBottomWidth : 1, 
+    borderBottomColor : borderColor,
+    paddingBottom: 8,
+  },
 
+  avatarRightContent:{
+    left:10,
+    width : width-12-10-16-42,
+  },
 
 
 

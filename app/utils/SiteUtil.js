@@ -170,6 +170,10 @@ export function fetchTopic(topic, page=1){
 			if($('#Main .topic_buttons').html()){
 
 				topic.collect_count =$('#Main .topic_buttons .fr').first().text().split('∙')[1];
+				if(topic.collect_count){
+					topic.collect_count = topic.collect_count.replace(' ', '');
+				}
+				
 				let favorite_text = $('#Main .topic_buttons a').first().text();
 				if(favorite_text === '加入收藏'){
 					topic.favorite_url = $('#Main .topic_buttons a').first().attr('href');
@@ -206,6 +210,8 @@ export function fetchTopic(topic, page=1){
 				reply.member_name = $(this).find('td[width="auto"] strong a').first().text();
 				reply.member_url = $(this).find('td[width="auto"] strong a').first().attr('href');
 				reply.floor_number = $(this).find('td[width="auto"] .fr span').first().text();
+				reply.post_date = $(this).find('td[width="auto"] .small').first().text();
+
 				reply.content = $(this).find('.reply_content').html();
 				if($(this).find('.thank_area a').html()){
 					let ignore = $(this).find('.thank_area a').eq(0).attr('onclick').match(/ignoreReply\((\d+), '(.+)'\)/i);
