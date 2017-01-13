@@ -13,11 +13,11 @@ import {
 } from '../utils/SiteUtil'
 
 
-function* fetchRecentTopicSagas(list, path, page){
+function* fetchRecentTopicSagas(wrapList, path, page){
 	try{
 
 		//console.log('list', list, path, page);
-		const result = yield call(fetchTopicListExt, list, path, page); 
+		const result = yield call(fetchTopicListExt, wrapList, path, page); 
 
 		//console.log('result', result);
 
@@ -25,7 +25,7 @@ function* fetchRecentTopicSagas(list, path, page){
 
 	} catch ( error ){
 
-		yield put(receiveRecentTopic(list));
+		yield put(receiveRecentTopic(wrapList));
 
 		toastShort('网络发生错误，请重试');
 	}
@@ -33,10 +33,10 @@ function* fetchRecentTopicSagas(list, path, page){
 
 export function* watchRecentTopic(){
 	while (true) {
-		const { list, path, page } = yield take([ types.REQUEST_RECENT_TOPIC, 
+		const { wrapList, path, page } = yield take([ types.REQUEST_RECENT_TOPIC, 
 										   		  types.REFRESH_RECENT_TOPIC, 
 										   		  types.REQUEST_MORE_RECENT_TOPIC]);
 		//console.log('user', 'page');
-		yield fork(fetchRecentTopicSagas, list, path, page);
+		yield fork(fetchRecentTopicSagas, wrapList, path, page);
 	}
 }

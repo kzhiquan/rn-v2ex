@@ -36,7 +36,7 @@ class TopicListTableView extends React.Component {
 
   componentDidMount() {
     const { actions, payload, path } = this.props;
-    actions.load(payload.list, path);
+    actions.load(payload.wrapList, path);
   }
 
 
@@ -77,7 +77,7 @@ class TopicListTableView extends React.Component {
     canLoadMore = false;
     page = 1;
     const { actions, payload, path } = this.props;
-    actions.refresh(payload.list, path, page);
+    actions.refresh(payload.wrapList, path, page);
   }
 
   renderFooter(){
@@ -120,7 +120,7 @@ class TopicListTableView extends React.Component {
       //if(this._isCurrentPageFilled()){
         page += 1;
       //}
-      actions.loadMore(payload.list, path, page);
+      actions.loadMore(payload.wrapList, path, page);
     }
   }
 
@@ -131,7 +131,7 @@ class TopicListTableView extends React.Component {
 
         <ListView
           initialListSize = {5}
-          dataSource={this.state.dataSource.cloneWithRows(this.props.payload.list)}
+          dataSource={this.state.dataSource.cloneWithRows(this.props.payload.wrapList.list)}
           renderRow={this.renderItem.bind(this)}
           renderFooter={this.renderFooter.bind(this)}
           onEndReached={this.onEndReached.bind(this)}
@@ -176,7 +176,7 @@ TopicListTableView.propTypes = {
     isLoading : React.PropTypes.bool,
     isRefreshing : React.PropTypes.bool,
     isLoadingMore : React.PropTypes.bool,
-    list : React.PropTypes.array,
+    wrapList : React.PropTypes.array,
   }),
   path : React.PropTypes.string,
 };

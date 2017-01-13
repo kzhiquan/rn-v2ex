@@ -52,11 +52,11 @@ export function* watchUser(){
 
 
 
-function* fetchUserTopicListSagas(list, path, page){
+function* fetchUserTopicListSagas(wrapList, path, page){
 	try{
 
 		//console.log('list', list, path, page);
-		const result = yield call(fetchUserTopicList, list, path, page); 
+		const result = yield call(fetchUserTopicList, wrapList, path, page); 
 
 		//console.log('result', result);
 
@@ -68,7 +68,7 @@ function* fetchUserTopicListSagas(list, path, page){
 		//toastShort('网络发生错误，请重试');
 		//yield put(receiveUserTopicList());
 
-		yield put(receiveUserTopicList(list));
+		yield put(receiveUserTopicList(wrapList));
 		toastShort('网络发生错误，请重试');
 	}
 }
@@ -77,15 +77,15 @@ function* fetchUserTopicListSagas(list, path, page){
 
 export function* watchUserTopicList(){
 	while (true) {
-		const { list, path, page } = yield take([ types.REQUEST_USER_TOPIC_LIST, 
+		const { wrapList, path, page } = yield take([ types.REQUEST_USER_TOPIC_LIST, 
 								   				  types.REFRESH_USER_TOPIC_LIST, 
 								   				  types.LOAD_MORE_USER_TOPIC_LIST]);
-		yield fork(fetchUserTopicListSagas, list, path, page);
+		yield fork(fetchUserTopicListSagas, wrapList, path, page);
 	}
 }
 
 
-function* fetchUserReplyListSagas(list, path, page){
+function* fetchUserReplyListSagas(wrapList, path, page){
 	try{
 		//console.log('path', path, 'page', page);
 		/*const userReplyListReceived = yield call(fetchUserReplyList, path, page); 
@@ -97,7 +97,7 @@ function* fetchUserReplyListSagas(list, path, page){
 			yield put(receiveUserReplyList(userReplyListReceived));
 		}*/
 		//console.log('list', list, path, page);
-		const result = yield call(fetchUserReplyList, list, path, page); 
+		const result = yield call(fetchUserReplyList, wrapList, path, page); 
 
 		//console.log('result', result);
 
@@ -106,7 +106,7 @@ function* fetchUserReplyListSagas(list, path, page){
 	} catch ( error ){
 		console.log('error:', error);
 		toastShort('网络发生错误，请重试');
-		yield put(receiveUserReplyList(list));
+		yield put(receiveUserReplyList(wrapList));
 	}
 }
 
@@ -114,10 +114,10 @@ function* fetchUserReplyListSagas(list, path, page){
 
 export function* watchUserReplyList(){
 	while (true) {
-		const { list, path, page } = yield take([ types.REQUEST_USER_REPLY_LIST, 
+		const { wrapList, path, page } = yield take([ types.REQUEST_USER_REPLY_LIST, 
 								   				  types.REFRESH_USER_REPLY_LIST, 
 								   				  types.LOAD_MORE_USER_REPLY_LIST]);
-		yield fork(fetchUserReplyListSagas, list, path, page);
+		yield fork(fetchUserReplyListSagas, wrapList, path, page);
 	}
 }
 

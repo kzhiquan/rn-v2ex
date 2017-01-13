@@ -157,7 +157,7 @@ class HomePage extends React.Component {
 
   render() {
     const { recentActions, recent, auth, navigator } = this.props; 
-
+    console.log('recent', recent);
     let titleConfig = {
       title: "V2EX"
     };

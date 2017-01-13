@@ -5,6 +5,8 @@ export const TEST_A = 'TEST_A'
 export const TEST_B = 'TEST_B'
 
 export const REQUEST_TOPIC = 'REQUEST_TOPIC'
+export const REFRESH_TOPIC = 'REFRESH_TOPIC'
+export const LOAD_MORE_TOPIC = 'LOAD_MORE_TOPIC'
 export const RECEIVE_TOPIC = 'RECEIVE_TOPIC'
 
 export const START_FAVORITE_TOPIC = 'START_FAVORITE_TOPIC'

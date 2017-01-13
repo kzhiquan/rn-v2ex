@@ -38,6 +38,7 @@ import SITE from '../constants/Config'
 let canLoadMore;
 let page = 1;
 let loadMoreTime = 0;
+let reply = null;
 
 const maxHeight = Dimensions.get('window').height;
 const maxWidth = Dimensions.get('window').width;
@@ -50,30 +51,44 @@ class TopicPage extends React.Component {
         rowHasChanged: (r1, r2) => r1 !== r2,
         sectionHeaderHasChanged: (h1, h2) => h1 !== h2,  
       }),
+      modalVisible: false,
+      topicMoreModalVisible:false,
+      replyMoreModalVisible:false,
+      unLoginModalVisible:false,
     };
     canLoadMore = false;
     page = 1;
   }
 
   componentWillMount() {
+    //console.log("componentWillMount");
   }
 
   componentDidMount() {
     const { topicActions, route, topic } = this.props;
+    //topicActions.requestTopic(route.topic);
     topicActions.requestTopic(topic.wrapList, route.topic.topic_url, 1);
-    loadMoreTime = Date.parse(new Date()) / 1000;
   }
 
   componentWillReceiveProps(nextProps){
     //console.log('nextProps', nextProps);
+    const { topic } = nextProps;
+    if( topic.isTopicMoreWorking ){
+      this.setState({topicMoreModalVisible:false});
+    }
+
+    if( topic.isReplyMoreWorking ){
+      this.setState({replyMoreModalVisible:false})
+    }
   }
 
   onRefresh(){
+    //console.log('onRefresh');
     canLoadMore = false;
     page = 1;
     const { topicActions, route, topic } = this.props;
+    //topicActions.requestTopic(true, false, false, route.topic);
     topicActions.refreshTopic(topic.wrapList, route.topic.topic_url, page);
-    loadMoreTime = Date.parse(new Date()) / 1000;
   }
 
   _renderNode(node, index, parent, type) {
@@ -112,6 +127,14 @@ class TopicPage extends React.Component {
     console.log('url', url);
   }
 
+  _userClick(){
+    const { navigator, path } = this;
+    navigator.push({
+      component : UserContainer,
+      name : 'User', 
+      path : path,
+    });
+  }
 
   _renderTopicTags(topic){
 
@@ -133,17 +156,6 @@ class TopicPage extends React.Component {
 
   _renderTopic(topic,sectionID, rowID, highlightRow){
     if(topic){
-      //console.log('topic', topic);
-      let thankIcon = require('../static/imgs/heart.png');
-      if(topic.thank_url == 'done'){
-        thankIcon = require('../static/imgs/heart_red.png');
-      }
-
-      let favoriteIcon = require('../static/imgs/star.png');
-      if(topic.favorite_url && topic.favorite_url.startsWith('/unfavorite')){
-        favoriteIcon = require('../static/imgs/star_red.png');
-      }
-
       return (
           <View style={styles.topicContainer}>
 
@@ -205,16 +217,14 @@ class TopicPage extends React.Component {
 
                 <View style={[styles.directionRow, {top:6}]}>
                   
-                  <TouchableOpacity onPress={this._onTopicThankClick.bind(this)}>
-                    <View style={styles.directionRow}>
-                      <Image
-                        source={thankIcon}
-                      />
-                      <View style={{paddingLeft:4}}>
-                        <Text style={styles.metaTextStyle}>感谢</Text>
-                      </View>
+                  <View style={styles.directionRow}>
+                    <Image
+                      source={require('../static/imgs/heart.png')}
+                    />
+                    <View style={{left:4}}>
+                      <Text style={styles.metaTextStyle}>感谢</Text>
                     </View>
-                  </TouchableOpacity>
+                  </View>
 
                   <View style={[styles.directionRow, {left:32}]}>
                     <Image
@@ -225,25 +235,21 @@ class TopicPage extends React.Component {
                     </View>
                   </View>
 
-                  <TouchableOpacity onPress={this._onTopicFavoriteClick.bind(this)}>
-                    <View style={[styles.directionRow,{left:64}]}>
-                      <Image
-                        source={favoriteIcon}
-                      />
-                      <View style={{paddingLeft:4, paddingTop:2}}>
-                        <Text style={styles.metaTextStyle}>{topic.collect_count || '收藏'}</Text>
-                      </View>
+                  <View style={[styles.directionRow,{left:64}]}>
+                    <Image
+                      source={require('../static/imgs/star.png')}
+                    />
+                    <View style={{left:4, top:2}}>
+                      <Text style={styles.metaTextStyle}>{topic.collect_count || '收藏'}</Text>
                     </View>
-                  </TouchableOpacity>
+                  </View>
 
                 </View>
 
 
-                <TouchableOpacity onPress={this._onTopicReplyClick.bind(this)}>
-                  <View style={styles.replyBtnContainer}>
-                    <Text style={styles.replyBtnText}>回复</Text>
-                  </View>
-                </TouchableOpacity>
+                <View style={styles.replyBtnContainer}>
+                  <Text style={styles.replyBtnText}>回复</Text>
+                </View>
 
               </View>
 
@@ -255,16 +261,36 @@ class TopicPage extends React.Component {
   }
 
   _renderReply(reply, sectionID, rowID, highlightRow){
+    //return null;
+    /*return (
 
-    let thankIcon = require('../static/imgs/heart.png');
-    if(reply.thank_url == 'done'){
-        thankIcon = require('../static/imgs/heart_red.png');
-    }
+      <TouchableOpacity onPress={this._onReplyMore} reply={item} that={this}>
+        <View style={styles.containerReply}>
+          <TouchableOpacity onPress={this._userClick} navigator={navigator} path={item.member_url}>
+            <Image style={styles.replyHeader} source={{uri:item.member_avatar}} />
+          </TouchableOpacity>
+          <View style={styles.replyBody}>
+            <HtmlRender
+              key={`${sectionID}-${rowID}`}
+              value={'<div>' + item.content + '</div>'}
+              stylesheet={topicTitleStyle}
+              onLinkPress={this._onLinkPress.bind(this)}
+              renderNode={this._renderNode}
+            />
+            <View style={styles.replyBodyDetail}>
+              <Text>{item.member_name}</Text>
+            </View>
+          </View>
+          <Text style={styles.replyFooter}>{item.floor_number}</Text>
+        </View>
+      </TouchableOpacity>
 
+
+    );*/
     return (
       <TouchableOpacity>
         <View style={styles.replyItemContainer}>
-            <TouchableOpacity onPress={()=>this._onReplyUserClick(reply)}>
+            <TouchableOpacity>
               <Image
                 style={styles.avatar_size_42}
                 source={{uri:reply.member_avatar}}
@@ -302,26 +328,19 @@ class TopicPage extends React.Component {
               </View>
 
               <View style={[styles.directionRow, {paddingTop:8}]}>
+                  <Image
+                    source={require('../static/imgs/heart.png')}
+                  />
 
-                  <TouchableOpacity onPress={()=>this._onReplyThankClick(reply)}>
-                    <Image
-                      source={thankIcon}
-                    />
-                  </TouchableOpacity>
+                  <Image
+                    style={{left:64}}
+                    source={require('../static/imgs/chat_reply.png')}
+                  />
 
-                  <TouchableOpacity onPress={()=>this._onReplyDialogClick(reply)}>
-                    <Image
-                      style={{left:64}}
-                      source={require('../static/imgs/chat_reply.png')}
-                    />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={()=>this._onReplyReplyClick(reply)}>
-                    <Image
-                      style={{left:128}}
-                      source={require('../static/imgs/at.png')}
-                    />
-                  </TouchableOpacity>
+                  <Image
+                    style={{left:128}}
+                    source={require('../static/imgs/at.png')}
+                  />
               </View>
 
             </View>
@@ -329,16 +348,14 @@ class TopicPage extends React.Component {
       </TouchableOpacity>
 
     )
-    
   }
 
   renderItem(item, sectionID, rowID, highlightRow){
     const { navigator } = this.props;
     if(sectionID == 'topic'){
       return this._renderTopic(item, sectionID, rowID, highlightRow);
-    }else{
-      return this._renderReply(item, sectionID, rowID, highlightRow);
     }
+    return this._renderReply(item, sectionID, rowID, highlightRow);
   }
 
   renderFooter(){
@@ -356,6 +373,8 @@ class TopicPage extends React.Component {
   }
 
   onEndReached() {
+    //console.log('outer onEndReached page', page);
+
     const time = Date.parse(new Date()) / 1000;
     if (canLoadMore && time - loadMoreTime > 1) {
       canLoadMore = false;
@@ -364,6 +383,7 @@ class TopicPage extends React.Component {
       //if ( this._isCurrentPageFilled()){
         page += 1;
       //}
+      //topicActions.requestTopic(false, false, true, route.topic, page);
       topicActions.loadMoreTopic(topic.wrapList, route.topic.topic_url, page);
     }
   }
@@ -389,76 +409,40 @@ class TopicPage extends React.Component {
     }
   }
 
-  _onTopicFavoriteClick(){
-    console.log('_onTopicFavoriteClick');
-    const { topicActions, topic, auth } = this.props;
-    topicActions.startFavoriteTopic(topic.wrapList.topic);
+  _onTopicMore(){
+    this.setState({topicMoreModalVisible:true});
   }
 
-  _onTopicThankClick(){
-    console.log('onTopicThankBtnClick');
+  _onReplyMore(){
+    //console.log('onReplyMore');
+    //console.log(this, reply);
+    const { that } = this;
+    reply = this.reply;
+    //console.log(this, reply);
+    that.setState({replyMoreModalVisible:true});
+  }
+
+  _onFavoriteBtnClick(){
+    //console.log('_onFavoriteBtnClick');
     const { topicActions, topic, auth } = this.props;
-    if(topic.wrapList.topic.thank_url !== 'done'){
-      topicActions.startThankTopic(topic.wrapList.topic.thank_url);
+    if(!auth.user){
+      this.setState({topicMoreModalVisible:false, unLoginModalVisible:true})
+    }else{
+      topicActions.startFavoriteTopic(topic.topic.favorite_url)
     }
   }
 
-  _onTopicReplyClick(){
-    console.log('onTopicReplyBtnClick');
-    const { navigator, topic, topicActions } = this.props;
-    navigator.push({
-      component : ReplyTopicPage,
-      name : 'ReplyTopicPage',
-      wrapList : topic.wrapList, 
-      topicActions : topicActions,
-    });
-  }
-
-
-  _onReplyUserClick(reply){
-    const { navigator } = this.props;
-    navigator.push({
-      component : UserContainer,
-      name : 'UserPage', 
-      path : reply.member_url,
-    });
-  }
-
-  _onReplyThankClick(reply){
-    console.log('_onReplyThankClick', reply);
-    if(reply.thank_url !== 'done'){
-      const { topicActions } = this.props;
-      topicActions.startThankReply(reply);
+  _onTopicThankBtnClick(){
+    //console.log('onThankBtnClick');
+    const { topicActions, topic, auth } = this.props;
+    if(!auth.user){
+      this.setState({topicMoreModalVisible:false, unLoginModalVisible:true})
+    }else{
+      topicActions.startThankTopic(topic.topic.thank_url);
     }
   }
 
-  _onReplyDialogClick(reply){
-    console.log('_onReplyDialogClick', reply);
-    const { navigator, topic } = this.props;
-    navigator.push({
-      component : TopicDialogPage,
-      name : 'TopicDialogPage',
-      wrapList : topic.wrapList, 
-      reply: reply,
-    });
-
-  }
-
-  _onReplyReplyClick(reply){
-    console.log('_onReplyReplyClick', reply);
-    const { navigator, topic, topicActions } = this.props;
-
-    navigator.push({
-      component : ReplyTopicPage,
-      name : 'ReplyTopicPage',
-      wrapList : topic.wrapList, 
-      reply: reply,
-      topicActions : topicActions,
-    });
-
-  }
-
-  /*_onTweetBtnClick(){
+  _onTweetBtnClick(){
     //console.log('onTweetBtnClick');
     const { topic, auth } = this.props;
     if(!auth.user){
@@ -489,7 +473,7 @@ class TopicPage extends React.Component {
     Linking.openURL(url).catch(err => console.log('error', err));
   }
 
-  _onTopicReplyClick(){
+  _onTopicReplyBtnClick(){
     console.log('onReplyBtnClick');
     this.setState({topicMoreModalVisible:false});
     const { navigator, topic, topicActions } = this.props;
@@ -566,10 +550,6 @@ class TopicPage extends React.Component {
         component : AccountContainer,
         name:'Account'
     });
-  }*/
-
-  _onTopicMore(){
-    console.log('topicMore');
   }
 
   _onBackClick(){
@@ -582,8 +562,6 @@ class TopicPage extends React.Component {
     let currentTopic = route.topic;
     if(topic.wrapList.topic){
       currentTopic = topic.wrapList.topic;
-      currentTopic.member_name = route.topic.member_name;
-      currentTopic.node_name = route.topic.node_name;
     }
 
     var titleConfig = {
@@ -601,7 +579,7 @@ class TopicPage extends React.Component {
       'reply' : replyRows,
     }
 
-    //console.log('rows',rows);
+    console.log('rows',rows);
     return (
       <View style={styles.container}>
 
@@ -629,6 +607,32 @@ class TopicPage extends React.Component {
           }}
         />
 
+        {/*this._renderTopicPart()*/}
+        
+        {/*<VXTopicMoreModal 
+          visible={this.state.topicMoreModalVisible}
+          onFavoriteBtnClick={this._onFavoriteBtnClick.bind(this)}
+          onThankBtnClick={this._onTopicThankBtnClick.bind(this)}
+          onTweetBtnClick={this._onTweetBtnClick.bind(this)}
+          onWeiboBtnClick={this._onWeiboBtnClick.bind(this)}
+          onSafariBtnClick={this._onSafariBtnClick.bind(this)}
+          onReplyBtnClick={this._onTopicReplyBtnClick.bind(this)}
+          onCancelBtnClick={this._onTopicCancelBtnClick.bind(this)}/>
+
+        <VXReplyMoreModal 
+          visible={this.state.replyMoreModalVisible}
+          onThankBtnClick={this._onReplyThankBtnClick.bind(this)}
+          onReplyBtnClick={this._onReplyReplyBtnClick.bind(this)}
+          onDialogBtnClick={this._onDialogBtnClick.bind(this)}
+          onCancelBtnClick={this._onReplyCancelBtnClick.bind(this)}/>
+
+        <VXModal
+          visible={this.state.unLoginModalVisible}
+          title={'尚未登录，请先登录'}
+          btnText={'确定'}
+          btnClick={ this._onUnLoginModalClick.bind(this) }
+        />*/}
+
         <ListView
           initialListSize = {5}
           dataSource={this.state.dataSource.cloneWithRowsAndSections(rows, Object.keys(rows))}
@@ -651,7 +655,7 @@ class TopicPage extends React.Component {
 
 
         <ActivityIndicator
-          animating={topic.isLoading }
+          animating={topic.isLoading || topic.isTopicMoreWorking || topic.isReplyMoreWorking }
           style={styles.front}
           size="large"
         />
@@ -783,6 +787,55 @@ const styles = StyleSheet.create({
 
 
 
+
+
+
+  base: {
+    flex: 1
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: '#FFF',
+  },
+  containerReply:{
+    flex:1,
+    flexDirection:'row',
+    borderBottomWidth:1,
+    padding:5,
+    justifyContent: 'space-between'
+  },
+  replyHeader:{
+    width:48,
+    height:48
+  },
+  replyBody:{
+    width:280
+  },
+  replyBodyDetail:{
+    flex:1,
+    flexDirection:'row',
+    justifyContent: 'space-between'
+  },
+  replyFooter:{
+    color:'blue',
+    paddingTop: 18
+  },
+
+
+  containerTopic:{
+    flex : 1,
+  },
+  topicHeader:{
+  },
+  topicBody:{
+
+  },
+  topicFooter:{
+    flex : 1,
+    flexDirection : 'row',
+  },
+
   footerContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -799,7 +852,7 @@ const styles = StyleSheet.create({
   front:{
     position: 'absolute',
     top:300,
-    left: (width-50)/2,
+    left: (375-50)/2,
     width: 50,
     height:50,
     zIndex: 1,

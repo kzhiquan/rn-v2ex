@@ -97,7 +97,7 @@ export function parseRecentTopicList($){
 	return topicList;
 }
 
-
+//parse user page topic list
 export function parseUserTopicList($){
 	let topicList = [];
 	$('.box').children('.item').each(function(i, el){
@@ -128,6 +128,7 @@ export function parseUserTopicList($){
 	return topicList;
 }
 
+//parse user page reply list
 export function parseUserReplyList($){
 	let replyList = [];
 	$('.box').children('.dock_area').each(function(i, el){
@@ -141,6 +142,109 @@ export function parseUserReplyList($){
 			replyList.push(reply);
 		}
 	});
+	return replyList;
+}
+
+//parse topic page
+export function parseTopic($, topicId){
+
+	let topic = {};
+
+	topic.topic_title = $('#Main .box .header h1').first().text();
+	topic.member_url = $('#Main .box .header .fr a').first().attr('href');
+	topic.member_avatar = 'https:' + $('#Main .box .header .fr a img').first().attr('src');
+	topic.topic_content = $('#Main .topic_content .markdown_body').html();
+	if(!topic.topic_content){
+		topic.topic_content = $('#Main .topic_content').html();
+	}
+	topic.vote_count = $('#topic_' + topicId + '_votes').find('a').first().text();
+	topic.click_count = $('#Main .box .header .gray').first().text().split('·')[2];
+	if(topic.click_count){
+		topic.click_count = topic.click_count.replace(' ', '');
+	}
+	topic.post_date = $('#Main .box .header .gray').first().text().split('·')[1];
+	if(topic.post_date){
+		topic.post_date = topic.post_date.replace(' ', '');
+	}
+	topic.tags = [];
+	$('#Main .box .inner').children('.tag').each(function(i, el){
+		let tag = {};
+		tag.name = $(this).text();
+		tag.path = $(this).attr('href');
+		topic.tags.push(tag);
+	});
+
+	if($('#Main .transparent .inner span').first().text() == '目前尚无回复'){
+		topic.reply_count = 0;
+	}else{
+		topic.reply_count = $('#Main .box .cell .gray').first().text().split('回复')[0].replace(' ', '');
+	}
+	//this part, should the user have login in, but not conside the own topic.
+	//console.log($('#Main .topic_buttons').html())
+	if($('#Main .topic_buttons').html()){
+
+		topic.collect_count =$('#Main .topic_buttons .fr').first().text().split('∙')[1];
+		if(topic.collect_count){
+			topic.collect_count = topic.collect_count.replace(' ', '');
+		}
+		
+		//let favorite_text = $('#Main .topic_buttons a').first().text();
+		/*if(favorite_text === '加入收藏'){
+			topic.favorite_url = $('#Main .topic_buttons a').first().attr('href');
+		}else{
+			topic.favorite_url = $('#Main .topic_buttons a').first().attr('href');
+		}*/
+		topic.favorite_url = $('#Main .topic_buttons a').first().attr('href');
+
+		topic.twitter_url = $('#Main .topic_buttons a').eq(1).attr('onclick').match(/window.open\('(.+)', '_blank/i)[1];
+		topic.weibo_url = $('#Main .topic_buttons a').eq(2).attr('onclick').match(/window.open\('(.+)', '_blank/i)[1];
+		
+		//console.log($('#Main .topic_buttons a').eq(3).html());
+		if($('#Main .topic_buttons a').eq(3).html()){
+			topic.ignore_url = $('#Main .topic_buttons a').eq(3).attr('onclick').match(/location.href = '(.+)'/i)[1];	
+		}
+		
+		//https://www.v2ex.com/thank/topic/324495?t=qrrthxvtcebhkvabkjlxfgalpufakjyo post method
+		if($('#topic_thank a').html()){
+			let thank = $('#topic_thank a').eq(0).attr('onclick').match(/thankTopic\((\d+), '(.+)'\)/i);
+			topic.thank_url = '/thank/topic/' + thank[1] + '?t=' + thank[2];
+		}else{
+			topic.thank_url = 'done';
+		}
+
+		topic.reply_once = $('#Main .cell form input').first().attr('value');
+
+	}
+
+	return topic;
+}
+
+//parse topic page reply list
+export function parseTopicReplyList($){
+	let replyList = [];
+
+	$('#Main .box').children('.cell').each(function(i, el){
+		let reply = {};
+		reply.member_avatar = 'https:' + $(this).find('td[width="48"] img').first().attr('src');
+		reply.member_name = $(this).find('td[width="auto"] strong a').first().text();
+		reply.member_url = $(this).find('td[width="auto"] strong a').first().attr('href');
+		reply.floor_number = $(this).find('td[width="auto"] .fr span').first().text();
+		reply.post_date = $(this).find('td[width="auto"] .small').first().text();
+
+		reply.content = $(this).find('.reply_content').html();
+		if($(this).find('.thank_area a').html()){
+			let ignore = $(this).find('.thank_area a').eq(0).attr('onclick').match(/ignoreReply\((\d+), '(.+)'\)/i);
+			reply.ignore_url = '/ignore/reply/' + ignore[1] + '?once=' + ignore[2];
+
+			let thank = $(this).find('.thank_area a').eq(1).attr('onclick').match(/thankReply\((\d+), '(.+)'\)/i);
+			reply.thank_url = '/thank/reply/' + thank[1] + '?t=' + thank[2];
+		}
+
+		if(reply.content){
+			replyList.push(reply);
+		}
+	});
+
 	return replyList;
 }
 

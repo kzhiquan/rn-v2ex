@@ -10,14 +10,18 @@ const initialState = {
 		isLoading : false,
 		isRefreshing : false,
 		isLoadingMore : false,
-		list : [],
+		wrapList : {
+			list: [],
+		},
 	},
 
 	replyListExt:{
 		isLoading : false,
 		isRefreshing : false,
 		isLoadingMore : false,
-		list : [],
+		wrapList : {
+			list : [],
+		},
 	},
 }
 
@@ -33,10 +37,10 @@ export default function user(state = initialState, action){
 				isLoading : false,
 				user : action.user,
 				topicListExt : Object.assign({}, state.topicListExt, {
-					list : receiveUserAvatarToTopicList(state, action),
+					wrapList : receiveUserAvatarToTopicList(state, action),
 				}),
 				replyListExt : Object.assign({}, state.topicListExt, {
-					list : receiveUserAvatarAndNameToReplyList(state, action),
+					wrapList : receiveUserAvatarAndNameToReplyList(state, action),
 				}),
 			} );
 
@@ -70,7 +74,7 @@ export default function user(state = initialState, action){
 					isLoading : false,
 					isRefreshing : false,
 					isLoadingMore : false,
-					list : receiveTopicListAvatarToList(state, action),
+					wrapList : receiveTopicListAvatarToList(state, action),
 				})
 			})
 
@@ -101,7 +105,7 @@ export default function user(state = initialState, action){
 					isLoading : false,
 					isRefreshing : false,
 					isLoadingMore : false,
-					list : receiveReplyListAvatarAndNameToList(state, action),
+					wrapList : receiveReplyListAvatarAndNameToList(state, action),
 				})
 			})
 
@@ -136,40 +140,46 @@ export default function user(state = initialState, action){
 
 function receiveTopicListAvatarToList(state, action){
 
-	if(!state.user) return action.list;
+	if(!state.user) return action.wrapList;
 
-	return  action.list.map( (topic, index, arr) => {
-				topic.member_avatar = state.user.member_avatar;
-				return topic;
-			});
+	action.wrapList.list =  action.wrapList.list.map( (topic, index, arr) => {
+								topic.member_avatar = state.user.member_avatar;
+								return topic;
+					   		});
+
+	return action.wrapList;
 
 }
 
 function receiveUserAvatarToTopicList(state, action){
-	return state.topicListExt.list.map( (topic, index, arr)=> {
-				topic.member_avatar = action.user.member_avatar;
-				return topic;
-		   });
+	state.topicListExt.wrapList.list = state.topicListExt.wrapList.list.map( (topic, index, arr)=> {
+											topic.member_avatar = action.user.member_avatar;
+											return topic;
+									   });
+	return state.topicListExt.wrapList;
 }
 
 
 function receiveReplyListAvatarAndNameToList(state, action){
 
-	if(!state.user) return action.list;
+	if(!state.user) return action.wrapList;
 
-	return  action.list.map( (reply, index, arr) => {
-				reply.member_avatar = state.user.member_avatar;
-				reply.member_name = state.user.member_name;
-				return reply;
-			});
+	action.wrapList.list =  action.wrapList.list.map( (reply, index, arr) => {
+								reply.member_avatar = state.user.member_avatar;
+								reply.member_name = state.user.member_name;
+								return reply;
+							});
 
+	return action.wrapList;
 }
 
 function receiveUserAvatarAndNameToReplyList(state, action){
-	return state.replyListExt.list.map( (reply, index, arr)=> {
-				reply.member_avatar = action.user.member_avatar;
-				reply.member_name = action.user.member_name;
-				return reply;
-		   });
+	state.replyListExt.wrapList.list = state.replyListExt.wrapList.list.map( (reply, index, arr)=> {
+											reply.member_avatar = action.user.member_avatar;
+											reply.member_name = action.user.member_name;
+											return reply;
+									   });
+
+	return state.replyListExt.wrapList;
 }
 

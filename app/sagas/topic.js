@@ -1,4 +1,5 @@
-import { put, take, call, fork } from 'redux-saga/effects'
+import { put, take, call, fork } from 'redux-saga/effects';
+import { takeLatest } from 'redux-saga';
 import { toastShort } from '../utils/ToastUtil';
 
 import * as types from '../constants/ActionTypes';
@@ -8,6 +9,7 @@ import {
 	endThankTopic, 
 	endReplyTopic,
 	endThankReply,
+	requestTopic,
 } from '../actions/topic';
 
 import { 
@@ -20,66 +22,85 @@ import {
 
 
 
-function* fetchTopicSagas(isRefreshing, isLoading, isLoadingMore, topic, page){
+function* fetchTopicSagas(wrapList, path, page){
 	try{
 
-		const topicReceived = yield call(fetchTopic, topic, page); 
+		const result = yield call(fetchTopic, wrapList, path, page); 
 		//console.log('topicReceived:', topicReceived);
 
-		if( typeof(topicReceived) !== 'object' ){
+		/*if( typeof(topicReceived) !== 'object' ){
 			toastShort(topicReceived);
 			yield put(receiveTopic());
 		}else{
 			yield put(receiveTopic(topicReceived));
-		}
+		}*/
+		yield put(receiveTopic(result));
 
 	} catch ( error ){
 		console.log('error:', error);
 		toastShort('网络发生错误，请重试');
-		yield put(receiveTopic());
+		yield put(receiveTopic(wrapList));
 	}
 }
 
 
 export function* watchTopic(){
 	while (true) {
-		const { isRefreshing, isLoading, isLoadingMore, topic, page } = yield take(types.REQUEST_TOPIC);
-		yield fork(fetchTopicSagas, isRefreshing, isLoading, isLoadingMore, topic, page);
+		//const { isRefreshing, isLoading, isLoadingMore, topic, page } = yield take(types.REQUEST_TOPIC);
+		//yield fork(fetchTopicSagas, isRefreshing, isLoading, isLoadingMore, topic, page);
+		const { wrapList, path, page } = yield take([ types.REQUEST_TOPIC, 
+										   		  	  types.REFRESH_TOPIC, 
+										   		  	  types.LOAD_MORE_TOPIC]);
+		//console.log('user', 'page');
+		yield fork(fetchTopicSagas, wrapList, path, page);
 	}
 }
 
 
 
 
-function * favoriteTopicSagas(favoriteUrl){
+function * favoriteTopicSagas(action){
+	let topic = action.topic;
 	try{
+		const {newTopic, result} = yield call(favoriteTopic, topic);
+		if(result){
+			
+			let msg = '取消收藏成功';
+			if(newTopic.favorite_url.startsWith('/unfavorite')){
+				msg = '收藏成功';
+			}
 
-		const favoriteResult = yield call(favoriteTopic, favoriteUrl);
-		if(favoriteResult){
-			toastShort('收藏成功!');
+			toastShort(msg);
 		}else{
-			toastShort('收藏失败!');
+
+			let msg = '收藏失败';
+			if(newTopic.favorite_url.startsWith('/unfavorite')){
+				msg = '取消收藏失败';
+			}
+			toastShort(msg);
 		}
 
-		yield put(endFavoriteTopic());
+		yield put(endFavoriteTopic(newTopic));
 
 	}catch (error){
 		console.log('error:', error);
 		toastShort('网络发生错误, 请稍后重试');
-		yield put(endFavoriteTopic());
+		yield put(endFavoriteTopic(topic));
 	}
 }
 
 
 export function* watchFavoriteTopic(){
 	while (true) {
-		const { favoriteUrl } = yield take(types.START_FAVORITE_TOPIC);
-		yield fork(favoriteTopicSagas, favoriteUrl);
+		//const { topic } = yield takeLatest(types.START_FAVORITE_TOPIC);
+		//yield fork(favoriteTopicSagas, topic);
+		yield *takeLatest(types.START_FAVORITE_TOPIC, favoriteTopicSagas);
 	}
 }
 
 
-function* thankTopicSagas(thankUrl){
+function* thankTopicSagas(action){
+	let thankUrl = action.thankUrl
 	try{
 
 		const thankResult = yield call(thankTopic, thankUrl);
@@ -89,7 +110,7 @@ function* thankTopicSagas(thankUrl){
 			toastShort('感谢发送失败!');
 		}
 
-		yield put(endThankTopic());
+		yield put(endThankTopic(thankResult));
 
 	}catch (error){
 		console.log('error:', error);
@@ -101,15 +122,17 @@ function* thankTopicSagas(thankUrl){
 
 export function* watchThankTopic(){
 	while (true) {
-		const { thankUrl } = yield take(types.START_THANK_TOPIC);
-		yield fork(thankTopicSagas, thankUrl);
+		//const { thankUrl } = yield take(types.START_THANK_TOPIC);
+		//yield fork(thankTopicSagas, thankUrl);
+		yield* takeLatest(types.START_THANK_TOPIC, thankTopicSagas);
 	}
 }
 
 
-function* replyTopicSagas(topicUrl, once, content){
+function* replyTopicSagas(wrapList, content){
+	let topic = wrapList.topic;
 	try{
-		const replyResult = yield call(replyTopic, topicUrl, once, content);
+		const replyResult = yield call(replyTopic, topic, content);
 		console.log('replyResult', replyResult);
 		if(replyResult){
 			toastShort('评论已发送!');
@@ -117,7 +140,8 @@ function* replyTopicSagas(topicUrl, once, content){
 			toastShort('评论发送失败!');
 		}
 
-		yield put(endReplyTopic());
+		yield put(endReplyTopic(replyResult));
+		yield put(requestTopic(wrapList, wrapList.topic.topic_url, 1));
 		
 	}catch (error){
 		console.log('error:', error);
@@ -128,36 +152,39 @@ function* replyTopicSagas(topicUrl, once, content){
 
 export function* watchReplyTopic(){
 	while (true){
-		const { topicUrl, once, content } = yield take(types.START_REPLY_TOPIC);
-		yield fork(replyTopicSagas, topicUrl, once, content);
+		const { wrapList, content } = yield take(types.START_REPLY_TOPIC);
+		yield fork(replyTopicSagas, wrapList, content);
 	}
 }
 
 
-function* thankReplySagas(thankUrl){
+function* thankReplySagas(action){
+	let reply = action.reply
 	try{
 
-		const thankResult = yield call(thankReply, thankUrl);
+		const thankResult = yield call(thankReply, reply);
 		if(thankResult){
 			toastShort('感谢已发送!');
+			reply.thank_url = 'done';
 		}else{
 			toastShort('感谢发送失败!');
 		}
 
-		yield put(endThankReply());
+		yield put(endThankReply(reply));
 
 	}catch (error){
 		console.log('error:', error);
 		toastShort('网络发生错误, 请稍后重试');
-		yield put(endThankReply());
+		yield put(endThankReply(reply));
 	}
 }
 
 
 export function* watchThankReply(){
 	while (true) {
-		const { thankUrl } = yield take(types.START_THANK_REPLY);
-		yield fork(thankReplySagas, thankUrl);
+		//const { reply } = yield take(types.START_THANK_REPLY);
+		//yield fork(thankReplySagas, reply);
+		yield* takeLatest(types.START_THANK_REPLY, thankReplySagas)
 	}
 }
 

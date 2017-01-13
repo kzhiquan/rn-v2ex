@@ -5,7 +5,7 @@ import * as API from '../api/API'
 import SITE from '../constants/Config'
 
 
-export function fetchTopicListExt(list, path, page=1){
+export function fetchTopicListExt(wrapList, path, page=1){
   return new Promise((resolve, reject) => {
 
   	let url = SITE.HOST + path;
@@ -25,21 +25,21 @@ export function fetchTopicListExt(list, path, page=1){
 		const $ = cheerio.load(body);
 		let newTopicList = API.parseRecentTopicList($);
 		if( page == 1 ){
-			list = [].concat(newTopicList);
+			wrapList.list = [].concat(newTopicList);
 		}else{
 
 			let firstNewTopic = newTopicList[0];
-			let foundIndex = list.findIndex( (topic, index, arr)=> {
+			let foundIndex = wrapList.list.findIndex( (topic, index, arr)=> {
 				return topic.topic_url.split('#')[0] == firstNewTopic.topic_url.split('#')[0];
 			});
 
 			if(foundIndex >= 0){
-				newTopicList.splice(0, list.length-foundIndex);
+				newTopicList.splice(0, wrapList.list.length-foundIndex);
 			}
 
-			list = list.concat(newTopicList);
+			wrapList.list = wrapList.list.concat(newTopicList);
 		}
-		resolve(list);
+		resolve(wrapList);
 
       })
       .catch((error) => {
@@ -120,14 +120,14 @@ export function fetchTopicList(path, page=1){
 
 }
 
-export function fetchTopic(topic, page=1){
+export function fetchTopic(wrapList, path, page=1){
 	return new Promise( (resolve, reject) => {
 		//console.log('topic', topic, 'page', page);
-		let topicId = topic.topic_url.split('#')[0].split('t/')[1];
-		let url = SITE.HOST + topic.topic_url.split('#')[0] + '?p=' + page;
-		//console.log('url', url, topicId);
+		let topicId = path.split('#')[0].split('t/')[1];
+		let topicUrl = SITE.HOST + path.split('#')[0] + '?p=' + page;
+		//console.log('topicUrl', topicUrl, topicId);
 
-		fetch(url)
+		fetch(topicUrl)
 		.then( (response) => {
 			return response.text();
 		})
@@ -135,7 +135,35 @@ export function fetchTopic(topic, page=1){
 			//console.log(body);
 			//console.log('page', page, 'topic', topic);
 			const $ = cheerio.load(body);
-			topic.topic_id = topicId;
+
+			if(page == 1){
+				wrapList.topic = API.parseTopic($, topicId);
+				wrapList.topic.topic_id = topicId;
+				wrapList.topic.topic_url = '/t/' + topicId;
+			}
+
+			let newReplyList = API.parseTopicReplyList($);
+			if(page == 1){
+				wrapList.list = [].concat(newReplyList);
+			}else{
+				let currentCount = wrapList.list.length;
+				let currentLastFloorNumber = parseInt(wrapList.list[currentCount-1].floor_number);
+				let index = newReplyList.length-1;
+				for( ; index>=0; index--){
+					let reply = newReplyList[index];
+					if(parseInt(reply.floor_number) == currentLastFloorNumber){
+						break;
+					}
+				}
+
+				let incrementReplyList = newReplyList.slice(index+1);
+				wrapList.list = wrapList.list.concat(incrementReplyList);
+			}
+
+			resolve(wrapList);
+
+
+			/*topic.topic_id = topicId;
 			topic.topic_title = $('#Main .box .header h1').first().text();
 			topic.member_url = $('#Main .box .header .fr a').first().attr('href');
 			topic.member_avatar = 'https:' + $('#Main .box .header .fr a img').first().attr('src');
@@ -224,7 +252,7 @@ export function fetchTopic(topic, page=1){
 				if(reply.content){
 					newReplyList.push(reply);
 				}
-			});
+			})
 
 
 			//add new replies
@@ -246,7 +274,9 @@ export function fetchTopic(topic, page=1){
 			}
 
 			//console.log('page', page, 'topic', topic);
-			resolve(topic);
+			resolve(topic);*/
+
+
 		})
 		.catch( (error) => {
 			reject(error);
@@ -361,15 +391,16 @@ export async function postNewTopic(title, content, node, once){
 	//return '/t/326988#reply0';
 }
 
-export function favoriteTopic(url){
-	let favoriteUrl = SITE.HOST + url;
+export function requestFavoriteTopic(topic){
 
+	let favoriteUrl = SITE.HOST + topic.favorite_url;
+	console.log('favoriteUrl', favoriteUrl);
 	return new Promise( (resolve, reject) => {
 		fetch(favoriteUrl,{
 			credentials:'include'
 		})
 		.then( (response) => {
-			//console.log(response);
+			//console.log('response', response);
 			if(response.status === 200 && response.ok){
 				resolve(true);
 			}else{
@@ -381,6 +412,55 @@ export function favoriteTopic(url){
 		});	
 	});
 }
+
+export function requestFavoriteUrlTopic(topic){
+	let topicUrl = SITE.HOST + '/t/' + topic.topic_id;
+	console.log('topicUrl', topicUrl);
+	return new Promise( (resolve, reject) => {
+		fetch(topicUrl,{
+			credentials:'include'
+		})
+		.then( (response) => response.text())
+		.then( (body) => {
+			const $ = cheerio.load(body);
+			let collect_count =$('#Main .topic_buttons .fr').first().text().split('∙')[1];
+			if(collect_count){
+				collect_count = collect_count.replace(' ', '');
+			}
+			let favorite_url = $('#Main .topic_buttons a').first().attr('href');
+			resolve({favorite_url, collect_count});
+		})
+		.catch( (error)=>{
+			reject(error);
+		});	
+	});
+}
+
+export async function favoriteTopic(topic){
+	let result = await requestFavoriteTopic(topic);
+	console.log('result:', result)
+	let flag = false;
+	if(result){
+		let {favorite_url, collect_count} = await requestFavoriteUrlTopic(topic);
+		console.log('favorite_url', favorite_url, collect_count);
+		if( favorite_url.startsWith('/favorite') && topic.favorite_url.startsWith('/unfavorite')){
+			topic.favorite_url = favorite_url;
+			topic.collect_count = collect_count;
+			flag = true;
+		}else if( favorite_url.startsWith('/unfavorite') && topic.favorite_url.startsWith('/favorite')){
+			topic.favorite_url = favorite_url;
+			topic.collect_count = collect_count;
+			flag = true;
+		}
+	}
+
+	return {
+		newTopic : topic,
+		result : flag,
+	}
+
+}
+
 
 export function thankTopic(url){
 	let thankUrl = SITE.HOST + url;
@@ -408,9 +488,10 @@ export function thankTopic(url){
 	});
 }
 
-export function replyTopic(url, once, content){
-	let replyUrl = SITE.HOST + url;
-	//console.log('replyUrl', replyUrl, once, content);
+export function replyTopic(topic, content){
+	let replyUrl = SITE.HOST + topic.topic_url;
+	let once = topic.reply_once;
+	console.log('replyUrl', replyUrl, once, content);
 	return new Promise( (resolve, reject) => {
 		let body = 'content=' + encodeURIComponent(content) + '&once=' + encodeURIComponent(once);
 		fetch(replyUrl,{
@@ -431,7 +512,7 @@ export function replyTopic(url, once, content){
 			}else{
 				resolve(false);
 			}
-			return response.text();
+			//return response.text();
 		})
 		/*.then( (body)=>{
 			console.log(body);
@@ -442,8 +523,8 @@ export function replyTopic(url, once, content){
 	});
 }
 
-export function thankReply(url){
-	let thankUrl = SITE.HOST + url;
+export function thankReply(reply){
+	let thankUrl = SITE.HOST + reply.thank_url;
 	//console.log('thankUrl', thankUrl);
 	return new Promise( (resolve, reject) => {
 		fetch(thankUrl,{
@@ -1010,12 +1091,12 @@ export function fetchUser(path){
 	});
 }
 
-export function fetchUserTopicList(list, path, page=1){
-	let myTopicUrl = SITE.HOST + path + '?p=' + page;
-	console.log('myTopicUrl:', myTopicUrl);
+export function fetchUserTopicList(wrapList, path, page=1){
+	let userTopicUrl = SITE.HOST + path + '?p=' + page;
+	console.log('userTopicUrl:', userTopicUrl);
 	return new Promise( (resolve, reject) => {
 
-		fetch(myTopicUrl, {
+		fetch(userTopicUrl, {
 			credentials:'include'
 		})
 		.then((response) => {
@@ -1062,21 +1143,21 @@ export function fetchUserTopicList(list, path, page=1){
 			const $ = cheerio.load(body);
 			let newTopicList = API.parseUserTopicList($);
 			if( page == 1 ){
-				list = [].concat(newTopicList);
+				wrapList.list = [].concat(newTopicList);
 			}else{
 
 				let firstNewTopic = newTopicList[0];
-				let foundIndex = list.findIndex( (topic, index, arr)=> {
+				let foundIndex = wrapList.list.findIndex( (topic, index, arr)=> {
 					return topic.topic_url.split('#')[0] == firstNewTopic.topic_url.split('#')[0];
 				});
 
 				if(foundIndex >= 0){
-					newTopicList.splice(0, list.length-foundIndex);
+					newTopicList.splice(0, wrapList.list.length-foundIndex);
 				}
 
-				list = list.concat(newTopicList);
+				wrapList.list = wrapList.list.concat(newTopicList);
 			}
-			resolve(list);
+			resolve(wrapList);
 
 		})
 		.catch( (error) => {
@@ -1086,14 +1167,14 @@ export function fetchUserTopicList(list, path, page=1){
 	});	
 }
 
-export function fetchUserReplyList(list, path, page=1){
+export function fetchUserReplyList(wrapList, path, page=1){
 	//path = '/member/jianghu521';
 	//page = 3;
-	let myReplyUrl = SITE.HOST + path + '?p=' + page;
-	console.log('myReplyUrl:', myReplyUrl);
+	let userReplyUrl = SITE.HOST + path + '?p=' + page;
+	console.log('userReplyUrl:', userReplyUrl);
 	return new Promise( (resolve, reject) => {
 
-		fetch(myReplyUrl, {
+		fetch(userReplyUrl, {
 			credentials:'include'
 		})
 		.then((response) => {
@@ -1126,23 +1207,23 @@ export function fetchUserReplyList(list, path, page=1){
 			let newReplyList = API.parseUserReplyList($);
 			//console.log('newReplyList', newReplyList);
 			if( page == 1 ){
-				list = [].concat(newReplyList);
+				wrapList.list = [].concat(newReplyList);
 			}else{
 
 				let firstNewReply = newReplyList[0];
-				let foundIndex = list.findIndex( (reply, index, arr)=> {
+				let foundIndex = wrapList.list.findIndex( (reply, index, arr)=> {
 					return (reply.topic.topic_url.split('#')[0] == firstNewReply.topic.topic_url.split('#')[0] &&
 							reply.content == firstNewReply.content);
 				});
 
 				if(foundIndex >= 0){
-					newReplyList.splice(0, list.length-foundIndex);
+					newReplyList.splice(0, wrapList.list.length-foundIndex);
 				}
 				//console.log('foundIndex', foundIndex);
 
-				list = list.concat(newReplyList);
+				wrapList.list = wrapList.list.concat(newReplyList);
 			}
-			resolve(list);
+			resolve(wrapList);
 
 		})
 		.catch( (error) => {

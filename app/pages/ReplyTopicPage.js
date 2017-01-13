@@ -8,6 +8,7 @@ import {
 	TouchableOpacity, 
 	ActivityIndicator,
 	TextInput,
+	Dimensions,
 } from 'react-native'
 
 import NavigationBar from 'react-native-navbar';
@@ -15,6 +16,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 
 class ReplyTopicPage extends React.Component {
+
 	constructor(props) {
 	    super(props);
 	    const { route } = this.props;
@@ -30,14 +32,12 @@ class ReplyTopicPage extends React.Component {
 	    }
   	}
 
-  	componentDidMount(){
-
-	}
-
 	_onPublish(){
 		const { navigator, route } = this.props;
+		const { topicActions, wrapList } = route;
 		console.log('route', route);
-		route.topicActions.startReplyTopic('/t/'+route.topic.topic.topic_id, route.topic.topic.reply_once, this.state.text);
+		//topicActions.startReplyTopic('/t/'+topic.topic_id, topic.reply_once, this.state.text);
+		topicActions.startReplyTopic(wrapList, this.state.text);
 		navigator.pop(); 
 	}
 
@@ -54,20 +54,32 @@ class ReplyTopicPage extends React.Component {
 			}
 		};
 
+		let rightButtonConfig = {
+			title: '发布',
+			handler: this._onPublish.bind(this),
+		};
+
 		return (
-			<View style={{flex:1}}>
+			<View style={styles.container}>
+
 	        	<NavigationBar
 	              title={titleConfig}
+	              style={styles.navigatorBarStyle}
 	              leftButton={leftButtonConfig}
-	              rightButton={
-	                <TouchableOpacity onPress={this._onPublish.bind(this)}>
-	                  <Icon name="ios-send" size={30} style={{marginRight:10, marginTop:10}} color="blue"/>
-	                </TouchableOpacity> 
-	              }
+	              rightButton={rightButtonConfig}
+	              statusBar={{
+			        tintColor : '#FAFAFA'
+			      }}
 	       		/>
-	       		<View>
+
+	       		<View style={styles.textInputContainer}>
 	       			<TextInput
-	       				style={{height: Math.max(35, this.state.height)}}
+	       				style={{
+	       					height: Math.max(35, this.state.height),
+	       					width:width-16-16,
+	       					fontSize:16,
+	       				}}
+	       				autoFocus={true}
 	       				multiline={true}
 	       				onChangeText={(text) => this.setState({text})}
 	       				onContentSizeChange={(event) => this.setState({height: event.nativeEvent.contentSize.height})}
@@ -80,6 +92,23 @@ class ReplyTopicPage extends React.Component {
 	}
 }
 
+const {height, width} = Dimensions.get('window');
+
+var styles = StyleSheet.create({
+	container : {
+		flex : 1,
+		backgroundColor : 'white',
+	},
+	navigatorBarStyle:{
+		backgroundColor : '#FAFAFA', 
+		borderBottomWidth : 1,
+		borderBottomColor : '#B2B2B2',
+	},
+	textInputContainer:{
+		paddingTop:12,
+		paddingLeft:16
+	}
+});
 
 export default ReplyTopicPage;
 

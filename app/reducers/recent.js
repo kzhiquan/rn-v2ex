@@ -6,7 +6,9 @@ const initialState = {
 	isLoading : false,
 	isRefreshing : false,
 	isLoadingMore : false,
-	list : [],
+	wrapList : {
+		list : [],
+	},
 }
 
 
@@ -34,15 +36,11 @@ export default function recent(state = initialState, action){
 				isRefreshing : false,
 				isLoading : false,
 				isLoadingMore : false,
-				list : action.list,
+				wrapList : action.wrapList,
 			} );
 
 		case REHYDRATE:
-			return Object.assign({}, state, {
-				isLoading:false,
-				isRefreshing:false,
-				isLoadingMore:false,
-			});
+			return Object.assign({}, initialState);
 
 		default:
 			return state;

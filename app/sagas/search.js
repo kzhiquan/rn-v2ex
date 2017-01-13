@@ -1,5 +1,5 @@
 import { put, take, call, fork, } from 'redux-saga/effects'
-import { takeLatest } from 'redux-saga'
+import { takeLatest } from 'redux-saga';
 
 import { toastShort } from '../utils/ToastUtil';
 import * as types from '../constants/ActionTypes';

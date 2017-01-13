@@ -32,55 +32,55 @@ export function cleanUser(){
 	}
 }*/
 
-export function requestUserTopicList(list, path, page=1){
+export function requestUserTopicList(wrapList, path, page=1){
 	return {
 		type: types.REQUEST_USER_TOPIC_LIST,
-		list,
+		wrapList,
 		path, 
 		page
 	}
 }
 
-export function refreshUserTopicList(list, path, page=1){
+export function refreshUserTopicList(wrapList, path, page=1){
 	return {
 		type: types.REFRESH_USER_TOPIC_LIST,
-		list,
+		wrapList,
 		path, 
 		page
 	}
 }
 
-export function loadMoreUserTopicList(list, path, page=1){
+export function loadMoreUserTopicList(wrapList, path, page=1){
 	return {
 		type: types.LOAD_MORE_USER_TOPIC_LIST,
-		list,
+		wrapList,
 		path, 
 		page
 	}
 }
 
 
-export function receiveUserTopicList(list){
+export function receiveUserTopicList(wrapList){
 	return {
 		type : types.RECEIVE_USER_TOPIC_LIST,
-		list,
+		wrapList,
 	}
 }
 
 
-export function requestUserReplyList(list, path, page=1){
+export function requestUserReplyList(wrapList, path, page=1){
 	return {
 		type : types.REQUEST_USER_REPLY_LIST,
-		list,
+		wrapList,
 		path, 
 		page,
 	}
 }
 
-export function refreshUserReplyList(list, path, page=1){
+export function refreshUserReplyList(wrapList, path, page=1){
 	return {
 		type : types.REFRESH_USER_REPLY_LIST,
-		list,
+		wrapList,
 		path, 
 		page,
 	}
@@ -95,10 +95,10 @@ export function loadMoreUserReplyList(list, path, page=1){
 	}
 }
 
-export function receiveUserReplyList(list){
+export function receiveUserReplyList(wrapList){
 	return {
 		type : types.RECEIVE_USER_REPLY_LIST,
-		list,
+		wrapList,
 	}
 }
 

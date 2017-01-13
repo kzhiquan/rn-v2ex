@@ -13,9 +13,11 @@ import {
   ActivityIndicator,
   RecyclerViewBackedScrollView,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 import NavigationBar from 'react-native-navbar';
+import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
 import UserContainer from '../containers/public/UserContainer';
 
@@ -71,9 +73,13 @@ class TopicDialogPage extends React.Component {
     });
   }
 
-  renderItem(item, sectionID, rowID, highlightRow) {
+  _onBackClick(){
     const { navigator } = this.props;
-    return (
+    navigator.pop();
+  }
+
+  renderItem(reply, sectionID, rowID, highlightRow) {
+    /*return (
         <View style={styles.containerReply}>
           <TouchableOpacity onPress={this._userClick} navigator={navigator} path={item.member_url}>
             <Image style={styles.replyHeader} source={{uri:item.member_avatar}} />
@@ -92,7 +98,46 @@ class TopicDialogPage extends React.Component {
           </View>
           <Text style={styles.replyFooter}>{item.floor_number}</Text>
         </View>
-    );
+    );*/
+    return (
+        <View style={styles.replyItemContainer}>
+            <Image
+              style={styles.avatar_size_42}
+              source={{uri:reply.member_avatar}}
+            />
+
+            <View style={styles.avatarRightContent}>
+
+              <View>
+                <Text style={{fontSize:16}}>{reply.member_name}</Text>
+              </View>
+
+              <View style={[styles.directionRow, {paddingTop:8,}]}>
+
+                <View>
+                  <Text style={styles.metaTextStyle}>{reply.post_date}</Text>
+                </View>
+
+                <Image
+                  style={{top:4,left:4}}
+                  source={require('../static/imgs/dot.png')}
+                />
+
+                <View style={{left:14}}>
+                  <Text style={styles.metaTextStyle}>{reply.floor_number+'楼'}</Text>
+                </View>
+
+              </View>
+
+              <View style={{paddingTop:8,}}>
+                <HTMLView
+                  value={'<div>' + reply.content + '</div>'}
+                  stylesheet={{fontSize:14}}
+                />
+              </View>
+            </View>
+        </View>
+    )
   }
 
   render() {
@@ -100,13 +145,6 @@ class TopicDialogPage extends React.Component {
     //console.log('this.props:', this.props);
     let titleConfig = {
       title: '对话内容'
-    };
-
-    let leftButtonConfig = {
-      title: 'Back',
-      handler: function onBack() {
-        navigator.pop();
-      }
     };
 
     //console.log('route.reply.content', unescape(route.reply.content), route.reply.content.match(/@<a href="\/member\/(.+)">/ig))
@@ -125,7 +163,7 @@ class TopicDialogPage extends React.Component {
 
 
     //try to find an algorith to get dialog
-    for (let reply of route.topic.topic.replyList){
+    for (let reply of route.wrapList.list){
 
       let index = user_names.findIndex(function(value, index, arr){
         return (value == reply.member_name );
@@ -145,10 +183,18 @@ class TopicDialogPage extends React.Component {
     //console.log('rows', rows);
 
     return (
-      <View>
+      <View style={styles.container}>
         <NavigationBar
+          style={styles.navigatorBarStyle}
           title={titleConfig}
-          leftButton={leftButtonConfig}
+          leftButton={
+            <TouchableOpacity onPress={this._onBackClick.bind(this)}>
+                <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+            </TouchableOpacity> 
+          }
+          statusBar={{
+            tintColor : '#FAFAFA'
+          }}
         />
 
         <ListView
@@ -166,7 +212,62 @@ class TopicDialogPage extends React.Component {
 
 }
 
+
+const {height, width} = Dimensions.get('window');
+let borderColor = '#B2B2B2';
+let cellBorderColor = '#EAEAEC';
+let noteTextColor = '#A0ADB8';
+let backgroundColor = 'white';
+
+
 const styles = StyleSheet.create({
+
+
+  container : {
+    flex : 1,
+    backgroundColor : 'white',
+  },
+
+  navigatorBarStyle:{
+    backgroundColor : '#FAFAFA', 
+    borderBottomWidth : 1,
+    borderBottomColor : '#B2B2B2',
+  },
+
+
+  replyItemContainer:{
+    flexDirection : 'row',
+    flex : 1, 
+    paddingTop:12, 
+    left:16, 
+    paddingBottom:10, 
+    borderBottomWidth : 1, 
+    borderBottomColor : borderColor,
+    paddingBottom: 8,
+  },
+
+  avatarRightContent:{
+    left:10,
+    width : width-12-10-16-42,
+  },
+
+  avatar_size_42:{
+    width:42,
+    height:42,
+    borderRadius:8,
+  },
+
+  metaTextStyle:{
+    fontSize:12, 
+    color:noteTextColor,
+  },
+
+  directionRow:{
+    flexDirection : 'row',
+  },
+
+
+
   base: {
     flex: 1
   },
