@@ -21,6 +21,7 @@ import NavigationBar from 'react-native-navbar';
 import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Share, {ShareSheet, Button} from 'react-native-share';
 
 import ResizableImage from '../components/ResizableImage'
 import LoadingView from '../components/LoadingView';
@@ -32,7 +33,8 @@ import { toastShort } from '../utils/ToastUtil';
 import VXTopicMoreModal from '../components/VXTopicMoreModal';
 import VXReplyMoreModal from '../components/VXReplyMoreModal';
 import VXModal from '../components/VXModal';
-import SITE from '../constants/Config'
+import SITE from '../constants/Config';
+import SharePage from './SharePage';
 
 
 let canLoadMore;
@@ -115,18 +117,22 @@ class TopicPage extends React.Component {
 
   _renderTopicTags(topic){
 
+    function TagComponent(tag, index, arr){
+      return (
+          <View key={index} style={styles.tagAreaContainer}>
+              <Text style={styles.metaTextStyle}>{tag.name}</Text>
+          </View>
+      )
+    }
+
     if(topic.tags && topic.tags.length > 0){
+
       return (
         <View style={[styles.directionRow, {paddingTop:4}]}>
-          {
-            topic.tags.map( (tag, index, arr) => {
-              return  <View key={index} style={styles.tagAreaContainer}>
-                        <Text style={styles.metaTextStyle}>{tag.name}</Text>
-                      </View>
-            })
-          }
+          {topic.tags.map(TagComponent)}
         </View>
       )
+
     }
 
   }
@@ -262,71 +268,69 @@ class TopicPage extends React.Component {
     }
 
     return (
-      <TouchableOpacity>
-        <View style={styles.replyItemContainer}>
-            <TouchableOpacity onPress={()=>this._onReplyUserClick(reply)}>
-              <Image
-                style={styles.avatar_size_42}
-                source={{uri:reply.member_avatar}}
-              />
-            </TouchableOpacity>
+      <View style={styles.replyItemContainer}>
+          <TouchableOpacity onPress={()=>this._onReplyUserClick(reply)}>
+            <Image
+              style={styles.avatar_size_42}
+              source={{uri:reply.member_avatar}}
+            />
+          </TouchableOpacity>
 
-            <View style={styles.avatarRightContent}>
+          <View style={styles.avatarRightContent}>
+
+            <View>
+              <Text style={{fontSize:16}}>{topic.member_name}</Text>
+            </View>
+
+            <View style={[styles.directionRow, {paddingTop:8,}]}>
 
               <View>
-                <Text style={{fontSize:16}}>{topic.member_name}</Text>
+                <Text style={styles.metaTextStyle}>{reply.post_date}</Text>
               </View>
 
-              <View style={[styles.directionRow, {paddingTop:8,}]}>
+              <Image
+                style={{top:4,left:4}}
+                source={require('../static/imgs/dot.png')}
+              />
 
-                <View>
-                  <Text style={styles.metaTextStyle}>{reply.post_date}</Text>
-                </View>
-
-                <Image
-                  style={{top:4,left:4}}
-                  source={require('../static/imgs/dot.png')}
-                />
-
-                <View style={{left:14}}>
-                  <Text style={styles.metaTextStyle}>{reply.floor_number+'楼'}</Text>
-                </View>
-
-              </View>
-
-              <View style={{paddingTop:8,}}>
-                <HTMLView
-                  value={'<div>' + reply.content + '</div>'}
-                  stylesheet={{fontSize:14}}
-                />
-              </View>
-
-              <View style={[styles.directionRow, {paddingTop:8}]}>
-
-                  <TouchableOpacity onPress={()=>this._onReplyThankClick(reply)}>
-                    <Image
-                      source={thankIcon}
-                    />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={()=>this._onReplyDialogClick(reply)}>
-                    <Image
-                      style={{left:64}}
-                      source={require('../static/imgs/chat_reply.png')}
-                    />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity onPress={()=>this._onReplyReplyClick(reply)}>
-                    <Image
-                      style={{left:128}}
-                      source={require('../static/imgs/at.png')}
-                    />
-                  </TouchableOpacity>
+              <View style={{left:14}}>
+                <Text style={styles.metaTextStyle}>{reply.floor_number+'楼'}</Text>
               </View>
 
             </View>
-        </View>
-      </TouchableOpacity>
+
+            <View style={{paddingTop:8,}}>
+              <HTMLView
+                value={'<div>' + reply.content + '</div>'}
+                stylesheet={{fontSize:14}}
+              />
+            </View>
+
+            <View style={[styles.directionRow, {paddingTop:8}]}>
+
+                <TouchableOpacity onPress={()=>this._onReplyThankClick(reply)}>
+                  <Image
+                    source={thankIcon}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={()=>this._onReplyDialogClick(reply)}>
+                  <Image
+                    style={{left:64}}
+                    source={require('../static/imgs/chat_reply.png')}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={()=>this._onReplyReplyClick(reply)}>
+                  <Image
+                    style={{left:128}}
+                    source={require('../static/imgs/at.png')}
+                  />
+                </TouchableOpacity>
+            </View>
+
+          </View>
+      </View>
 
     )
     
@@ -361,26 +365,35 @@ class TopicPage extends React.Component {
       canLoadMore = false;
       loadMoreTime = Date.parse(new Date()) / 1000;
       const { topicActions, route, topic } = this.props;
-      //if ( this._isCurrentPageFilled()){
+      if ( this._isCurrentPageFilled()){
         page += 1;
-      //}
+      }
       topicActions.loadMoreTopic(topic.wrapList, route.topic.topic_url, page);
     }
   }
 
   _isCurrentPageFilled(countPerPage=100){
     const { topic } = this.props;
-    let replyCount = topic.topic.replyList.length;
+    /*let replyCount = topic.wrapList.list.length;
     if(replyCount == 0){
       return false;
     }
 
-    let lastReplyFloor = parseInt(topic.topic.replyList[replyCount-1].floor_number);
+    let lastReplyFloor = parseInt(topic.wrapList.list[replyCount-1].floor_number);
+    let remaimder = lastReplyFloor % countPerPage;
+    if( countPerPage - remaimder > 5 )
     if( lastReplyFloor % countPerPage == 0 ){
       return true;
     }else{
       return false;
+    }*/
+    let currentCount = topic.wrapList.list.length;
+    if(currentCount < parseInt(topic.wrapList.topic.reply_count)){
+      return true;
+    }else{
+      return false;
     }
+
   }
 
   onScroll() {
@@ -487,89 +500,23 @@ class TopicPage extends React.Component {
     let url = SITE.HOST + topic.topic.topic_url.split('#')[0];
     //console.log('url', url);
     Linking.openURL(url).catch(err => console.log('error', err));
-  }
-
-  _onTopicReplyClick(){
-    console.log('onReplyBtnClick');
-    this.setState({topicMoreModalVisible:false});
-    const { navigator, topic, topicActions } = this.props;
-    navigator.push({
-      component : ReplyTopicPage,
-      name : 'ReplyTopicPage',
-      topic : topic, 
-      topicActions : topicActions,
-    });
-  }
-
-  _onTopicCancelBtnClick(){
-    this.setState({topicMoreModalVisible:false});
-  }
-
-  _onReplyThankBtnClick(){
-    //console.log('onReplyThankBtnClick');
-
-    const { topicActions, topic, auth } = this.props;
-    if(!auth.user){
-      this.setState({replyMoreModalVisible:false, unLoginModalVisible:true})
-    }else{
-      topicActions.startThankReply(reply.thank_url);
-    }
-
-  }
-
-  _onReplyReplyBtnClick(){
-
-    const { navigator, topic, auth, topicActions } = this.props;
-    if(!auth.user){
-      this.setState({replyMoreModalVisible:false, unLoginModalVisible:true});
-    }else{
-      this.setState({replyMoreModalVisible:false});
-      navigator.push({
-        component : ReplyTopicPage,
-        name : 'ReplyTopicPage',
-        topic : topic, 
-        reply: reply,
-        topicActions : topicActions,
-      });
-    }
-
-  }
-
-  _onReplyCancelBtnClick(){
-    //console.log('onReplyCancelBtnClick');
-    this.setState({replyMoreModalVisible:false});
-  }
-
-  _onDialogBtnClick(){
-    console.log('onDialogBtnClick');
-
-    const { navigator, auth, topic } = this.props;
-    if(!auth.user){
-      this.setState({replyMoreModalVisible:false, unLoginModalVisible:true});
-    }else{
-      this.setState({replyMoreModalVisible:false});
-      navigator.push({
-        component : TopicDialogPage,
-        name : 'TopicDialogPage',
-        topic : topic, 
-        reply: reply,
-      });
-    }
-
-  }
-
-  _onUnLoginModalClick(){
-    //console.log('onUnLoginModalClick');
-    const { navigator } = this.props;
-    this.setState({unLoginModalVisible:false});
-    navigator.push({
-        component : AccountContainer,
-        name:'Account'
-    });
   }*/
 
-  _onTopicMore(){
-    console.log('topicMore');
+  _onShareTopicClick(){
+    /*console.log('_onShareTopicClick');
+    const { navigator } = this.props;
+    navigator.push({
+      component : SharePage,
+      name : 'SharePage'
+    });*/
+    let shareOptions = {
+      title: "React Native",
+      message: "Hola mundo",
+      url: "http://facebook.github.io/react-native/",
+      subject: "Share Link" //  for email
+    };
+
+    Share.open(shareOptions);
   }
 
   _onBackClick(){
@@ -617,7 +564,7 @@ class TopicPage extends React.Component {
             </TouchableOpacity> 
           }
           rightButton={
-            <TouchableOpacity onPress={this._onTopicMore.bind(this)}>
+            <TouchableOpacity onPress={this._onShareTopicClick.bind(this)}>
                 <Image 
                   style={{right:12, top:11}} 
                   source={require('../static/imgs/share.png')}

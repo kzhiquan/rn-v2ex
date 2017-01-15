@@ -19,7 +19,6 @@ import {
 import NavigationBar from 'react-native-navbar';
 import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
-import UserContainer from '../containers/public/UserContainer';
 
 class TopicDialogPage extends React.Component {
 
@@ -27,12 +26,7 @@ class TopicDialogPage extends React.Component {
     super(props);
     this.state = {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 } ),
-      replyMoreModalVisible : false,
     };
-    this.renderItem = this.renderItem.bind(this);
-  }
-
-  componentDidMount() {
   }
 
   _renderNode(node, index, parent, type) {
@@ -44,17 +38,14 @@ class TopicDialogPage extends React.Component {
         }
 
         return (
-                <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
-                  <Image 
-                    source={{uri:uri}} 
-                    style={{
-                      width:maxWidth-30,
-                      height:maxWidth-30,
-                      resizeMode: Image.resizeMode.contain}} />
-                </View>
-                /*<ResizableImage 
-                    source={{uri:uri}}
-                    style={{}} />*/
+            <View key={index} style={{flex:1, flexDirection:'row', justifyContent: 'center', width:maxWidth, height:maxWidth,}}>
+              <Image 
+                source={{uri:uri}} 
+                style={{
+                  width:maxWidth-30,
+                  height:maxWidth-30,
+                  resizeMode: Image.resizeMode.contain}} />
+            </View>
         )
 
     }
@@ -64,41 +55,12 @@ class TopicDialogPage extends React.Component {
     console.log('url', url);
   }
 
-  _userClick(){
-    const { navigator, path } = this;
-    navigator.push({
-      component : UserContainer,
-      name : 'User', 
-      path : path,
-    });
-  }
-
   _onBackClick(){
     const { navigator } = this.props;
     navigator.pop();
   }
 
   renderItem(reply, sectionID, rowID, highlightRow) {
-    /*return (
-        <View style={styles.containerReply}>
-          <TouchableOpacity onPress={this._userClick} navigator={navigator} path={item.member_url}>
-            <Image style={styles.replyHeader} source={{uri:item.member_avatar}} />
-          </TouchableOpacity>
-          <View style={styles.replyBody}>
-            <HtmlRender
-              key={`${sectionID}-${rowID}`}
-              value={'<div>' + item.content + '</div>'}
-              stylesheet={topicTitleStyle}
-              onLinkPress={this._onLinkPress.bind(this)}
-              renderNode={this._renderNode}
-            />
-            <View style={styles.replyBodyDetail}>
-              <Text>{item.member_name}</Text>
-            </View>
-          </View>
-          <Text style={styles.replyFooter}>{item.floor_number}</Text>
-        </View>
-    );*/
     return (
         <View style={styles.replyItemContainer}>
             <Image
@@ -141,7 +103,7 @@ class TopicDialogPage extends React.Component {
   }
 
   render() {
-    const { navigator, route } = this.props;
+    const { route } = this.props;
     //console.log('this.props:', this.props);
     let titleConfig = {
       title: '对话内容'
@@ -169,7 +131,7 @@ class TopicDialogPage extends React.Component {
         return (value == reply.member_name );
       });
 
-      console.log(reply, index);
+      //console.log(reply, index);
 
       if(index >= 0){
         rows.push(reply);
@@ -180,8 +142,6 @@ class TopicDialogPage extends React.Component {
       }
     }
 
-    //console.log('rows', rows);
-
     return (
       <View style={styles.container}>
         <NavigationBar
@@ -189,7 +149,10 @@ class TopicDialogPage extends React.Component {
           title={titleConfig}
           leftButton={
             <TouchableOpacity onPress={this._onBackClick.bind(this)}>
-                <Image style={{left:12, top:11}} source={require('../static/imgs/back_arrow.png')}/>
+                <Image 
+                  style={{left:12, top:11}} 
+                  source={require('../static/imgs/back_arrow.png')}
+                />
             </TouchableOpacity> 
           }
           statusBar={{
@@ -221,8 +184,6 @@ let backgroundColor = 'white';
 
 
 const styles = StyleSheet.create({
-
-
   container : {
     flex : 1,
     backgroundColor : 'white',
@@ -265,41 +226,6 @@ const styles = StyleSheet.create({
   directionRow:{
     flexDirection : 'row',
   },
-
-
-
-  base: {
-    flex: 1
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#FFF',
-  },
-  containerReply:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomWidth:1,
-    padding:5,
-    justifyContent: 'space-between'
-  },
-  replyHeader:{
-    width:48,
-    height:48
-  },
-  replyBody:{
-    width:280
-  },
-  replyBodyDetail:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent: 'space-between'
-  },
-  replyFooter:{
-    color:'blue',
-    paddingTop: 18
-  },
-
 
 });
 
