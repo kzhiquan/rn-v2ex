@@ -12,7 +12,7 @@
     "react": "15.3.2",
     "react-native": "0.36.0",
     "react-native-html-render": "git@github.com:kzhiquan/react-native-html-render.git",
-    "react-native-htmlview": "^0.5.0",
+    "react-native-htmlview": "git@github.com:kzhiquan/react-native-htmlview.git",
     "react-native-navbar": "^1.5.4",
     "react-native-popover": "^0.2.0",
     "react-native-root-toast": "^1.0.3",

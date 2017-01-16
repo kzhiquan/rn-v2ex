@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as topicCreators from '../actions/topic';
+import * as topicCreators from '../../actions/topic';
 
-import TopicPage from '../pages/TopicPage';
+import TopicPage from '../../pages/public/TopicPage';
 
 class TopicContainer extends React.Component {
   render() {

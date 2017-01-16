@@ -18,7 +18,7 @@ import {
 
 import AccountContainer from '../../containers/auth/AccountContainer';
 import NodeTopicListContainer from '../../containers/NodeTopicListContainer';
-import TopicContainer from '../../containers/TopicContainer';
+import TopicContainer from '../../containers/public/TopicContainer';
 import UserContainer from '../../containers/public/UserContainer';
 import TopicTableItem from '../../components/TopicTableItem';
 

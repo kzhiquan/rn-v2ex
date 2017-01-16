@@ -22,11 +22,12 @@ import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Share from 'react-native-share';
+import ResizableImage from '../../components/ResizableImage';
 
-import UserContainer from '../containers/public/UserContainer';
+import UserContainer from '../../containers/public/UserContainer';
 import ReplyTopicPage from './ReplyTopicPage';
 import TopicDialogPage from './TopicDialogPage';
-import SITE from '../constants/Config';
+import SITE from '../../constants/Config';
 
 
 let canLoadMore;
@@ -70,34 +71,53 @@ class TopicPage extends React.Component {
     loadMoreTime = Date.parse(new Date()) / 1000;
   }
 
+  _onImageContainerLayout(event, index){
+      console.log('layout', event.nativeEvent.layout, index);
+  }
+
   _renderNode(node, index, parent, type) {
-    //console.log('node:',node);
+
+
+    //console.log('node:',node, index, parent, type );
+
+
+    
     if (node.name === 'img') {
         let uri = node.attribs.src;
         if(uri.indexOf('http') == -1){
           uri = 'http:' + uri;
         }
 
-        return (
+        //console.log('node:',node, index, parent, type, uri);
+
+        /*return (
                 <View key={index} 
                       style={{
-                        flex:1, 
-                        flexDirection:'row', 
                         justifyContent: 'center', 
                         alignItems:'center', 
                         width:maxWidth-12-12, 
                         height:maxWidth,
                         backgroundColor:'rgba(3, 3, 3,0.5)',
-                      }}>
-                  <Image 
+                      }}
+                      onLayout={(event)=>this._onImageContainerLayout(event,index)}>
+                  <Image
+                    key={index}
                     source={{uri:uri}} 
                     style={{
                       width:maxWidth-12-12,
-                      height:maxWidth,
+                      height:280,
                       resizeMode: Image.resizeMode.contain
                     }} />
                 </View>
-        )
+        )*/
+        /*return (
+            <ResizableImage
+              key={{index}}
+              style={{
+              }}
+              source={{uri:uri}}
+            />
+        )*/
 
     }
   }
@@ -120,7 +140,7 @@ class TopicPage extends React.Component {
     if(topic.tags && topic.tags.length > 0){
 
       return (
-        <View style={[styles.directionRow, {paddingTop:4}]}>
+        <View style={[styles.directionRow, {paddingTop:4, paddingBottom:4}]}>
           {topic.tags.map(TagComponent)}
         </View>
       )
@@ -132,14 +152,14 @@ class TopicPage extends React.Component {
   _renderTopic(topic,sectionID, rowID, highlightRow){
     if(topic){
       //console.log('topic', topic);
-      let thankIcon = require('../static/imgs/heart.png');
+      let thankIcon = require('../../static/imgs/heart.png');
       if(topic.thank_url == 'done'){
-        thankIcon = require('../static/imgs/heart_red.png');
+        thankIcon = require('../../static/imgs/heart_red.png');
       }
 
-      let favoriteIcon = require('../static/imgs/star.png');
+      let favoriteIcon = require('../../static/imgs/star.png');
       if(topic.favorite_url && topic.favorite_url.startsWith('/unfavorite')){
-        favoriteIcon = require('../static/imgs/star_red.png');
+        favoriteIcon = require('../../static/imgs/star_red.png');
       }
 
       return (
@@ -167,7 +187,7 @@ class TopicPage extends React.Component {
                         </View>
                         <Image
                           style={{top:4,left:4}}
-                          source={require('../static/imgs/dot.png')}
+                          source={require('../../static/imgs/dot.png')}
                         />
                         <View style={{left:14}}>
                           <Text style={styles.metaTextStyle}>{topic.click_count}</Text>
@@ -193,7 +213,7 @@ class TopicPage extends React.Component {
                 <HTMLView
                   value={'<div>' + topic.topic_content + '</div>'}
                   stylesheet={{fontSize:14}}
-                  renderNode={this._renderNode}
+                  renderNode={this._renderNode.bind(this)}
                   onLinkPress={this._onLinkPress}
                 />
               </View>
@@ -216,7 +236,7 @@ class TopicPage extends React.Component {
 
                   <View style={[styles.directionRow, {left:32}]}>
                     <Image
-                      source={require('../static/imgs/chat_reply.png')}
+                      source={require('../../static/imgs/chat_reply.png')}
                     />
                     <View style={{left:4}}>
                       <Text style={styles.metaTextStyle}>{topic.reply_count}个回复</Text>
@@ -254,9 +274,9 @@ class TopicPage extends React.Component {
 
   _renderReply(reply, sectionID, rowID, highlightRow){
 
-    let thankIcon = require('../static/imgs/heart.png');
+    let thankIcon = require('../../static/imgs/heart.png');
     if(reply.thank_url == 'done'){
-        thankIcon = require('../static/imgs/heart_red.png');
+        thankIcon = require('../../static/imgs/heart_red.png');
     }
 
     return (
@@ -282,7 +302,7 @@ class TopicPage extends React.Component {
 
               <Image
                 style={{top:4,left:4}}
-                source={require('../static/imgs/dot.png')}
+                source={require('../../static/imgs/dot.png')}
               />
 
               <View style={{left:14}}>
@@ -310,7 +330,7 @@ class TopicPage extends React.Component {
                   style={{paddingLeft:64}}
                   onPress={()=>this._onReplyDialogClick(reply)}>
                   <Image
-                    source={require('../static/imgs/chat_reply.png')}
+                    source={require('../../static/imgs/chat_reply.png')}
                   />
                 </TouchableOpacity>
 
@@ -318,7 +338,7 @@ class TopicPage extends React.Component {
                   style={{paddingLeft:64}}
                   onPress={()=>this._onReplyReplyClick(reply)}>
                   <Image
-                    source={require('../static/imgs/at.png')}
+                    source={require('../../static/imgs/at.png')}
                   />
                 </TouchableOpacity>
             </View>
@@ -523,7 +543,7 @@ class TopicPage extends React.Component {
             <TouchableOpacity onPress={this._onBackClick.bind(this)}>
                 <Image 
                   style={{left:12, top:11}} 
-                  source={require('../static/imgs/back_arrow.png')}
+                  source={require('../../static/imgs/back_arrow.png')}
                 />
             </TouchableOpacity> 
           }
@@ -531,7 +551,7 @@ class TopicPage extends React.Component {
             <TouchableOpacity onPress={this._onShareTopicClick.bind(this)}>
                 <Image 
                   style={{right:12, top:11}} 
-                  source={require('../static/imgs/share.png')}
+                  source={require('../../static/imgs/share.png')}
                 />
             </TouchableOpacity> 
           }

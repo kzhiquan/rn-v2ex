@@ -23,7 +23,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import HtmlRender from 'react-native-html-render';
 
 import AccountContainer from '../../containers/auth/AccountContainer';
-import TopicContainer from '../../containers/TopicContainer';
+import TopicContainer from '../../containers/public/TopicContainer';
 import NodeContainer from '../../containers/find/NodeContainer';
 import NameGotoTableItem from '../../components/NameGotoTableItem';
 

@@ -22,7 +22,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import LoadingView from '../components/LoadingView';
 import AccountContainer from '../containers/auth/AccountContainer';
 import SearchContainer from '../containers/home/SearchContainer';
-import TopicContainer from '../containers/TopicContainer';
+import TopicContainer from '../containers/public/TopicContainer';
 import { toastShort } from '../utils/ToastUtil';
 import VXModal from '../components/VXModal';
 import NewTopicTitlePage from './home/NewTopicTitlePage';

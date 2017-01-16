@@ -21,7 +21,7 @@ import NavigationBar from 'react-native-navbar';
 
 
 import AccountContainer from '../../containers/auth/AccountContainer';
-import TopicContainer from '../../containers/TopicContainer';
+import TopicContainer from '../../containers/public/TopicContainer';
 import UserContainer from '../../containers/public/UserContainer';
 import TopicTableItem from '../../components/TopicTableItem';
 
@@ -56,8 +56,8 @@ class MyFavoriteTopicListPage extends React.Component {
     authActions.refreshMyFavoriteTopic(route.node.path);
   }
 
-  _onTopicClick(){
-    const { topic, navigator } = this;
+  _onTopicClick(topic){
+    const { navigator } = this.props;
     navigator.push({
       component : TopicContainer,
       name : 'TopicPage',
@@ -65,12 +65,12 @@ class MyFavoriteTopicListPage extends React.Component {
     });
   }
 
-  _onUserClick(){
-    const { navigator, path } = this;
+  _onUserClick(topic){
+    const { navigator } = this.props;
     navigator.push({
       component : UserContainer,
       name : 'UserPage', 
-      path : path,
+      path : topic.topic.member_url,
     });
   }
 
@@ -84,9 +84,8 @@ class MyFavoriteTopicListPage extends React.Component {
       return (
         <TopicTableItem 
           topic = {topic}
-          navigator = {navigator}
-          onTopicClick = {this._onTopicClick}
-          onUserClick = {this._onUserClick}
+          onTopicClick = {()=>this._onTopicClick(topic)}
+          onUserClick = {()=>this._onUserClick(topic)}
         />
       )
   }

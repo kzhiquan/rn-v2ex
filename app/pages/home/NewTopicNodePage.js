@@ -16,7 +16,7 @@ import {
 import NavigationBar from 'react-native-navbar';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import TopicContainer from '../../containers/TopicContainer';
+import TopicContainer from '../../containers/public/TopicContainer';
 import NameTableItem from '../../components/NameTableItem';
 
 

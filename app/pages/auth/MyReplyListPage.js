@@ -21,7 +21,7 @@ import NavigationBar from 'react-native-navbar';
 import HTMLView from 'react-native-htmlview';
 import HtmlRender from 'react-native-html-render';
 
-import TopicContainer from '../../containers/TopicContainer'
+import TopicContainer from '../../containers/public/TopicContainer'
 
 
 let canLoadMore;

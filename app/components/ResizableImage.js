@@ -25,10 +25,13 @@ var ResizableImage = React.createClass({
       return
     }
     Image.getSize(this.props.source.uri, (w, h) => {
+      console.log('image set size', w, h);
       this.setState({width:w, height:h})
     })
+
   },
   render: function() {
+    console.log('image render');
     var finalSize = {}
     if (this.state.width > width) {
       finalSize.width = width
@@ -42,6 +45,8 @@ var ResizableImage = React.createClass({
     } else {
       source = Object.assign(source, this.props.source, finalSize)
     }
+
+    console.log('style', style, 'source', source);
 
     return (
       <Image

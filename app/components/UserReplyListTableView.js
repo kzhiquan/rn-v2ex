@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 
-import TopicContainer from '../containers/TopicContainer';
+import TopicContainer from '../containers/public/TopicContainer';
 import TableView from './TableView'
 import UserReplyTableItem from './UserReplyTableItem';
 

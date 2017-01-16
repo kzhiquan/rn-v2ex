@@ -24,7 +24,7 @@ import HtmlRender from 'react-native-html-render';
 
 import Button from '../../components/Button';
 import AccountContainer from '../../containers/auth/AccountContainer'
-import TopicContainer from '../../containers/TopicContainer'
+import TopicContainer from '../../containers/public/TopicContainer'
 import UserContainer from '../../containers/public/UserContainer'
 
 

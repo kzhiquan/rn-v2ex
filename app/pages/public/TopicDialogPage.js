@@ -82,7 +82,7 @@ class TopicDialogPage extends React.Component {
 
                 <Image
                   style={{top:4,left:4}}
-                  source={require('../static/imgs/dot.png')}
+                  source={require('../../static/imgs/dot.png')}
                 />
 
                 <View style={{left:14}}>
@@ -151,7 +151,7 @@ class TopicDialogPage extends React.Component {
             <TouchableOpacity onPress={this._onBackClick.bind(this)}>
                 <Image 
                   style={{left:12, top:11}} 
-                  source={require('../static/imgs/back_arrow.png')}
+                  source={require('../../static/imgs/back_arrow.png')}
                 />
             </TouchableOpacity> 
           }
